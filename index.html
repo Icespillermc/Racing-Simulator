@@ -1469,6 +1469,15 @@ function runLapInternal(){
   if(race.finished||paused)return;
 
   const {track,currentOrder}=race;
+  const totalLaps=seriesTrackVal(track,'stage1')+seriesTrackVal(track,'stage2')+seriesTrackVal(track,'stage3');
+
+  // Safety: end race if laps exceed total
+  if(race.laps>=totalLaps&&totalLaps>0){
+    race.finished=true;
+    race.laps=totalLaps;
+    currentOrder.forEach((d,i)=>{d.finishPos=i+1;});
+    return;
+  }
 
   // If caution, decrement caution counter
   if(race.flag==='caution'){
@@ -1805,15 +1814,6 @@ function runLapInternal(){
     }
   }
 
-  // Check race end
-  const totalLaps=seriesTrackVal(track,'stage1')+seriesTrackVal(track,'stage2')+seriesTrackVal(track,'stage3');
-  if(race.laps>=totalLaps){
-    race.finished=true;
-    race.laps=totalLaps;
-    currentOrder.forEach((d,i)=>{
-      d.finishPos=i+1;
-    });
-  }
 }
 
 function onRaceComplete(){
@@ -2641,7 +2641,7 @@ function updateAuthUI(){
 }
 
 // ====================== INIT ======================
-function init(){proceedInit();}
+function init(){updateAuthUI();proceedInit();}
 function proceedInit(){
   // Populate track select
   const sel=document.getElementById('trackSelect');
