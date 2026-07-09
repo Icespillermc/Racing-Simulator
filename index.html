@@ -375,131 +375,131 @@ select:focus{outline:none;border-color:var(--yellow)}
 <script>
 // ====================== CUP SERIES DRIVERS ======================
 let CUP_DRIVERS = [
-  {num:1,name:"Ross Chastain",team:"Trackhouse Racing",mfg:"Chevy",ovr:84,ss:78,it:82,st:86,rc:80,agg:92,con:62},
-  {num:2,name:"Austin Cindric",team:"Team Penske",mfg:"Ford",ovr:76,ss:84,it:72,st:70,rc:82,agg:66,con:72},
-  {num:3,name:"Austin Dillon",team:"Richard Childress Racing",mfg:"Chevy",ovr:72,ss:70,it:72,st:74,rc:64,agg:68,con:72},
-  {num:4,name:"Noah Gragson",team:"Front Row Motorsports",mfg:"Ford",ovr:69,ss:70,it:66,st:70,rc:68,agg:74,con:64},
-  {num:5,name:"Kyle Larson",team:"Hendrick Motorsports",mfg:"Chevy",ovr:97,ss:88,it:99,st:92,rc:91,agg:65,con:85},
-  {num:6,name:"Brad Keselowski",team:"RFK Racing",mfg:"Ford",ovr:86,ss:88,it:85,st:82,rc:74,agg:68,con:84},
-  {num:7,name:"Daniel Suarez",team:"Spire Motorsports",mfg:"Chevy",ovr:78,ss:74,it:76,st:74,rc:84,agg:70,con:74},
-  {num:33,name:"Austin Hill",team:"Richard Childress Racing",mfg:"Chevy",ovr:78,ss:90,it:72,st:68,rc:56,agg:65,con:70},
-  {num:9,name:"Chase Elliott",team:"Hendrick Motorsports",mfg:"Chevy",ovr:93,ss:80,it:90,st:89,rc:96,agg:55,con:88},
-  {num:10,name:"Ty Dillon",team:"Kaulig Racing",mfg:"Chevy",ovr:67,ss:66,it:66,st:68,rc:62,agg:60,con:70},
-  {num:11,name:"Denny Hamlin",team:"Joe Gibbs Racing",mfg:"Toyota",ovr:95,ss:94,it:93,st:90,rc:88,agg:75,con:80},
-  {num:12,name:"Ryan Blaney",team:"Team Penske",mfg:"Ford",ovr:90,ss:86,it:91,st:87,rc:80,agg:62,con:86},
-  {num:16,name:"AJ Allmendinger",team:"Kaulig Racing",mfg:"Chevy",ovr:74,ss:62,it:70,st:68,rc:90,agg:66,con:72},
-  {num:17,name:"Chris Buescher",team:"RFK Racing",mfg:"Ford",ovr:83,ss:76,it:85,st:80,rc:78,agg:55,con:92},
-  {num:19,name:"Chase Briscoe",team:"Joe Gibbs Racing",mfg:"Toyota",ovr:79,ss:68,it:78,st:80,rc:82,agg:70,con:76},
-  {num:20,name:"Christopher Bell",team:"Joe Gibbs Racing",mfg:"Toyota",ovr:91,ss:78,it:92,st:90,rc:93,agg:70,con:82},
-  {num:21,name:"Josh Berry",team:"Wood Brothers Racing",mfg:"Ford",ovr:66,ss:58,it:66,st:70,rc:72,agg:64,con:72},
-  {num:22,name:"Joey Logano",team:"Team Penske",mfg:"Ford",ovr:87,ss:90,it:84,st:85,rc:76,agg:78,con:76},
-  {num:23,name:"Bubba Wallace",team:"23XI Racing",mfg:"Toyota",ovr:81,ss:92,it:78,st:76,rc:70,agg:72,con:76},
-  {num:24,name:"William Byron",team:"Hendrick Motorsports",mfg:"Chevy",ovr:92,ss:82,it:94,st:88,rc:85,agg:60,con:90},
-  {num:34,name:"Todd Gilliland",team:"Front Row Motorsports",mfg:"Ford",ovr:70,ss:74,it:68,st:68,rc:66,agg:60,con:76},
-  {num:35,name:"Riley Herbst",team:"23XI Racing",mfg:"Toyota",ovr:68,ss:70,it:66,st:66,rc:64,agg:66,con:68},
-  {num:36,name:"Chandler Smith",team:"Front Row Motorsports",mfg:"Ford",ovr:62,ss:64,it:60,st:62,rc:56,agg:58,con:66},
-  {num:38,name:"Zane Smith",team:"Front Row Motorsports",mfg:"Ford",ovr:63,ss:64,it:60,st:62,rc:60,agg:54,con:72},
-  {num:41,name:"Cole Custer",team:"Haas Factory Team",mfg:"Chevy",ovr:65,ss:68,it:62,st:64,rc:60,agg:62,con:68},
-  {num:42,name:"John H. Nemechek",team:"Legacy Motor Club",mfg:"Toyota",ovr:65,ss:68,it:62,st:64,rc:60,agg:62,con:70},
-  {num:43,name:"Erik Jones",team:"Legacy Motor Club",mfg:"Toyota",ovr:75,ss:82,it:74,st:72,rc:68,agg:58,con:80},
-  {num:45,name:"Tyler Reddick",team:"23XI Racing",mfg:"Toyota",ovr:89,ss:72,it:90,st:85,rc:92,agg:72,con:78},
-  {num:47,name:"Ricky Stenhouse Jr",team:"HYAK Motorsports",mfg:"Chevy",ovr:73,ss:86,it:70,st:72,rc:64,agg:72,con:64},
-  {num:48,name:"Alex Bowman",team:"Hendrick Motorsports",mfg:"Chevy",ovr:82,ss:80,it:81,st:80,rc:82,agg:52,con:86},
-  {num:51,name:"Cody Ware",team:"Rick Ware Racing",mfg:"Chevy",ovr:55,ss:56,it:54,st:56,rc:50,agg:48,con:60},
-  {num:54,name:"Ty Gibbs",team:"Joe Gibbs Racing",mfg:"Toyota",ovr:80,ss:68,it:82,st:78,rc:76,agg:78,con:68},
-  {num:60,name:"Ryan Preece",team:"RFK Racing",mfg:"Ford",ovr:64,ss:68,it:62,st:64,rc:60,agg:60,con:74},
-  {num:67,name:"Corey Heim",team:"23XI Racing",mfg:"Toyota",ovr:60,ss:72,it:78,st:76,rc:72,agg:78,con:78},
-  {num:71,name:"Michael McDowell",team:"Spire Motorsports",mfg:"Chevy",ovr:74,ss:88,it:70,st:66,rc:72,agg:55,con:82},
-  {num:77,name:"Carson Hocevar",team:"Spire Motorsports",mfg:"Chevy",ovr:71,ss:66,it:70,st:74,rc:66,agg:76,con:62},
-  {num:78,name:"BJ McLeod",team:"Live Fast Motorsports",mfg:"Chevy",ovr:56,ss:58,it:54,st:54,rc:50,agg:50,con:60},
-  {num:84,name:"Jimmie Johnson",team:"Legacy Motor Club",mfg:"Toyota",ovr:58,ss:64,it:54,st:52,rc:50,agg:45,con:60},
-  {num:88,name:"Connor Zilisch",team:"Trackhouse Racing",mfg:"Chevy",ovr:77,ss:68,it:76,st:70,rc:88,agg:72,con:70},
-  {num:97,name:"Shane van Gisbergen",team:"Trackhouse Racing",mfg:"Chevy",ovr:78,ss:58,it:72,st:68,rc:96,agg:68,con:68}
+  {num:1,name:"Ross Chastain",team:"Trackhouse Racing",mfg:"Chevy",ovr:77,ss:76,it:76,st:78,rc:82,agg:86,con:66},
+  {num:2,name:"Austin Cindric",team:"Team Penske",mfg:"Ford",ovr:75,ss:88,it:76,st:72,rc:76,agg:62,con:76},
+  {num:3,name:"Austin Dillon",team:"Richard Childress Racing",mfg:"Chevy",ovr:68,ss:76,it:66,st:66,rc:61,agg:74,con:68},
+  {num:4,name:"Noah Gragson",team:"Front Row Motorsports",mfg:"Ford",ovr:68,ss:72,it:64,st:68,rc:62,agg:76,con:63},
+  {num:5,name:"Kyle Larson",team:"Hendrick Motorsports",mfg:"Chevy",ovr:88,ss:88,it:99,st:94,rc:91,agg:67,con:88},
+  {num:6,name:"Brad Keselowski",team:"RFK Racing",mfg:"Ford",ovr:79,ss:90,it:82,st:80,rc:74,agg:68,con:81},
+  {num:7,name:"Daniel Suarez",team:"Spire Motorsports",mfg:"Chevy",ovr:80,ss:82,it:82,st:80,rc:88,agg:68,con:81},
+  {num:33,name:"Austin Hill",team:"Richard Childress Racing",mfg:"Chevy",ovr:81,ss:94,it:84,st:80,rc:74,agg:70,con:82},
+  {num:9,name:"Chase Elliott",team:"Hendrick Motorsports",mfg:"Chevy",ovr:86,ss:86,it:93,st:94,rc:96,agg:58,con:90},
+  {num:10,name:"Ty Dillon",team:"Kaulig Racing",mfg:"Chevy",ovr:62,ss:66,it:62,st:63,rc:58,agg:58,con:64},
+  {num:11,name:"Denny Hamlin",team:"Joe Gibbs Racing",mfg:"Toyota",ovr:94,ss:99,it:99,st:99,rc:95,agg:77,con:95},
+  {num:12,name:"Ryan Blaney",team:"Team Penske",mfg:"Ford",ovr:88,ss:99,it:97,st:93,rc:90,agg:58,con:94},
+  {num:16,name:"AJ Allmendinger",team:"Kaulig Racing",mfg:"Chevy",ovr:71,ss:64,it:68,st:66,rc:89,agg:66,con:72},
+  {num:17,name:"Chris Buescher",team:"RFK Racing",mfg:"Ford",ovr:80,ss:83,it:88,st:85,rc:80,agg:55,con:92},
+  {num:19,name:"Chase Briscoe",team:"Joe Gibbs Racing",mfg:"Toyota",ovr:79,ss:80,it:84,st:84,rc:81,agg:64,con:80},
+  {num:20,name:"Christopher Bell",team:"Joe Gibbs Racing",mfg:"Toyota",ovr:85,ss:83,it:93,st:93,rc:92,agg:67,con:84},
+  {num:21,name:"Josh Berry",team:"Wood Brothers Racing",mfg:"Ford",ovr:65,ss:67,it:64,st:68,rc:61,agg:62,con:67},
+  {num:22,name:"Joey Logano",team:"Team Penske",mfg:"Ford",ovr:81,ss:90,it:84,st:84,rc:76,agg:74,con:76},
+  {num:23,name:"Bubba Wallace",team:"23XI Racing",mfg:"Toyota",ovr:80,ss:93,it:82,st:78,rc:78,agg:66,con:80},
+  {num:24,name:"William Byron",team:"Hendrick Motorsports",mfg:"Chevy",ovr:83,ss:88,it:94,st:86,rc:86,agg:58,con:88},
+  {num:34,name:"Todd Gilliland",team:"Front Row Motorsports",mfg:"Ford",ovr:68,ss:77,it:68,st:68,rc:63,agg:62,con:71},
+  {num:35,name:"Riley Herbst",team:"23XI Racing",mfg:"Toyota",ovr:67,ss:73,it:64,st:66,rc:65,agg:66,con:66},
+  {num:36,name:"Chandler Smith",team:"Front Row Motorsports",mfg:"Ford",ovr:76,ss:82,it:78,st:79,rc:75,agg:62,con:80},
+  {num:38,name:"Zane Smith",team:"Front Row Motorsports",mfg:"Ford",ovr:66,ss:66,it:64,st:70,rc:64,agg:58,con:72},
+  {num:41,name:"Cole Custer",team:"Haas Factory Team",mfg:"Chevy",ovr:60,ss:62,it:59,st:62,rc:56,agg:60,con:62},
+  {num:42,name:"John H. Nemechek",team:"Legacy Motor Club",mfg:"Toyota",ovr:65,ss:70,it:62,st:65,rc:60,agg:64,con:68},
+  {num:43,name:"Erik Jones",team:"Legacy Motor Club",mfg:"Toyota",ovr:74,ss:88,it:76,st:76,rc:69,agg:58,con:80},
+  {num:45,name:"Tyler Reddick",team:"23XI Racing",mfg:"Toyota",ovr:93,ss:99,it:99,st:99,rc:97,agg:70,con:96},
+  {num:47,name:"Ricky Stenhouse Jr",team:"HYAK Motorsports",mfg:"Chevy",ovr:73,ss:88,it:70,st:70,rc:66,agg:76,con:68},
+  {num:48,name:"Alex Bowman",team:"Hendrick Motorsports",mfg:"Chevy",ovr:67,ss:72,it:72,st:66,rc:70,agg:51,con:72},
+  {num:51,name:"Cody Ware",team:"Rick Ware Racing",mfg:"Chevy",ovr:54,ss:58,it:52,st:54,rc:50,agg:55,con:57},
+  {num:54,name:"Ty Gibbs",team:"Joe Gibbs Racing",mfg:"Toyota",ovr:81,ss:78,it:87,st:86,rc:84,agg:72,con:80},
+  {num:60,name:"Ryan Preece",team:"RFK Racing",mfg:"Ford",ovr:71,ss:76,it:68,st:68,rc:68,agg:70,con:74},
+  {num:67,name:"Corey Heim",team:"23XI Racing",mfg:"Toyota",ovr:83,ss:82,it:88,st:85,rc:84,agg:75,con:84},
+  {num:71,name:"Michael McDowell",team:"Spire Motorsports",mfg:"Chevy",ovr:71,ss:88,it:66,st:68,rc:72,agg:54,con:78},
+  {num:77,name:"Carson Hocevar",team:"Spire Motorsports",mfg:"Chevy",ovr:78,ss:79,it:81,st:82,rc:76,agg:77,con:76},
+  {num:78,name:"BJ McLeod",team:"Live Fast Motorsports",mfg:"Chevy",ovr:53,ss:55,it:52,st:52,rc:50,agg:52,con:56},
+  {num:84,name:"Jimmie Johnson",team:"Legacy Motor Club",mfg:"Toyota",ovr:54,ss:58,it:56,st:52,rc:52,agg:48,con:55},
+  {num:88,name:"Connor Zilisch",team:"Trackhouse Racing",mfg:"Chevy",ovr:69,ss:64,it:68,st:64,rc:84,agg:70,con:63},
+  {num:97,name:"Shane van Gisbergen",team:"Trackhouse Racing",mfg:"Chevy",ovr:77,ss:69,it:76,st:75,rc:98,agg:69,con:74}
 ];
 
 // ====================== XFINITY SERIES DRIVERS ======================
 let XFINITY_DRIVERS = [
-  {num:"00",name:"Sheldon Creed",team:"Haas Factory Team",mfg:"Chevy",ovr:78,ss:76,it:80,st:74,rc:72,agg:70,con:68},
-  {num:16,name:"AJ Allmendinger",team:"Kaulig Racing",mfg:"Chevy",ovr:82,ss:64,it:76,st:72,rc:96,agg:68,con:74},
-  {num:25,name:"Alex Labbe",team:"SS-GreenLight Racing",mfg:"Chevy",ovr:56,ss:58,it:54,st:56,rc:52,agg:56,con:60},
-  {num:47,name:"Josh Bilicki",team:"SS-GreenLight Racing",mfg:"Chevy",ovr:62,ss:64,it:60,st:62,rc:58,agg:56,con:66},
-  {num:1,name:"Carson Kvapil",team:"JR Motorsports",mfg:"Chevy",ovr:68,ss:64,it:68,st:70,rc:66,agg:66,con:64},
-  {num:2,name:"Jesse Love",team:"Richard Childress Racing",mfg:"Chevy",ovr:76,ss:70,it:78,st:80,rc:68,agg:72,con:70},
-  {num:5,name:"Chandler Smith",team:"Hettinger Racing",mfg:"Ford",ovr:74,ss:70,it:74,st:76,rc:68,agg:70,con:68},
-  {num:7,name:"Justin Allgaier",team:"JR Motorsports",mfg:"Chevy",ovr:88,ss:76,it:86,st:82,rc:90,agg:62,con:86},
-  {num:8,name:"Sammy Smith",team:"JR Motorsports",mfg:"Chevy",ovr:75,ss:68,it:76,st:78,rc:70,agg:74,con:66},
-  {num:88,name:"Rajah Caruth",team:"JR Motorsports",mfg:"Chevy",ovr:70,ss:72,it:68,st:70,rc:66,agg:66,con:70},
-  {num:14,name:"Nick Sanchez",team:"AM Racing",mfg:"Chevy",ovr:68,ss:72,it:66,st:68,rc:62,agg:66,con:66},
-  {num:17,name:"Corey Day",team:"Hendrick Motorsports",mfg:"Chevy",ovr:74,ss:68,it:76,st:72,rc:70,agg:66,con:68},
-  {num:18,name:"William Sawalich",team:"Joe Gibbs Racing",mfg:"Toyota",ovr:74,ss:70,it:74,st:76,rc:72,agg:66,con:70},
-  {num:19,name:"Brent Crews",team:"Joe Gibbs Racing",mfg:"Toyota",ovr:70,ss:66,it:72,st:74,rc:66,agg:68,con:66},
-  {num:20,name:"Brandon Jones",team:"Joe Gibbs Racing",mfg:"Toyota",ovr:74,ss:72,it:74,st:76,rc:68,agg:60,con:76},
-  {num:21,name:"Austin Hill",team:"Richard Childress Racing",mfg:"Chevy",ovr:86,ss:94,it:84,st:82,rc:68,agg:68,con:78},
-  {num:24,name:"Harrison Burton",team:"Sam Hunt Racing",mfg:"Toyota",ovr:64,ss:66,it:62,st:64,rc:60,agg:62,con:66},
-  {num:26,name:"Dean Thompson",team:"Sam Hunt Racing",mfg:"Toyota",ovr:64,ss:68,it:62,st:66,rc:56,agg:66,con:60},
-  {num:27,name:"Jeb Burton",team:"Jordan Anderson Racing",mfg:"Chevy",ovr:66,ss:68,it:64,st:68,rc:64,agg:62,con:70},
-  {num:28,name:"Kyle Sieg",team:"RSS Racing",mfg:"Ford",ovr:62,ss:64,it:60,st:62,rc:58,agg:64,con:62},
-  {num:30,name:"Dawson Cram",team:"Stanton Barrett Motorsports",mfg:"Chevy",ovr:56,ss:58,it:54,st:56,rc:52,agg:60,con:56},
-  {num:31,name:"Blaine Perkins",team:"Jordan Anderson Racing",mfg:"Chevy",ovr:58,ss:60,it:56,st:58,rc:54,agg:62,con:60},
-  {num:32,name:"Jordan Anderson",team:"Jordan Anderson Racing",mfg:"Chevy",ovr:60,ss:62,it:58,st:60,rc:56,agg:64,con:60},
-  {num:35,name:"Joey Gase",team:"Joey Gase Motorsports",mfg:"Ford",ovr:54,ss:56,it:52,st:54,rc:50,agg:50,con:56},
-  {num:39,name:"Ryan Sieg",team:"RSS Racing",mfg:"Ford",ovr:74,ss:76,it:72,st:74,rc:68,agg:70,con:72},
-  {num:41,name:"Sam Mayer",team:"Haas Factory Team",mfg:"Chevy",ovr:82,ss:78,it:80,st:84,rc:74,agg:84,con:64},
-  {num:42,name:"Nick Leitz",team:"Young's Motorsports",mfg:"Chevy",ovr:56,ss:58,it:54,st:56,rc:52,agg:58,con:58},
-  {num:44,name:"Brennan Poole",team:"Alpha Prime Racing",mfg:"Chevy",ovr:60,ss:62,it:58,st:60,rc:56,agg:52,con:64},
-  {num:45,name:"Lavar Scott",team:"Alpha Prime Racing",mfg:"Chevy",ovr:64,ss:62,it:64,st:66,rc:62,agg:66,con:62},
-  {num:48,name:"Patrick Staropoli",team:"Big Machine Racing",mfg:"Chevy",ovr:60,ss:58,it:60,st:62,rc:58,agg:56,con:64},
-  {num:51,name:"Jeremy Clements",team:"Jeremy Clements Racing",mfg:"Chevy",ovr:66,ss:68,it:64,st:66,rc:62,agg:62,con:68},
-  {num:53,name:"Brad Perez",team:"Joey Gase Motorsports",mfg:"Ford",ovr:54,ss:56,it:52,st:54,rc:50,agg:58,con:56},
-  {num:54,name:"Taylor Gray",team:"Joe Gibbs Racing",mfg:"Toyota",ovr:72,ss:68,it:70,st:74,rc:68,agg:72,con:66},
-  {num:66,name:"Timmy Hill",team:"MBM Motorsports",mfg:"Toyota",ovr:56,ss:58,it:54,st:56,rc:52,agg:56,con:62},
-  {num:87,name:"Austin Green",team:"Peterson Racing",mfg:"Chevy",ovr:60,ss:58,it:60,st:62,rc:58,agg:62,con:60},
-  {num:9,name:"Connor Zilisch",team:"JR Motorsports",mfg:"Chevy",ovr:72,ss:64,it:70,st:66,rc:82,agg:68,con:70},
-  {num:91,name:"Mason Maggio",team:"DGM Racing",mfg:"Chevy",ovr:56,ss:58,it:54,st:56,rc:52,agg:58,con:58},
-  {num:92,name:"Josh Williams",team:"DGM Racing",mfg:"Chevy",ovr:62,ss:60,it:62,st:64,rc:60,agg:66,con:60},
-  {num:96,name:"Anthony Alfredo",team:"Viking Motorsports",mfg:"Chevy",ovr:66,ss:70,it:64,st:66,rc:62,agg:62,con:66},
-  {num:99,name:"Parker Retzlaff",team:"Viking Motorsports",mfg:"Chevy",ovr:68,ss:72,it:66,st:68,rc:62,agg:66,con:64}
+  {num:"00",name:"Sheldon Creed",team:"Haas Factory Team",mfg:"Chevy",ovr:82,ss:84,it:87,st:86,rc:83,agg:68,con:81},
+  {num:16,name:"AJ Allmendinger",team:"Kaulig Racing",mfg:"Chevy",ovr:73,ss:64,it:72,st:68,rc:92,agg:68,con:72},
+  {num:08,name:"Alex Labbe",team:"SS-GreenLight Racing",mfg:"Chevy",ovr:64,ss:68,it:65,st:63,rc:62,agg:58,con:66},
+  {num:07,name:"Josh Bilicki",team:"SS-GreenLight Racing",mfg:"Chevy",ovr:67,ss:72,it:68,st:68,rc:69,agg:56,con:71},
+  {num:1,name:"Carson Kvapil",team:"JR Motorsports",mfg:"Chevy",ovr:76,ss:78,it:80,st:80,rc:74,agg:64,con:79},
+  {num:2,name:"Jesse Love",team:"Richard Childress Racing",mfg:"Chevy",ovr:82,ss:83,it:88,st:86,rc:81,agg:70,con:82},
+  {num:5,name:"Chandler Smith",team:"Hettinger Racing",mfg:"Ford",ovr:81,ss:84,it:86,st:86,rc:81,agg:68,con:81},
+  {num:7,name:"Justin Allgaier",team:"JR Motorsports",mfg:"Chevy",ovr:86,ss:88,it:92,st:90,rc:92,agg:66,con:91},
+  {num:8,name:"Sammy Smith",team:"JR Motorsports",mfg:"Chevy",ovr:80,ss:81,it:84,st:87,rc:78,agg:70,con:80},
+  {num:88,name:"Rajah Caruth",team:"JR Motorsports",mfg:"Chevy",ovr:74,ss:78,it:76,st:80,rc:73,agg:61,con:79},
+  {num:14,name:"Nick Sanchez",team:"AM Racing",mfg:"Chevy",ovr:69,ss:72,it:72,st:74,rc:64,agg:65,con:69},
+  {num:17,name:"Corey Day",team:"Hendrick Motorsports",mfg:"Chevy",ovr:82,ss:83,it:86,st:86,rc:83,agg:72,con:82},
+  {num:18,name:"William Sawalich",team:"Joe Gibbs Racing",mfg:"Toyota",ovr:79,ss:82,it:80,st:84,rc:80,agg:66,con:80},
+  {num:19,name:"Brent Crews",team:"Joe Gibbs Racing",mfg:"Toyota",ovr:77,ss:76,it:82,st:83,rc:78,agg:66,con:79},
+  {num:20,name:"Brandon Jones",team:"Joe Gibbs Racing",mfg:"Toyota",ovr:78,ss:79,it:82,st:84,rc:78,agg:62,con:84},
+  {num:21,name:"Austin Hill",team:"Richard Childress Racing",mfg:"Chevy",ovr:85,ss:96,it:90,st:87,rc:80,agg:72,con:86},
+  {num:24,name:"Harrison Burton",team:"Sam Hunt Racing",mfg:"Toyota",ovr:71,ss:78,it:72,st:72,rc:72,agg:62,con:72},
+  {num:26,name:"Dean Thompson",team:"Sam Hunt Racing",mfg:"Toyota",ovr:72,ss:76,it:74,st:77,rc:70,agg:62,con:71},
+  {num:27,name:"Jeb Burton",team:"Jordan Anderson Racing",mfg:"Chevy",ovr:72,ss:74,it:71,st:76,rc:74,agg:64,con:75},
+  {num:28,name:"Kyle Sieg",team:"RSS Racing",mfg:"Ford",ovr:68,ss:72,it:70,st:69,rc:64,agg:62,con:68},
+  {num:30,name:"Dawson Cram",team:"Stanton Barrett Motorsports",mfg:"Chevy",ovr:60,ss:61,it:62,st:60,rc:57,agg:58,con:62},
+  {num:31,name:"Blaine Perkins",team:"Jordan Anderson Racing",mfg:"Chevy",ovr:68,ss:70,it:70,st:72,rc:64,agg:62,con:70},
+  {num:32,name:"Jordan Anderson",team:"Jordan Anderson Racing",mfg:"Chevy",ovr:63,ss:66,it:61,st:65,rc:60,agg:62,con:62},
+  {num:35,name:"Joey Gase",team:"Joey Gase Motorsports",mfg:"Ford",ovr:62,ss:67,it:64,st:64,rc:58,agg:54,con:64},
+  {num:39,name:"Ryan Sieg",team:"RSS Racing",mfg:"Ford",ovr:78,ss:83,it:81,st:80,rc:78,agg:66,con:80},
+  {num:41,name:"Sam Mayer",team:"Haas Factory Team",mfg:"Chevy",ovr:83,ss:85,it:86,st:89,rc:83,agg:78,con:78},
+  {num:42,name:"Nick Leitz",team:"Young's Motorsports",mfg:"Chevy",ovr:63,ss:64,it:63,st:62,rc:63,agg:60,con:64},
+  {num:44,name:"Brennan Poole",team:"Alpha Prime Racing",mfg:"Chevy",ovr:69,ss:74,it:73,st:70,rc:66,agg:56,con:73},
+  {num:45,name:"Lavar Scott",team:"Alpha Prime Racing",mfg:"Chevy",ovr:69,ss:68,it:72,st:72,rc:70,agg:63,con:68},
+  {num:48,name:"Patrick Staropoli",team:"Big Machine Racing",mfg:"Chevy",ovr:67,ss:66,it:71,st:68,rc:70,agg:59,con:70},
+  {num:51,name:"Jeremy Clements",team:"Jeremy Clements Racing",mfg:"Chevy",ovr:72,ss:76,it:72,st:76,rc:72,agg:61,con:74},
+  {num:53,name:"Brad Perez",team:"Joey Gase Motorsports",mfg:"Ford",ovr:60,ss:60,it:60,st:60,rc:60,agg:60,con:60},
+  {num:54,name:"Taylor Gray",team:"Joe Gibbs Racing",mfg:"Toyota",ovr:79,ss:80,it:80,st:83,rc:80,agg:72,con:78},
+  {num:66,name:"Timmy Hill",team:"MBM Motorsports",mfg:"Toyota",ovr:65,ss:66,it:64,st:67,rc:64,agg:60,con:68},
+  {num:87,name:"Austin Green",team:"Peterson Racing",mfg:"Chevy",ovr:67,ss:66,it:69,st:72,rc:66,agg:60,con:70},
+  {num:9,name:"Connor Zilisch",team:"JR Motorsports",mfg:"Chevy",ovr:66,ss:62,it:64,st:62,rc:80,agg:68,con:63},
+  {num:91,name:"Mason Maggio",team:"DGM Racing",mfg:"Chevy",ovr:61,ss:64,it:61,st:65,rc:56,agg:58,con:63},
+  {num:92,name:"Josh Williams",team:"DGM Racing",mfg:"Chevy",ovr:66,ss:64,it:64,st:67,rc:71,agg:66,con:66},
+  {num:96,name:"Anthony Alfredo",team:"Viking Motorsports",mfg:"Chevy",ovr:74,ss:80,it:76,st:77,rc:73,agg:61,con:76},
+  {num:99,name:"Parker Retzlaff",team:"Viking Motorsports",mfg:"Chevy",ovr:75,ss:80,it:76,st:80,rc:72,agg:64,con:78}
 ];
 
 // ====================== TRUCK SERIES DRIVERS ======================
 let TRUCK_DRIVERS = [
-  {num:1,name:"Corey Heim",team:"TRICON Garage",mfg:"Toyota",ovr:84,ss:88,it:82,st:80,rc:76,agg:68,con:82},
-  {num:2,name:"Luke Baldwin",team:"Team Reaume",mfg:"Ford",ovr:54,ss:56,it:52,st:54,rc:50,agg:54,con:58},
-  {num:4,name:"Ricky Stenhouse Jr",team:"Niece Motorsports",mfg:"Chevy",ovr:64,ss:72,it:60,st:62,rc:58,agg:68,con:58},
-  {num:5,name:"Adam Andretti",team:"TRICON Garage",mfg:"Toyota",ovr:58,ss:60,it:56,st:58,rc:54,agg:58,con:60},
-  {num:7,name:"Connor Mosack",team:"Spire Motorsports",mfg:"Chevy",ovr:60,ss:58,it:60,st:62,rc:60,agg:60,con:64},
-  {num:9,name:"Grant Enfinger",team:"CR7 Motorsports",mfg:"Chevy",ovr:78,ss:80,it:76,st:80,rc:72,agg:64,con:82},
-  {num:10,name:"Corey LaJoie",team:"Kaulig Racing",mfg:"Dodge",ovr:66,ss:70,it:64,st:64,rc:62,agg:62,con:68},
-  {num:11,name:"Kaden Honeycutt",team:"TRICON Garage",mfg:"Toyota",ovr:62,ss:60,it:60,st:64,rc:60,agg:68,con:62},
-  {num:12,name:"Brenden Queen",team:"Kaulig Racing",mfg:"Dodge",ovr:60,ss:62,it:58,st:60,rc:56,agg:60,con:64},
-  {num:13,name:"Cole Butcher",team:"ThorSport Racing",mfg:"Ford",ovr:62,ss:64,it:60,st:64,rc:56,agg:60,con:66},
-  {num:14,name:"Mini Tyrrell",team:"Kaulig Racing",mfg:"Dodge",ovr:56,ss:58,it:54,st:56,rc:52,agg:58,con:58},
-  {num:15,name:"Tanner Gray",team:"TRICON Garage",mfg:"Toyota",ovr:72,ss:68,it:70,st:76,rc:66,agg:64,con:76},
-  {num:16,name:"Justin Haley",team:"Kaulig Racing",mfg:"Dodge",ovr:68,ss:64,it:68,st:70,rc:66,agg:62,con:72},
-  {num:17,name:"Giovanni Ruggiero",team:"TRICON Garage",mfg:"Toyota",ovr:60,ss:58,it:60,st:62,rc:58,agg:62,con:62},
-  {num:18,name:"Tyler Ankrum",team:"McAnally-Hilgemann Racing",mfg:"Chevy",ovr:66,ss:70,it:64,st:68,rc:60,agg:62,con:68},
-  {num:19,name:"Daniel Hemric",team:"McAnally-Hilgemann Racing",mfg:"Chevy",ovr:70,ss:64,it:68,st:72,rc:72,agg:55,con:78},
-  {num:20,name:"Toni Breidinger",team:"McAnally-Hilgemann Racing",mfg:"Chevy",ovr:52,ss:54,it:50,st:52,rc:48,agg:56,con:54},
-  {num:22,name:"Josh Reaume",team:"Team Reaume",mfg:"Ford",ovr:52,ss:54,it:50,st:52,rc:48,agg:54,con:54},
-  {num:25,name:"Parker Kligerman",team:"Kaulig Racing",mfg:"Dodge",ovr:70,ss:68,it:68,st:70,rc:74,agg:62,con:76},
-  {num:26,name:"Dawson Sutton",team:"Rackley W.A.R.",mfg:"Chevy",ovr:56,ss:58,it:54,st:56,rc:52,agg:58,con:58},
-  {num:33,name:"Frankie Muniz",team:"Team Reaume",mfg:"Ford",ovr:52,ss:54,it:50,st:52,rc:48,agg:56,con:54},
-  {num:34,name:"Layne Riggs",team:"Front Row Motorsports",mfg:"Ford",ovr:66,ss:70,it:64,st:68,rc:60,agg:62,con:66},
-  {num:38,name:"Chandler Smith",team:"Front Row Motorsports",mfg:"Ford",ovr:74,ss:70,it:74,st:76,rc:68,agg:70,con:68},
-  {num:42,name:"Tyler Reif",team:"Niece Motorsports",mfg:"Chevy",ovr:56,ss:58,it:54,st:56,rc:52,agg:60,con:56},
-  {num:44,name:"Andres Perez De Lara",team:"Niece Motorsports",mfg:"Chevy",ovr:58,ss:60,it:56,st:58,rc:54,agg:58,con:60},
-  {num:45,name:"Landen Lewis",team:"Niece Motorsports",mfg:"Chevy",ovr:58,ss:60,it:58,st:60,rc:54,agg:62,con:58},
-  {num:52,name:"Stewart Friesen",team:"Halmar Friesen Racing",mfg:"Toyota",ovr:76,ss:70,it:72,st:78,rc:80,agg:68,con:78},
-  {num:56,name:"Timmy Hill",team:"Hill Motorsports",mfg:"Chevy",ovr:56,ss:58,it:54,st:56,rc:52,agg:54,con:60},
-  {num:62,name:"John Hunter Nemechek",team:"Halmar Friesen Racing",mfg:"Toyota",ovr:68,ss:72,it:66,st:68,rc:64,agg:64,con:68},
-  {num:71,name:"Connor Zilisch",team:"Spire Motorsports",mfg:"Chevy",ovr:72,ss:64,it:70,st:66,rc:88,agg:68,con:70},
-  {num:76,name:"Spencer Boyd",team:"Freedom Racing Enterprises",mfg:"Ford",ovr:54,ss:56,it:52,st:54,rc:50,agg:54,con:58},
-  {num:77,name:"Carson Hocevar",team:"Spire Motorsports",mfg:"Chevy",ovr:74,ss:70,it:72,st:76,rc:70,agg:80,con:66},
-  {num:81,name:"Kris Wright",team:"McAnally-Hilgemann Racing",mfg:"Chevy",ovr:56,ss:58,it:54,st:56,rc:52,agg:58,con:58},
-  {num:88,name:"Ty Majeski",team:"ThorSport Racing",mfg:"Ford",ovr:80,ss:82,it:78,st:82,rc:74,agg:66,con:82},
-  {num:91,name:"Christian Eckes",team:"McAnally-Hilgemann Racing",mfg:"Chevy",ovr:82,ss:76,it:80,st:86,rc:78,agg:66,con:84},
-  {num:98,name:"Jake Garcia",team:"ThorSport Racing",mfg:"Ford",ovr:60,ss:62,it:58,st:62,rc:56,agg:60,con:64},
-  {num:99,name:"Ben Rhodes",team:"ThorSport Racing",mfg:"Ford",ovr:74,ss:78,it:72,st:76,rc:68,agg:62,con:80}
+  {num:1,name:"Corey Heim",team:"TRICON Garage",mfg:"Toyota",ovr:85,ss:90,it:90,st:87,rc:86,agg:70,con:86},
+  {num:2,name:"Luke Baldwin",team:"Team Reaume",mfg:"Ford",ovr:60,ss:60,it:62,st:60,rc:58,agg:58,con:62},
+  {num:4,name:"Ricky Stenhouse Jr",team:"Niece Motorsports",mfg:"Chevy",ovr:69,ss:80,it:66,st:66,rc:64,agg:74,con:64},
+  {num:5,name:"Adam Andretti",team:"TRICON Garage",mfg:"Toyota",ovr:65,ss:68,it:66,st:66,rc:66,agg:58,con:66},
+  {num:7,name:"Connor Mosack",team:"Spire Motorsports",mfg:"Chevy",ovr:69,ss:68,it:70,st:74,rc:66,agg:62,con:72},
+  {num:9,name:"Grant Enfinger",team:"CR7 Motorsports",mfg:"Chevy",ovr:80,ss:88,it:84,st:86,rc:76,agg:65,con:84},
+  {num:10,name:"Corey LaJoie",team:"Kaulig Racing",mfg:"Dodge",ovr:72,ss:82,it:74,st:70,rc:74,agg:60,con:75},
+  {num:11,name:"Kaden Honeycutt",team:"TRICON Garage",mfg:"Toyota",ovr:76,ss:78,it:78,st:80,rc:76,agg:66,con:78},
+  {num:12,name:"Brenden Queen",team:"Kaulig Racing",mfg:"Dodge",ovr:71,ss:74,it:72,st:74,rc:70,agg:59,con:75},
+  {num:13,name:"Cole Butcher",team:"ThorSport Racing",mfg:"Ford",ovr:70,ss:71,it:72,st:75,rc:70,agg:59,con:73},
+  {num:14,name:"Mini Tyrrell",team:"Kaulig Racing",mfg:"Dodge",ovr:67,ss:72,it:67,st:69,rc:66,agg:58,con:70},
+  {num:15,name:"Tanner Gray",team:"TRICON Garage",mfg:"Toyota",ovr:74,ss:76,it:76,st:80,rc:72,agg:60,con:80},
+  {num:16,name:"Justin Haley",team:"Kaulig Racing",mfg:"Dodge",ovr:76,ss:80,it:77,st:80,rc:78,agg:66,con:78},
+  {num:17,name:"Giovanni Ruggiero",team:"TRICON Garage",mfg:"Toyota",ovr:74,ss:74,it:76,st:78,rc:76,agg:62,con:78},
+  {num:18,name:"Tyler Ankrum",team:"McAnally-Hilgemann Racing",mfg:"Chevy",ovr:76,ss:82,it:78,st:80,rc:76,agg:58,con:79},
+  {num:19,name:"Daniel Hemric",team:"McAnally-Hilgemann Racing",mfg:"Chevy",ovr:76,ss:78,it:78,st:82,rc:78,agg:55,con:84},
+  {num:20,name:"Toni Breidinger",team:"McAnally-Hilgemann Racing",mfg:"Chevy",ovr:60,ss:65,it:58,st:60,rc:60,agg:55,con:62},
+  {num:22,name:"Josh Reaume",team:"Team Reaume",mfg:"Ford",ovr:62,ss:64,it:62,st:62,rc:61,agg:60,con:64},
+  {num:25,name:"Parker Kligerman",team:"Kaulig Racing",mfg:"Dodge",ovr:70,ss:75,it:72,st:68,rc:74,agg:60,con:74},
+  {num:26,name:"Dawson Sutton",team:"Rackley W.A.R.",mfg:"Chevy",ovr:69,ss:72,it:69,st:72,rc:70,agg:60,con:70},
+  {num:33,name:"Frankie Muniz",team:"Team Reaume",mfg:"Ford",ovr:62,ss:67,it:63,st:63,rc:61,agg:54,con:66},
+  {num:34,name:"Layne Riggs",team:"Front Row Motorsports",mfg:"Ford",ovr:80,ss:83,it:82,st:84,rc:78,agg:71,con:80},
+  {num:38,name:"Chandler Smith",team:"Front Row Motorsports",mfg:"Ford",ovr:81,ss:84,it:86,st:86,rc:81,agg:68,con:81},
+  {num:42,name:"Tyler Reif",team:"Niece Motorsports",mfg:"Chevy",ovr:65,ss:66,it:68,st:66,rc:64,agg:62,con:66},
+  {num:44,name:"Andres Perez De Lara",team:"Niece Motorsports",mfg:"Chevy",ovr:68,ss:72,it:72,st:70,rc:67,agg:58,con:72},
+  {num:45,name:"Landen Lewis",team:"Niece Motorsports",mfg:"Chevy",ovr:67,ss:70,it:67,st:69,rc:64,agg:62,con:68},
+  {num:52,name:"Stewart Friesen",team:"Halmar Friesen Racing",mfg:"Toyota",ovr:80,ss:79,it:80,st:86,rc:84,agg:67,con:83},
+  {num:56,name:"Timmy Hill",team:"Hill Motorsports",mfg:"Chevy",ovr:64,ss:66,it:64,st:67,rc:64,agg:58,con:68},
+  {num:62,name:"John Hunter Nemechek",team:"Halmar Friesen Racing",mfg:"Toyota",ovr:66,ss:72,it:64,st:67,rc:62,agg:66,con:67},
+  {num:71,name:"Connor Zilisch",team:"Spire Motorsports",mfg:"Chevy",ovr:67,ss:62,it:64,st:62,rc:84,agg:68,con:63},
+  {num:76,name:"Spencer Boyd",team:"Freedom Racing Enterprises",mfg:"Ford",ovr:65,ss:70,it:65,st:69,rc:60,agg:56,con:68},
+  {num:77,name:"Carson Hocevar",team:"Spire Motorsports",mfg:"Chevy",ovr:80,ss:81,it:82,st:84,rc:78,agg:79,con:78},
+  {num:81,name:"Kris Wright",team:"McAnally-Hilgemann Racing",mfg:"Chevy",ovr:66,ss:69,it:66,st:72,rc:64,agg:60,con:68},
+  {num:88,name:"Ty Majeski",team:"ThorSport Racing",mfg:"Ford",ovr:82,ss:90,it:86,st:86,rc:82,agg:65,con:86},
+  {num:91,name:"Christian Eckes",team:"McAnally-Hilgemann Racing",mfg:"Chevy",ovr:83,ss:86,it:87,st:90,rc:82,agg:63,con:88},
+  {num:98,name:"Jake Garcia",team:"ThorSport Racing",mfg:"Ford",ovr:72,ss:76,it:74,st:76,rc:71,agg:58,con:77},
+  {num:99,name:"Ben Rhodes",team:"ThorSport Racing",mfg:"Ford",ovr:80,ss:88,it:82,st:84,rc:79,agg:63,con:86}
 ];
 
 // ====================== F1 SERIES DRIVERS (2026) ======================
@@ -2591,29 +2591,38 @@ const FIREBASE_CONFIG = {
 
 let firebaseApp, fbDb, fbAuth;
 let fbUser = null;
+let fbReady = false;
 
 function loadFirebase(callback){
   if(typeof firebase!=='undefined'){initFirebase(callback);return;}
   const scripts=['firebase-app-compat','firebase-firestore-compat','firebase-auth-compat'];
   let n=0;
   scripts.forEach(id=>{
+    const existing=document.querySelector(`script[src*="${id}"]`);
+    if(existing){n++;if(n===scripts.length)initFirebase(callback);return;}
     const s=document.createElement('script');
     s.src='https://www.gstatic.com/firebasejs/10.14.1/'+id+'.js';
     s.onload=()=>{n++;if(n===scripts.length)initFirebase(callback);};
+    s.onerror=()=>{console.error('Failed to load Firebase script:',id);};
     document.head.appendChild(s);
   });
 }
 function initFirebase(callback){
+  if(fbReady){if(callback)callback();return;}
   try{
     firebaseApp=firebase.initializeApp(FIREBASE_CONFIG);
     fbDb=firebase.firestore(firebaseApp);
     fbAuth=firebase.auth(firebaseApp);
+    fbReady=true;
     fbAuth.onAuthStateChanged(user=>{
       fbUser=user;
       updateAuthUI();
       if(user)loadFromFirestore().then(()=>{loadAllSeasons();renderStandings();renderResults();updateHeaderInfo();});
-      if(callback)callback();
     });
+    fbAuth.getRedirectResult().catch(e=>{
+      if(e && e.code!=='auth/no-auth-event')console.error('Redirect sign-in error:',e);
+    });
+    if(callback)callback();
   }catch(e){console.error('Firebase init failed:',e);if(callback)callback();}
 }
 async function loadFromFirestore(){
@@ -2633,9 +2642,34 @@ async function syncToFirestore(key,value){
   try{await fbDb.collection('users').doc(fbUser.uid).set({[key]:value},{merge:true});}catch(e){console.error('Firestore sync error:',e);}
 }
 function signIn(){
+  const btn=document.getElementById('fbBtn');
+  if(btn){btn.disabled=true;btn.textContent='Signing in…';}
   loadFirebase(()=>{
-    if(fbUser)return;
-    fbAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>console.error(e));
+    if(!fbAuth){
+      if(btn){btn.disabled=false;btn.textContent='Sign in with Google';}
+      alert('Google sign-in failed to load. Check your internet connection and try again.');
+      return;
+    }
+    if(fbUser){if(btn){btn.disabled=false;btn.textContent='Sign in with Google';}return;}
+    fbAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+      .catch(e=>{
+        console.error('Sign-in error:',e.code,e.message);
+        if(e.code==='auth/popup-blocked'||e.code==='auth/cancelled-popup-request'){
+          fbAuth.signInWithRedirect(new firebase.auth.GoogleAuthProvider()).catch(e2=>{
+            console.error('Redirect sign-in error:',e2);
+            alert('Sign-in failed: '+e2.message);
+          });
+          return;
+        }
+        if(e.code==='auth/popup-closed-by-user'){
+          // user closed it themselves, no need to alert
+        } else if(e.code==='auth/unauthorized-domain'){
+          alert('This domain is not authorized for Google sign-in in the Firebase project settings. Add it under Authentication > Settings > Authorized domains.');
+        } else {
+          alert('Sign-in failed: '+e.message);
+        }
+      })
+      .finally(()=>{if(btn){btn.disabled=false;btn.textContent='Sign in with Google';}});
   });
 }
 function signOut(){
@@ -2704,6 +2738,7 @@ function proceedInit(){
   loadSchedulePresets();
   document.getElementById('chaseToggle').checked=season.chaseEnabled;
   updateHeaderInfo();
+  loadFirebase(); // preload in background so sign-in is instant when clicked
 }
 
 function saveSeason(seriesKey, seasonObj){
