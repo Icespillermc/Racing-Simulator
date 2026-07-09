@@ -216,18 +216,11 @@ select:focus{outline:none;border-color:var(--yellow)}
 .roster-modal th .sort-arrow{display:inline-block;margin-left:2px;font-size:8px;opacity:0.4}
 .roster-modal th.sort-asc .sort-arrow,.roster-modal th.sort-desc .sort-arrow{opacity:1;color:var(--yellow)}
 .dnq-row{opacity:0.5}.dnq-row td{color:var(--text3)!important}
-#loadingOverlay{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:12px}
-#loadingOverlay .loader{color:var(--yellow);font-size:18px;font-weight:700}
-#loadingOverlay .loader-sub{color:var(--text3);font-size:12px}
 #authSection{display:flex;align-items:center;gap:6px;margin-top:2px}
 #authSection .fb-avatar{width:20px;height:20px;border-radius:50%;object-fit:cover}
 </style>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 </head>
 <body>
-<div id="loadingOverlay"><div class="loader">Loading...</div><div class="loader-sub">Connecting to cloud storage</div></div>
 
 <header>
   <h1><span class="red">&#9679;</span> <span class="yellow">NASCAR</span> CUP SERIES SIMULATOR</h1>
@@ -2587,77 +2580,68 @@ const FIREBASE_CONFIG = {
 
 let firebaseApp, fbDb, fbAuth;
 let fbUser = null;
-let fbReady = false;
 
-function initFirebase(){
-  try{
-    firebaseApp = firebase.initializeApp(FIREBASE_CONFIG);
-    fbDb = firebase.firestore(firebaseApp);
-    fbAuth = firebase.auth(firebaseApp);
-    fbAuth.onAuthStateChanged(async user => {
-      fbUser = user;
-      updateAuthUI();
-      if(user) await loadFromFirestore();
-      fbReady = true;
-      document.getElementById('loadingOverlay').style.display='none';
-      proceedInit();
-    });
-  }catch(e){
-    console.error('Firebase init failed:', e);
-    fbReady = true;
-    document.getElementById('loadingOverlay').style.display='none';
-    proceedInit();
-  }
+function loadFirebase(callback){
+  if(typeof firebase!=='undefined'){initFirebase(callback);return;}
+  const scripts=['firebase-app-compat','firebase-firestore-compat','firebase-auth-compat'];
+  let n=0;
+  scripts.forEach(id=>{
+    const s=document.createElement('script');
+    s.src='https://www.gstatic.com/firebasejs/10.14.1/'+id+'.js';
+    s.onload=()=>{n++;if(n===scripts.length)initFirebase(callback);};
+    document.head.appendChild(s);
+  });
 }
-
+function initFirebase(callback){
+  try{
+    firebaseApp=firebase.initializeApp(FIREBASE_CONFIG);
+    fbDb=firebase.firestore(firebaseApp);
+    fbAuth=firebase.auth(firebaseApp);
+    fbAuth.onAuthStateChanged(user=>{
+      fbUser=user;
+      updateAuthUI();
+      if(user)loadFromFirestore().then(()=>{loadAllSeasons();renderStandings();renderResults();updateHeaderInfo();});
+      if(callback)callback();
+    });
+  }catch(e){console.error('Firebase init failed:',e);if(callback)callback();}
+}
 async function loadFromFirestore(){
   try{
-    const doc = await fbDb.collection('users').doc(fbUser.uid).get();
-    if(!doc.exists) return;
-    const data = doc.data();
-    if(data.rosters) localStorage.setItem('nascar_rosters', JSON.stringify(data.rosters));
-    if(data.presets) localStorage.setItem('nascar_presets', JSON.stringify(data.presets));
+    const doc=await fbDb.collection('users').doc(fbUser.uid).get();
+    if(!doc.exists)return;
+    const data=doc.data();
+    if(data.rosters)localStorage.setItem('nascar_rosters',JSON.stringify(data.rosters));
+    if(data.presets)localStorage.setItem('nascar_presets',JSON.stringify(data.presets));
     for(const k of ['cup','xfinity','truck','f1','indycar','eel']){
-      if(data[k]) localStorage.setItem('nascar_'+k, JSON.stringify(data[k]));
+      if(data[k])localStorage.setItem('nascar_'+k,JSON.stringify(data[k]));
     }
-  }catch(e){ console.error('Firestore load error:', e); }
+  }catch(e){console.error('Firestore load error:',e);}
 }
-
-async function syncToFirestore(key, value){
-  if(!fbUser) return;
-  try{
-    await fbDb.collection('users').doc(fbUser.uid).set({ [key]: value }, { merge: true });
-  }catch(e){ console.error('Firestore sync error:', e); }
+async function syncToFirestore(key,value){
+  if(!fbUser)return;
+  try{await fbDb.collection('users').doc(fbUser.uid).set({[key]:value},{merge:true});}catch(e){console.error('Firestore sync error:',e);}
 }
-
 function signIn(){
-  if(!fbAuth)return;
-  fbAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(()=>location.reload()).catch(e=>console.error(e));
+  loadFirebase(()=>{
+    fbAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(()=>location.reload()).catch(e=>console.error(e));
+  });
 }
 function signOut(){
   if(!fbAuth)return;
   fbAuth.signOut().then(()=>location.reload()).catch(e=>console.error(e));
 }
-
 function updateAuthUI(){
-  const el = document.getElementById('authSection');
-  if(!el) return;
+  const el=document.getElementById('authSection');
+  if(!el)return;
   if(fbUser){
-    el.innerHTML = `<span style="font-size:11px;color:var(--text2)">${fbUser.displayName||fbUser.email}</span> <button onclick="signOut()" style="font-size:10px;padding:2px 6px;background:var(--bg4);color:var(--text);border:1px solid var(--border);border-radius:3px;cursor:pointer">Sign Out</button>`;
-  } else {
-    el.innerHTML = `<button onclick="signIn()" style="font-size:10px;padding:2px 8px;background:var(--blue);color:#fff;border:none;border-radius:3px;cursor:pointer;font-weight:600">Sign in with Google</button>`;
+    el.innerHTML=`<span style="font-size:11px;color:var(--text2)">${fbUser.displayName||fbUser.email}</span> <button onclick="signOut()" style="font-size:10px;padding:2px 6px;background:var(--bg4);color:var(--text);border:1px solid var(--border);border-radius:3px;cursor:pointer">Sign Out</button>`;
+  }else{
+    el.innerHTML=`<button onclick="signIn()" style="font-size:10px;padding:2px 8px;background:var(--blue);color:#fff;border:none;border-radius:3px;cursor:pointer;font-weight:600">Sign in with Google</button>`;
   }
 }
 
 // ====================== INIT ======================
-function init(){
-  try{ initFirebase(); }catch(e){
-    console.error('Firebase init failed:', e);
-    fbReady = true;
-    document.getElementById('loadingOverlay').style.display='none';
-    proceedInit();
-  }
-}
+function init(){proceedInit();}
 function proceedInit(){
   // Populate track select
   const sel=document.getElementById('trackSelect');
@@ -2879,5 +2863,8 @@ document.addEventListener('DOMContentLoaded',init);
   </div>
 </div>
 
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 </body>
 </html>
