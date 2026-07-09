@@ -1,0 +1,2883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NASCAR Cup Series Simulator</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0a;--bg2:#111;--bg3:#1a1a1a;--bg4:#222;
+  --text:#ddd;--text2:#999;--text3:#666;
+  --yellow:#ffd700;--red:#e10600;--darkred:#8b0000;
+  --green:#00c853;--blue:#2979ff;--orange:#ff9100;
+  --chevy:#ffd700;--ford:#0066cc;--toyota:#e10600;--dodge:#8a8a8a;
+  --border:#333;--highlight:#333;
+}
+html,body{height:100%;font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--text);font-size:14px;overflow:hidden}
+body{display:flex;flex-direction:column}
+/* HEADER */
+header{background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);padding:10px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid var(--yellow);flex-shrink:0}
+header h1{font-size:20px;font-weight:800;letter-spacing:1px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+header h1 span.yellow{color:var(--yellow)}
+header h1 span.red{color:var(--red)}
+header h1 span.blue{color:#2986e2}
+header h1 span.green{color:#0c8}
+header .race-info{font-size:13px;color:var(--text2);text-align:right}
+header .race-info .track-name{color:var(--yellow);font-weight:700;font-size:15px}
+/* TABS */
+.tab-bar{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
+.tab-btn{padding:10px 24px;cursor:pointer;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text2);background:transparent;border:none;border-bottom:3px solid transparent;transition:all 0.2s}
+.tab-btn:hover{color:var(--text);background:var(--bg3)}
+.tab-btn.active{color:var(--yellow);border-bottom-color:var(--yellow)}
+/* MAIN CONTENT */
+.content{flex:1;overflow:hidden;position:relative}
+.panel{display:none;height:100%}
+.panel.active{display:flex;flex-direction:column}
+#panel-race{overflow:hidden;flex-direction:row}
+#panel-standings{overflow-y:auto}
+#panel-results{overflow-y:auto}
+/* RACE PANEL */
+.race-panel{flex-direction:row}
+.race-main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.race-side{width:320px;border-left:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;height:100%}
+/* LEADERBOARD */
+.leaderboard-wrap{flex:1;overflow-y:auto;overflow-x:hidden}
+.leaderboard-wrap::-webkit-scrollbar{width:6px}
+.leaderboard-wrap::-webkit-scrollbar-track{background:var(--bg)}
+.leaderboard-wrap::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+.lb-table{width:100%;border-collapse:collapse;font-size:12px}
+.lb-table th{position:sticky;top:0;background:var(--bg2);color:var(--text2);padding:4px 6px;text-align:left;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;z-index:1;border-bottom:1px solid var(--border)}
+.lb-table td{padding:3px 6px;border-bottom:1px solid rgba(255,255,255,0.03);white-space:nowrap}
+.lb-table tr{transition:background 0.15s}
+.lb-table tr:hover{background:rgba(255,215,0,0.05)}
+.lb-table tr.p1{background:rgba(255,215,0,0.08)}
+.lb-table tr.pit-row td{color:var(--orange)}
+.lb-table tr.caution-row td{opacity:0.6}
+.pos-cell{font-weight:700;width:30px;text-align:center}
+.pos-change{font-size:10px;width:24px;text-align:center}
+.pos-change.up{color:var(--green)}
+.pos-change.down{color:var(--red)}
+.pos-change.neutral{color:var(--text3)}
+.num-cell{font-weight:700;width:36px}
+.driver-cell{width:140px}
+.team-cell{color:var(--text2);font-size:11px;width:130px}
+.mfg-cell{width:20px;font-size:10px;font-weight:700;text-align:center}
+.gap-cell{width:70px;font-family:'Consolas','Courier New',monospace;color:var(--text2);text-align:right}
+.laps-led-cell{width:50px;color:var(--text2);text-align:center;font-size:11px}
+.status-cell{width:60px;text-align:center;font-size:10px}
+.pits-cell{width:40px;text-align:center;font-size:10px;color:var(--text3)}
+.badge{display:inline-block;padding:1px 5px;border-radius:3px;font-weight:600;font-size:10px}
+.badge-ss{background:rgba(0,200,83,0.2);color:var(--green)}
+.badge-int{background:rgba(41,121,255,0.2);color:var(--blue)}
+.badge-st{background:rgba(255,145,0,0.2);color:var(--orange)}
+.badge-rc{background:rgba(225,6,0,0.2);color:var(--red)}
+  .badge-chev{background:rgba(255,215,0,0.25);color:var(--chevy);font-weight:800}
+  .badge-ford{background:rgba(0,102,204,0.3);color:#66b3ff;font-weight:800}
+  .badge-toyo{background:rgba(225,6,0,0.2);color:var(--toyota);font-weight:800}
+  .badge-chevy{background:rgba(255,215,0,0.25);color:var(--chevy);font-weight:800}
+  .badge-toyota{background:rgba(225,6,0,0.2);color:var(--toyota);font-weight:800}
+  .badge-dodge{background:rgba(138,138,138,0.25);color:var(--dodge);font-weight:800}
+  .badge-honda{background:rgba(227,10,23,0.2);color:#e30a17;font-weight:800}
+  .badge-red-bull{background:rgba(30,65,161,0.3);color:#4a7aff;font-weight:800}
+  .badge-mclaren{background:rgba(255,135,0,0.3);color:#ff8700;font-weight:800}
+  .badge-ferrari{background:rgba(220,0,0,0.3);color:#ff3333;font-weight:800}
+  .badge-mercedes{background:rgba(39,244,210,0.2);color:#27f4d2;font-weight:800}
+  .badge-aston-martin{background:rgba(0,111,98,0.3);color:#00a889;font-weight:800}
+  .badge-alpine{background:rgba(255,105,180,0.2);color:#ff69b4;font-weight:800}
+  .badge-rb{background:rgba(41,78,122,0.3);color:#6a9cd4;font-weight:800}
+  .badge-haas{background:rgba(136,136,136,0.2);color:#888;font-weight:800}
+  .badge-williams{background:rgba(0,162,230,0.3);color:#00a2e6;font-weight:800}
+  .badge-sauber{background:rgba(0,231,1,0.2);color:#00e701;font-weight:800}
+  .badge-cadillac{background:rgba(255,255,255,0.15);color:#fff;font-weight:800}
+  .badge-audi{background:rgba(139,0,0,0.3);color:#cc3333;font-weight:800}
+  .badge-racing-bulls{background:rgba(41,78,122,0.3);color:#6a9cd4;font-weight:800}
+/* RACE LOG */
+.race-log-wrap{flex:1;overflow-y:auto;padding:6px 10px;max-height:100%}
+.race-log-wrap::-webkit-scrollbar{width:4px}
+.race-log-entry{padding:2px 0;font-size:11px;color:var(--text2);border-bottom:1px solid rgba(255,255,255,0.03)}
+.race-log-entry.l{color:var(--yellow);font-weight:600}
+.race-log-entry.c{color:var(--orange)}
+.race-log-entry.s{color:var(--blue)}
+.race-log-entry.r{color:var(--green)}
+.race-log-entry.f{color:var(--red);font-weight:600}
+.race-log-entry .lap-tag{color:var(--text3);margin-right:4px}
+/* CONTROLS */
+.controls{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--bg2);border-top:1px solid var(--border);flex-shrink:0;flex-wrap:wrap}
+.controls .ctrl-group{display:flex;align-items:center;gap:4px}
+.controls label{font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase}
+.btn{padding:6px 14px;border:none;border-radius:4px;font-size:12px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:0.5px;transition:all 0.15s;color:#fff}
+.btn:hover{filter:brightness(1.15);transform:translateY(-1px)}
+.btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;filter:none}
+.btn-yellow{background:var(--yellow);color:#000}
+.btn-red{background:var(--red)}
+.btn-blue{background:var(--blue)}
+.btn-green{background:var(--green);color:#000}
+.btn-gray{background:var(--bg4);color:var(--text)}
+.btn-orange{background:var(--orange)}
+.btn-sm{padding:4px 10px;font-size:11px}
+.series-btn{padding:2px 10px;border:1px solid var(--border);border-radius:3px;font-size:10px;font-weight:700;cursor:pointer;background:var(--bg3);color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;transition:all 0.15s}
+.series-btn:hover{background:var(--bg4);color:var(--text)}
+.series-btn.active{background:var(--yellow);color:#000;border-color:var(--yellow)}
+.speed-group{display:flex;background:var(--bg4);border-radius:4px;overflow:hidden}
+.toggle-wrapper{position:relative;display:inline-block;width:32px;height:18px;margin-left:4px;vertical-align:middle}
+.toggle-wrapper input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;cursor:pointer;inset:0;background:var(--bg4);border-radius:9px;transition:0.2s}
+.toggle-slider::before{content:'';position:absolute;height:14px;width:14px;left:2px;bottom:2px;background:var(--text2);border-radius:50%;transition:0.2s}
+.toggle-wrapper input:checked+.toggle-slider{background:var(--red)}
+.toggle-wrapper input:checked+.toggle-slider::before{transform:translateX(14px);background:#fff}
+.speed-btn{padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;background:transparent;border:none;color:var(--text2);transition:all 0.15s}
+.speed-btn:hover{color:var(--text)}
+.speed-btn.active{background:var(--yellow);color:#000}
+/* STATUS BAR */
+.status-bar{display:flex;align-items:center;gap:16px;padding:4px 14px;background:var(--bg2);border-top:1px solid var(--border);flex-shrink:0;font-size:11px}
+.status-bar .stat{display:flex;align-items:center;gap:4px}
+.status-bar .stat-label{color:var(--text3)}
+.status-bar .stat-value{font-weight:600;color:var(--text)}
+.status-bar .stat-value.under-green{color:var(--green)}
+.status-bar .stat-value.under-yellow{color:var(--yellow)}
+.status-bar .stat-value.under-red{color:var(--red)}
+/* STANDINGS PANEL */
+.standings-panel{padding:10px 16px;overflow:auto}
+.standings-panel h2{font-size:16px;margin-bottom:10px;color:var(--yellow)}
+.st-table{width:100%;border-collapse:collapse;font-size:12px}
+.st-table th{background:var(--bg2);color:var(--text2);padding:5px 8px;text-align:left;font-weight:600;font-size:10px;text-transform:uppercase;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:1;cursor:pointer;user-select:none}
+.st-table th:hover{color:var(--yellow)}
+.st-table th .sort-arrow{display:inline-block;margin-left:2px;font-size:8px;opacity:0.4}
+.st-table th.sort-asc .sort-arrow{opacity:1;color:var(--yellow)}
+.st-table th.sort-desc .sort-arrow{opacity:1;color:var(--yellow)}
+.st-table td{padding:4px 8px;border-bottom:1px solid rgba(255,255,255,0.03)}
+.st-table tr:hover{background:rgba(255,215,0,0.03)}
+.st-table .st-pos{font-weight:700;text-align:center;width:30px}
+.st-table .st-pos.top1{color:var(--yellow)}
+.st-table .st-pos.top2{color:var(--text2)}
+.st-table .st-pos.top3{color:#cd7f32}
+.st-table .st-num{font-weight:700}
+.st-table .st-driver{width:160px}
+.st-table .st-team{color:var(--text2);font-size:11px}
+.st-table .st-points{font-weight:700;text-align:center}
+.st-table .st-wins{text-align:center;color:var(--yellow)}
+.st-table .st-top5{text-align:center;color:var(--green)}
+.st-table .st-top10{text-align:center;color:var(--blue)}
+.st-table .st-stagewins{text-align:center;color:#b388ff}
+.st-table .st-stagepts{text-align:center;color:#ce93d8}
+.st-table .st-poles{text-align:center;color:#ff8a65}
+.st-table .st-gap{text-align:center;color:var(--text2);font-size:11px}
+.st-table .st-avgfin{text-align:center;color:var(--text2);font-size:11px}
+.st-table .st-avgstart{text-align:center;color:var(--text2);font-size:11px}
+.st-table .st-races{text-align:center;color:var(--text3)}
+/* RESULTS PANEL */
+.results-panel{padding:10px 16px;overflow-y:auto}
+.results-panel h2{font-size:16px;margin-bottom:10px;color:var(--yellow)}
+.result-card{background:var(--bg2);border:1px solid var(--border);border-radius:6px;margin-bottom:10px;padding:10px}
+.result-card h3{font-size:14px;color:var(--yellow);margin-bottom:6px}
+.result-card .result-info{font-size:11px;color:var(--text2);margin-bottom:6px}
+.result-table{width:100%;border-collapse:collapse;font-size:11px}
+.result-table th{background:var(--bg3);color:var(--text2);padding:3px 6px;text-align:left;font-weight:600;border-bottom:1px solid var(--border)}
+.result-table td{padding:2px 6px;border-bottom:1px solid rgba(255,255,255,0.03)}
+/* SELECT */
+select{padding:5px 10px;background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:4px;font-size:12px;font-weight:600;cursor:pointer}
+select:focus{outline:none;border-color:var(--yellow)}
+/* RESPONSIVE */
+@media(max-width:900px){.race-panel{flex-direction:column}.race-side{width:100%;border-left:none;border-top:1px solid var(--border);max-height:200px}}
+.fastest-lap{color:#b388ff!important;font-weight:700}
+.collapsible-header{cursor:pointer;user-select:none}
+.collapsible-header:hover{background:rgba(255,255,255,0.03)}
+.collapsible-header .toggle-arrow{display:inline-block;transition:transform 0.2s;margin-right:6px;font-size:10px}
+.collapsible-header.collapsed .toggle-arrow{transform:rotate(-90deg)}
+.collapsible-body{overflow:hidden;transition:max-height 0.3s}
+.collapsible-body.collapsed{max-height:0!important}
+/* ANIMATIONS */
+@keyframes flash{0%,100%{opacity:1}50%{opacity:0.5}}
+.flash{animation:flash 0.5s ease-in-out 3}
+@keyframes slideIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.slide-in{animation:slideIn 0.3s ease-out}
+/* TOOLTIP */
+.tip{position:relative;cursor:help}
+.tip:hover::after{content:attr(data-tip);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--bg3);color:var(--text);padding:4px 8px;border-radius:4px;font-size:10px;white-space:nowrap;z-index:10;border:1px solid var(--border)}
+/* HEADER RACE INFO */
+#headerRace{font-size:11px;color:var(--text2);margin-top:2px}
+/* CHASE ACTIVE ROW */
+.st-table tr.chase-active{background:rgba(0,200,100,0.05);border-left:3px solid var(--green)}
+.st-table tr.chase-active td:first-child{padding-left:11px}
+/* SCHEDULE MODAL */
+.schedule-modal #scheduleList{font-size:12px}
+.schedule-entry .btn{padding:1px 5px;font-size:10px}
+.schedule-modal{min-width:550px}
+.schedule-entry .sched-track-name{flex:1}
+.schedule-entry.selected{background:var(--bg3);border-left:3px solid var(--yellow)}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:100;display:flex;align-items:center;justify-content:center}
+.modal-content{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px;min-width:500px;max-width:600px;max-height:80vh;display:flex;flex-direction:column}
+.schedule-entry{display:flex;align-items:center;gap:6px;padding:4px 6px;margin:2px 0;border-radius:4px;background:var(--bg1);font-size:12px}
+.schedule-entry .sched-race-num{color:var(--yellow);min-width:50px;font-weight:600}
+.schedule-entry button{padding:2px 6px;font-size:11px}
+/* ROSTER EDITOR */
+.roster-modal{min-width:90%;max-width:1200px}.roster-modal table{width:100%;border-collapse:collapse;font-size:12px}.roster-modal th,.roster-modal td{padding:3px 4px;border:1px solid var(--border);text-align:center}.roster-modal th{background:var(--bg3);color:var(--yellow);font-weight:600;white-space:nowrap;position:sticky;top:0;z-index:1}.roster-modal td input{width:100%;padding:2px 4px;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:2px;font-size:12px;box-sizing:border-box}.roster-modal td input:focus{outline:none;border-color:var(--yellow)}.roster-modal .modal-body{overflow:auto;max-height:60vh}.roster-modal .roster-actions{display:flex;gap:6px;padding:8px 0;flex-shrink:0}.roster-modal .roster-actions button{font-size:11px;padding:4px 10px}
+.roster-modal th .sort-arrow{display:inline-block;margin-left:2px;font-size:8px;opacity:0.4}
+.roster-modal th.sort-asc .sort-arrow,.roster-modal th.sort-desc .sort-arrow{opacity:1;color:var(--yellow)}
+.dnq-row{opacity:0.5}.dnq-row td{color:var(--text3)!important}
+#loadingOverlay{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:12px}
+#loadingOverlay .loader{color:var(--yellow);font-size:18px;font-weight:700}
+#loadingOverlay .loader-sub{color:var(--text3);font-size:12px}
+#authSection{display:flex;align-items:center;gap:6px;margin-top:2px}
+#authSection .fb-avatar{width:20px;height:20px;border-radius:50%;object-fit:cover}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+</head>
+<body>
+<div id="loadingOverlay"><div class="loader">Loading...</div><div class="loader-sub">Connecting to cloud storage</div></div>
+
+<header>
+  <h1><span class="red">&#9679;</span> <span class="yellow">NASCAR</span> CUP SERIES SIMULATOR</h1>
+  <div class="race-info">
+    <div style="display:flex;gap:8px;margin-bottom:4px" id="seriesSelector">
+      <button class="series-btn active" data-series="cup" onclick="switchSeries('cup')">Cup</button>
+      <button class="series-btn" data-series="xfinity" onclick="switchSeries('xfinity')">Xfinity</button>
+      <button class="series-btn" data-series="truck" onclick="switchSeries('truck')">Truck</button>
+      <button class="series-btn" data-series="f1" onclick="switchSeries('f1')">F1</button>
+      <button class="series-btn" data-series="indycar" onclick="switchSeries('indycar')">IndyCar</button>
+      <button class="series-btn" data-series="eel" onclick="switchSeries('eel')">EEL</button>
+    </div>
+    <div class="track-name" id="headerTrack">Select a Track</div>
+    <div id="headerRace"></div>
+    <div id="headerSession">Ready</div>
+    <div id="authSection"></div>
+  </div>
+</header>
+
+<div class="tab-bar">
+  <button class="tab-btn active" data-tab="race">Race Center</button>
+  <button class="tab-btn" data-tab="standings">Standings</button>
+  <button class="tab-btn" data-tab="results">Results</button>
+</div>
+
+<div class="content">
+
+<!-- RACE PANEL -->
+<div class="panel active race-panel" id="panel-race">
+  <div class="race-main">
+    <div class="leaderboard-wrap" id="leaderboardWrap">
+      <table class="lb-table" id="leaderboard">
+        <thead>
+          <tr>
+            <th>Pos</th><th>+/-</th><th>#</th><th>Driver</th><th>Team</th><th>Mfg</th><th>Time</th><th>To Leader</th><th>Led</th><th>Laps</th><th>Pits</th><th>Last Pit</th><th>Best Lap</th><th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="lbBody"></tbody>
+      </table>
+    </div>
+    <div class="controls">
+      <div class="ctrl-group">
+        <label>Track:</label>
+        <select id="trackSelect"></select>
+        <label style="margin-left:10px">Stages:</label>
+        <label class="toggle-wrapper"><input type="checkbox" id="stagesToggle" checked><span class="toggle-slider"></span></label>
+        <label style="margin-left:10px">Chase:</label>
+        <label class="toggle-wrapper"><input type="checkbox" id="chaseToggle" checked onchange="toggleChase()"><span class="toggle-slider"></span></label>
+        <button class="btn btn-gray btn-sm" style="margin-left:6px" onclick="openScheduleEditor()">Schedule</button>
+      </div>
+      <div class="ctrl-group">
+        <button class="btn btn-yellow btn-sm" id="btnQualify" onclick="runQualifying()">Qualify</button>
+        <button class="btn btn-red btn-sm" id="btnRace" onclick="startRace()">Start Race</button>
+        <button class="btn btn-gray btn-sm" id="btnReset" onclick="resetSession()">Reset</button>
+        <button class="btn btn-gray btn-sm" id="btnAuto" onclick="toggleAutoMode()">Auto</button>
+      </div>
+      <div class="ctrl-group" style="margin-left:auto">
+        <label>Speed:</label>
+        <div class="speed-group">
+          <button class="speed-btn active" data-speed="1000">1x</button>
+          <button class="speed-btn" data-speed="350">3x</button>
+          <button class="speed-btn" data-speed="100">10x</button>
+          <button class="speed-btn" data-speed="40">25x</button>
+          <button class="speed-btn" data-speed="0" id="speedInstant">Full</button>
+        </div>
+      </div>
+      <div class="ctrl-group">
+        <button class="btn btn-gray btn-sm" id="btnPause" onclick="togglePause()" disabled>Pause</button>
+      </div>
+    </div>
+    <div class="status-bar" id="statusBar">
+      <div class="stat"><span class="stat-label">Lap:</span><span class="stat-value" id="sLap">-</span></div>
+      <div class="stat"><span class="stat-label">Stage:</span><span class="stat-value" id="sStage">-</span></div>
+      <div class="stat"><span class="stat-label">Flag:</span><span class="stat-value" id="sFlag">-</span></div>
+      <div class="stat"><span class="stat-label">Leader:</span><span class="stat-value" id="sLeader">-</span></div>
+      <div class="stat"><span class="stat-label">Caution Laps:</span><span class="stat-value" id="sCautionLaps">-</span></div>
+      <div class="stat"><span class="stat-label">Running:</span><span class="stat-value" id="sRunning">40/40</span></div>
+    </div>
+  </div>
+  <div class="race-side">
+    <div style="padding:6px 10px;background:var(--bg2);border-bottom:1px solid var(--border);font-size:11px;font-weight:600;color:var(--yellow);flex-shrink:0">RACE LOG</div>
+    <div class="race-log-wrap" id="raceLog"></div>
+  </div>
+</div>
+
+<!-- STANDINGS PANEL -->
+<div class="panel" id="panel-standings">
+  <div class="standings-panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <h2 style="margin:0" id="stTitle">Cup Series Standings</h2>
+        <div style="display:flex;gap:6px">
+          <span id="viewToggle" style="display:none;cursor:pointer;font-size:10px;padding:3px 6px;border-radius:3px;background:var(--bg3);color:var(--text2);user-select:none" onclick="toggleStandingsView()">Season View</span>
+          <span id="teamViewToggle" style="cursor:pointer;font-size:10px;padding:3px 6px;border-radius:3px;background:var(--bg3);color:var(--text2);user-select:none" onclick="toggleTeamView()">Team Standings</span>
+          <button class="btn btn-gray btn-sm" onclick="resetSeason()">Reset Season</button>
+          <button class="btn btn-gray btn-sm" onclick="newSeason()">New Season</button>
+          <button class="btn btn-gray btn-sm" onclick="openRosterEditor()">Rosters</button>
+        </div>
+      </div>
+    <table class="st-table">
+      <thead id="stHead">
+        <tr>
+          <th data-col="pos">Pos<span class="sort-arrow">▼</span></th><th data-col="num">#<span class="sort-arrow">▼</span></th><th data-col="driver">Driver<span class="sort-arrow">▼</span></th><th data-col="team">Team<span class="sort-arrow">▼</span></th><th data-col="points">Points<span class="sort-arrow">▼</span></th><th data-col="gap">Gap<span class="sort-arrow">▼</span></th><th data-col="wins">Wins<span class="sort-arrow">▼</span></th><th data-col="podiums">Pod<span class="sort-arrow">▼</span></th><th data-col="poles">Poles<span class="sort-arrow">▼</span></th><th data-col="avgfin">Avg F<span class="sort-arrow">▼</span></th><th data-col="avgstart">Avg S<span class="sort-arrow">▼</span></th><th data-col="t5">T5<span class="sort-arrow">▼</span></th><th data-col="t10">T10<span class="sort-arrow">▼</span></th><th data-col="races">Races<span class="sort-arrow">▼</span></th>
+        </tr>
+      </thead>
+      <tbody id="stBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- RESULTS PANEL -->
+<div class="panel" id="panel-results">
+  <div class="results-panel">
+    <h2>Race Results</h2>
+    <div id="resultsContainer">
+      <p style="color:var(--text3);padding:20px;text-align:center">No races completed yet. Run a race to see results.</p>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- SCHEDULE EDITOR MODAL -->
+<div class="modal-overlay" id="scheduleModal" style="display:none" onclick="if(event.target===this)closeScheduleEditor()">
+  <div class="modal-content schedule-modal">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <h3 style="margin:0">Schedule Editor</h3>
+      <button class="btn btn-gray btn-sm" onclick="closeScheduleEditor()">X</button>
+    </div>
+    <div style="margin-bottom:8px;display:flex;gap:6px;align-items:center">
+      <label class="toggle-wrapper"><input type="checkbox" id="manualScheduleToggle" onchange="toggleManualSchedule()"><span class="toggle-slider"></span></label>
+      <span style="font-size:11px;color:var(--text2)">Free Pick (ignore schedule)</span>
+    </div>
+    <div id="scheduleListContainer" style="max-height:400px;overflow-y:auto;margin-bottom:8px;border:1px solid var(--border);border-radius:4px;padding:8px;background:var(--bg2)">
+      <div id="scheduleList"></div>
+    </div>
+    <div style="display:flex;gap:6px">
+      <select id="scheduleAddTrack" style="flex:1;font-size:12px;padding:4px 6px"></select>
+      <button class="btn btn-gray btn-sm" onclick="addToSchedule()">Add Track</button>
+      <button class="btn btn-gray btn-sm" onclick="resetToDefaultSchedule()">Reset</button>
+    </div>
+    <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);display:flex;gap:6px;align-items:center">
+      <span style="font-size:11px;color:var(--text2);white-space:nowrap">Presets:</span>
+      <select id="presetSelect" style="flex:1;font-size:12px;padding:4px 6px"></select>
+      <button class="btn btn-gray btn-sm" onclick="loadPreset()">Load</button>
+      <button class="btn btn-gray btn-sm" onclick="savePreset()">Save</button>
+      <button class="btn btn-gray btn-sm" onclick="deletePreset()">Del</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ====================== CUP SERIES DRIVERS ======================
+let CUP_DRIVERS = [
+  {num:1,name:"Ross Chastain",team:"Trackhouse Racing",mfg:"Chevy",ovr:84,ss:78,it:82,st:86,rc:80,agg:92,con:62},
+  {num:2,name:"Austin Cindric",team:"Team Penske",mfg:"Ford",ovr:76,ss:84,it:72,st:70,rc:82,agg:66,con:72},
+  {num:3,name:"Austin Dillon",team:"Richard Childress Racing",mfg:"Chevy",ovr:72,ss:70,it:72,st:74,rc:64,agg:68,con:72},
+  {num:4,name:"Noah Gragson",team:"Front Row Motorsports",mfg:"Ford",ovr:69,ss:70,it:66,st:70,rc:68,agg:74,con:64},
+  {num:5,name:"Kyle Larson",team:"Hendrick Motorsports",mfg:"Chevy",ovr:97,ss:88,it:99,st:92,rc:91,agg:65,con:85},
+  {num:6,name:"Brad Keselowski",team:"RFK Racing",mfg:"Ford",ovr:86,ss:88,it:85,st:82,rc:74,agg:68,con:84},
+  {num:7,name:"Daniel Suarez",team:"Spire Motorsports",mfg:"Chevy",ovr:78,ss:74,it:76,st:74,rc:84,agg:70,con:74},
+  {num:33,name:"Austin Hill",team:"Richard Childress Racing",mfg:"Chevy",ovr:78,ss:90,it:72,st:68,rc:56,agg:65,con:70},
+  {num:9,name:"Chase Elliott",team:"Hendrick Motorsports",mfg:"Chevy",ovr:93,ss:80,it:90,st:89,rc:96,agg:55,con:88},
+  {num:10,name:"Ty Dillon",team:"Kaulig Racing",mfg:"Chevy",ovr:67,ss:66,it:66,st:68,rc:62,agg:60,con:70},
+  {num:11,name:"Denny Hamlin",team:"Joe Gibbs Racing",mfg:"Toyota",ovr:95,ss:94,it:93,st:90,rc:88,agg:75,con:80},
+  {num:12,name:"Ryan Blaney",team:"Team Penske",mfg:"Ford",ovr:90,ss:86,it:91,st:87,rc:80,agg:62,con:86},
+  {num:16,name:"AJ Allmendinger",team:"Kaulig Racing",mfg:"Chevy",ovr:74,ss:62,it:70,st:68,rc:90,agg:66,con:72},
+  {num:17,name:"Chris Buescher",team:"RFK Racing",mfg:"Ford",ovr:83,ss:76,it:85,st:80,rc:78,agg:55,con:92},
+  {num:19,name:"Chase Briscoe",team:"Joe Gibbs Racing",mfg:"Toyota",ovr:79,ss:68,it:78,st:80,rc:82,agg:70,con:76},
+  {num:20,name:"Christopher Bell",team:"Joe Gibbs Racing",mfg:"Toyota",ovr:91,ss:78,it:92,st:90,rc:93,agg:70,con:82},
+  {num:21,name:"Josh Berry",team:"Wood Brothers Racing",mfg:"Ford",ovr:66,ss:58,it:66,st:70,rc:72,agg:64,con:72},
+  {num:22,name:"Joey Logano",team:"Team Penske",mfg:"Ford",ovr:87,ss:90,it:84,st:85,rc:76,agg:78,con:76},
+  {num:23,name:"Bubba Wallace",team:"23XI Racing",mfg:"Toyota",ovr:81,ss:92,it:78,st:76,rc:70,agg:72,con:76},
+  {num:24,name:"William Byron",team:"Hendrick Motorsports",mfg:"Chevy",ovr:92,ss:82,it:94,st:88,rc:85,agg:60,con:90},
+  {num:34,name:"Todd Gilliland",team:"Front Row Motorsports",mfg:"Ford",ovr:70,ss:74,it:68,st:68,rc:66,agg:60,con:76},
+  {num:35,name:"Riley Herbst",team:"23XI Racing",mfg:"Toyota",ovr:68,ss:70,it:66,st:66,rc:64,agg:66,con:68},
+  {num:36,name:"Chandler Smith",team:"Front Row Motorsports",mfg:"Ford",ovr:62,ss:64,it:60,st:62,rc:56,agg:58,con:66},
+  {num:38,name:"Zane Smith",team:"Front Row Motorsports",mfg:"Ford",ovr:63,ss:64,it:60,st:62,rc:60,agg:54,con:72},
+  {num:41,name:"Cole Custer",team:"Haas Factory Team",mfg:"Chevy",ovr:65,ss:68,it:62,st:64,rc:60,agg:62,con:68},
+  {num:42,name:"John H. Nemechek",team:"Legacy Motor Club",mfg:"Toyota",ovr:65,ss:68,it:62,st:64,rc:60,agg:62,con:70},
+  {num:43,name:"Erik Jones",team:"Legacy Motor Club",mfg:"Toyota",ovr:75,ss:82,it:74,st:72,rc:68,agg:58,con:80},
+  {num:45,name:"Tyler Reddick",team:"23XI Racing",mfg:"Toyota",ovr:89,ss:72,it:90,st:85,rc:92,agg:72,con:78},
+  {num:47,name:"Ricky Stenhouse Jr",team:"HYAK Motorsports",mfg:"Chevy",ovr:73,ss:86,it:70,st:72,rc:64,agg:72,con:64},
+  {num:48,name:"Alex Bowman",team:"Hendrick Motorsports",mfg:"Chevy",ovr:82,ss:80,it:81,st:80,rc:82,agg:52,con:86},
+  {num:51,name:"Cody Ware",team:"Rick Ware Racing",mfg:"Chevy",ovr:55,ss:56,it:54,st:56,rc:50,agg:48,con:60},
+  {num:54,name:"Ty Gibbs",team:"Joe Gibbs Racing",mfg:"Toyota",ovr:80,ss:68,it:82,st:78,rc:76,agg:78,con:68},
+  {num:60,name:"Ryan Preece",team:"RFK Racing",mfg:"Ford",ovr:64,ss:68,it:62,st:64,rc:60,agg:60,con:74},
+  {num:67,name:"Corey Heim",team:"23XI Racing",mfg:"Toyota",ovr:60,ss:66,it:58,st:56,rc:52,agg:58,con:68},
+  {num:71,name:"Michael McDowell",team:"Spire Motorsports",mfg:"Chevy",ovr:74,ss:88,it:70,st:66,rc:72,agg:55,con:82},
+  {num:77,name:"Carson Hocevar",team:"Spire Motorsports",mfg:"Chevy",ovr:71,ss:66,it:70,st:74,rc:66,agg:76,con:62},
+  {num:78,name:"BJ McLeod",team:"Live Fast Motorsports",mfg:"Chevy",ovr:56,ss:58,it:54,st:54,rc:50,agg:50,con:60},
+  {num:84,name:"Jimmie Johnson",team:"Legacy Motor Club",mfg:"Toyota",ovr:58,ss:64,it:54,st:52,rc:50,agg:45,con:60},
+  {num:88,name:"Connor Zilisch",team:"Trackhouse Racing",mfg:"Chevy",ovr:77,ss:68,it:76,st:70,rc:88,agg:72,con:70},
+  {num:97,name:"Shane van Gisbergen",team:"Trackhouse Racing",mfg:"Chevy",ovr:78,ss:58,it:72,st:68,rc:96,agg:68,con:68}
+];
+
+// ====================== XFINITY SERIES DRIVERS ======================
+let XFINITY_DRIVERS = [
+  {num:"00",name:"Sheldon Creed",team:"Haas Factory Team",mfg:"Chevy",ovr:78,ss:76,it:80,st:74,rc:72,agg:70,con:68},
+  {num:16,name:"AJ Allmendinger",team:"Kaulig Racing",mfg:"Chevy",ovr:82,ss:64,it:76,st:72,rc:96,agg:68,con:74},
+  {num:25,name:"Alex Labbe",team:"SS-GreenLight Racing",mfg:"Chevy",ovr:56,ss:58,it:54,st:56,rc:52,agg:56,con:60},
+  {num:47,name:"Josh Bilicki",team:"SS-GreenLight Racing",mfg:"Chevy",ovr:62,ss:64,it:60,st:62,rc:58,agg:56,con:66},
+  {num:1,name:"Carson Kvapil",team:"JR Motorsports",mfg:"Chevy",ovr:68,ss:64,it:68,st:70,rc:66,agg:66,con:64},
+  {num:2,name:"Jesse Love",team:"Richard Childress Racing",mfg:"Chevy",ovr:76,ss:70,it:78,st:80,rc:68,agg:72,con:70},
+  {num:5,name:"Chandler Smith",team:"Hettinger Racing",mfg:"Ford",ovr:74,ss:70,it:74,st:76,rc:68,agg:70,con:68},
+  {num:7,name:"Justin Allgaier",team:"JR Motorsports",mfg:"Chevy",ovr:88,ss:76,it:86,st:82,rc:90,agg:62,con:86},
+  {num:8,name:"Sammy Smith",team:"JR Motorsports",mfg:"Chevy",ovr:75,ss:68,it:76,st:78,rc:70,agg:74,con:66},
+  {num:88,name:"Rajah Caruth",team:"JR Motorsports",mfg:"Chevy",ovr:70,ss:72,it:68,st:70,rc:66,agg:66,con:70},
+  {num:14,name:"Nick Sanchez",team:"AM Racing",mfg:"Chevy",ovr:68,ss:72,it:66,st:68,rc:62,agg:66,con:66},
+  {num:17,name:"Corey Day",team:"Hendrick Motorsports",mfg:"Chevy",ovr:74,ss:68,it:76,st:72,rc:70,agg:66,con:68},
+  {num:18,name:"William Sawalich",team:"Joe Gibbs Racing",mfg:"Toyota",ovr:74,ss:70,it:74,st:76,rc:72,agg:66,con:70},
+  {num:19,name:"Brent Crews",team:"Joe Gibbs Racing",mfg:"Toyota",ovr:70,ss:66,it:72,st:74,rc:66,agg:68,con:66},
+  {num:20,name:"Brandon Jones",team:"Joe Gibbs Racing",mfg:"Toyota",ovr:74,ss:72,it:74,st:76,rc:68,agg:60,con:76},
+  {num:21,name:"Austin Hill",team:"Richard Childress Racing",mfg:"Chevy",ovr:86,ss:94,it:84,st:82,rc:68,agg:68,con:78},
+  {num:24,name:"Harrison Burton",team:"Sam Hunt Racing",mfg:"Toyota",ovr:64,ss:66,it:62,st:64,rc:60,agg:62,con:66},
+  {num:26,name:"Dean Thompson",team:"Sam Hunt Racing",mfg:"Toyota",ovr:64,ss:68,it:62,st:66,rc:56,agg:66,con:60},
+  {num:27,name:"Jeb Burton",team:"Jordan Anderson Racing",mfg:"Chevy",ovr:66,ss:68,it:64,st:68,rc:64,agg:62,con:70},
+  {num:28,name:"Kyle Sieg",team:"RSS Racing",mfg:"Ford",ovr:62,ss:64,it:60,st:62,rc:58,agg:64,con:62},
+  {num:30,name:"Dawson Cram",team:"Stanton Barrett Motorsports",mfg:"Chevy",ovr:56,ss:58,it:54,st:56,rc:52,agg:60,con:56},
+  {num:31,name:"Blaine Perkins",team:"Jordan Anderson Racing",mfg:"Chevy",ovr:58,ss:60,it:56,st:58,rc:54,agg:62,con:60},
+  {num:32,name:"Jordan Anderson",team:"Jordan Anderson Racing",mfg:"Chevy",ovr:60,ss:62,it:58,st:60,rc:56,agg:64,con:60},
+  {num:35,name:"Joey Gase",team:"Joey Gase Motorsports",mfg:"Ford",ovr:54,ss:56,it:52,st:54,rc:50,agg:50,con:56},
+  {num:39,name:"Ryan Sieg",team:"RSS Racing",mfg:"Ford",ovr:74,ss:76,it:72,st:74,rc:68,agg:70,con:72},
+  {num:41,name:"Sam Mayer",team:"Haas Factory Team",mfg:"Chevy",ovr:82,ss:78,it:80,st:84,rc:74,agg:84,con:64},
+  {num:42,name:"Nick Leitz",team:"Young's Motorsports",mfg:"Chevy",ovr:56,ss:58,it:54,st:56,rc:52,agg:58,con:58},
+  {num:44,name:"Brennan Poole",team:"Alpha Prime Racing",mfg:"Chevy",ovr:60,ss:62,it:58,st:60,rc:56,agg:52,con:64},
+  {num:45,name:"Lavar Scott",team:"Alpha Prime Racing",mfg:"Chevy",ovr:64,ss:62,it:64,st:66,rc:62,agg:66,con:62},
+  {num:48,name:"Patrick Staropoli",team:"Big Machine Racing",mfg:"Chevy",ovr:60,ss:58,it:60,st:62,rc:58,agg:56,con:64},
+  {num:51,name:"Jeremy Clements",team:"Jeremy Clements Racing",mfg:"Chevy",ovr:66,ss:68,it:64,st:66,rc:62,agg:62,con:68},
+  {num:53,name:"Brad Perez",team:"Joey Gase Motorsports",mfg:"Ford",ovr:54,ss:56,it:52,st:54,rc:50,agg:58,con:56},
+  {num:54,name:"Taylor Gray",team:"Joe Gibbs Racing",mfg:"Toyota",ovr:72,ss:68,it:70,st:74,rc:68,agg:72,con:66},
+  {num:66,name:"Timmy Hill",team:"MBM Motorsports",mfg:"Toyota",ovr:56,ss:58,it:54,st:56,rc:52,agg:56,con:62},
+  {num:87,name:"Austin Green",team:"Peterson Racing",mfg:"Chevy",ovr:60,ss:58,it:60,st:62,rc:58,agg:62,con:60},
+  {num:9,name:"Connor Zilisch",team:"JR Motorsports",mfg:"Chevy",ovr:72,ss:64,it:70,st:66,rc:82,agg:68,con:70},
+  {num:91,name:"Mason Maggio",team:"DGM Racing",mfg:"Chevy",ovr:56,ss:58,it:54,st:56,rc:52,agg:58,con:58},
+  {num:92,name:"Josh Williams",team:"DGM Racing",mfg:"Chevy",ovr:62,ss:60,it:62,st:64,rc:60,agg:66,con:60},
+  {num:96,name:"Anthony Alfredo",team:"Viking Motorsports",mfg:"Chevy",ovr:66,ss:70,it:64,st:66,rc:62,agg:62,con:66},
+  {num:99,name:"Parker Retzlaff",team:"Viking Motorsports",mfg:"Chevy",ovr:68,ss:72,it:66,st:68,rc:62,agg:66,con:64}
+];
+
+// ====================== TRUCK SERIES DRIVERS ======================
+let TRUCK_DRIVERS = [
+  {num:1,name:"Corey Heim",team:"TRICON Garage",mfg:"Toyota",ovr:84,ss:88,it:82,st:80,rc:76,agg:68,con:82},
+  {num:2,name:"Luke Baldwin",team:"Team Reaume",mfg:"Ford",ovr:54,ss:56,it:52,st:54,rc:50,agg:54,con:58},
+  {num:4,name:"Ricky Stenhouse Jr",team:"Niece Motorsports",mfg:"Chevy",ovr:64,ss:72,it:60,st:62,rc:58,agg:68,con:58},
+  {num:5,name:"Adam Andretti",team:"TRICON Garage",mfg:"Toyota",ovr:58,ss:60,it:56,st:58,rc:54,agg:58,con:60},
+  {num:7,name:"Connor Mosack",team:"Spire Motorsports",mfg:"Chevy",ovr:60,ss:58,it:60,st:62,rc:60,agg:60,con:64},
+  {num:9,name:"Grant Enfinger",team:"CR7 Motorsports",mfg:"Chevy",ovr:78,ss:80,it:76,st:80,rc:72,agg:64,con:82},
+  {num:10,name:"Corey LaJoie",team:"Kaulig Racing",mfg:"Dodge",ovr:66,ss:70,it:64,st:64,rc:62,agg:62,con:68},
+  {num:11,name:"Kaden Honeycutt",team:"TRICON Garage",mfg:"Toyota",ovr:62,ss:60,it:60,st:64,rc:60,agg:68,con:62},
+  {num:12,name:"Brenden Queen",team:"Kaulig Racing",mfg:"Dodge",ovr:60,ss:62,it:58,st:60,rc:56,agg:60,con:64},
+  {num:13,name:"Cole Butcher",team:"ThorSport Racing",mfg:"Ford",ovr:62,ss:64,it:60,st:64,rc:56,agg:60,con:66},
+  {num:14,name:"Mini Tyrrell",team:"Kaulig Racing",mfg:"Dodge",ovr:56,ss:58,it:54,st:56,rc:52,agg:58,con:58},
+  {num:15,name:"Tanner Gray",team:"TRICON Garage",mfg:"Toyota",ovr:72,ss:68,it:70,st:76,rc:66,agg:64,con:76},
+  {num:16,name:"Justin Haley",team:"Kaulig Racing",mfg:"Dodge",ovr:68,ss:64,it:68,st:70,rc:66,agg:62,con:72},
+  {num:17,name:"Giovanni Ruggiero",team:"TRICON Garage",mfg:"Toyota",ovr:60,ss:58,it:60,st:62,rc:58,agg:62,con:62},
+  {num:18,name:"Tyler Ankrum",team:"McAnally-Hilgemann Racing",mfg:"Chevy",ovr:66,ss:70,it:64,st:68,rc:60,agg:62,con:68},
+  {num:19,name:"Daniel Hemric",team:"McAnally-Hilgemann Racing",mfg:"Chevy",ovr:70,ss:64,it:68,st:72,rc:72,agg:55,con:78},
+  {num:20,name:"Toni Breidinger",team:"McAnally-Hilgemann Racing",mfg:"Chevy",ovr:52,ss:54,it:50,st:52,rc:48,agg:56,con:54},
+  {num:22,name:"Josh Reaume",team:"Team Reaume",mfg:"Ford",ovr:52,ss:54,it:50,st:52,rc:48,agg:54,con:54},
+  {num:25,name:"Parker Kligerman",team:"Kaulig Racing",mfg:"Dodge",ovr:70,ss:68,it:68,st:70,rc:74,agg:62,con:76},
+  {num:26,name:"Dawson Sutton",team:"Rackley W.A.R.",mfg:"Chevy",ovr:56,ss:58,it:54,st:56,rc:52,agg:58,con:58},
+  {num:33,name:"Frankie Muniz",team:"Team Reaume",mfg:"Ford",ovr:52,ss:54,it:50,st:52,rc:48,agg:56,con:54},
+  {num:34,name:"Layne Riggs",team:"Front Row Motorsports",mfg:"Ford",ovr:66,ss:70,it:64,st:68,rc:60,agg:62,con:66},
+  {num:38,name:"Chandler Smith",team:"Front Row Motorsports",mfg:"Ford",ovr:74,ss:70,it:74,st:76,rc:68,agg:70,con:68},
+  {num:42,name:"Tyler Reif",team:"Niece Motorsports",mfg:"Chevy",ovr:56,ss:58,it:54,st:56,rc:52,agg:60,con:56},
+  {num:44,name:"Andres Perez De Lara",team:"Niece Motorsports",mfg:"Chevy",ovr:58,ss:60,it:56,st:58,rc:54,agg:58,con:60},
+  {num:45,name:"Landen Lewis",team:"Niece Motorsports",mfg:"Chevy",ovr:58,ss:60,it:58,st:60,rc:54,agg:62,con:58},
+  {num:52,name:"Stewart Friesen",team:"Halmar Friesen Racing",mfg:"Toyota",ovr:76,ss:70,it:72,st:78,rc:80,agg:68,con:78},
+  {num:56,name:"Timmy Hill",team:"Hill Motorsports",mfg:"Chevy",ovr:56,ss:58,it:54,st:56,rc:52,agg:54,con:60},
+  {num:62,name:"John Hunter Nemechek",team:"Halmar Friesen Racing",mfg:"Toyota",ovr:68,ss:72,it:66,st:68,rc:64,agg:64,con:68},
+  {num:71,name:"Connor Zilisch",team:"Spire Motorsports",mfg:"Chevy",ovr:72,ss:64,it:70,st:66,rc:88,agg:68,con:70},
+  {num:76,name:"Spencer Boyd",team:"Freedom Racing Enterprises",mfg:"Ford",ovr:54,ss:56,it:52,st:54,rc:50,agg:54,con:58},
+  {num:77,name:"Carson Hocevar",team:"Spire Motorsports",mfg:"Chevy",ovr:74,ss:70,it:72,st:76,rc:70,agg:80,con:66},
+  {num:81,name:"Kris Wright",team:"McAnally-Hilgemann Racing",mfg:"Chevy",ovr:56,ss:58,it:54,st:56,rc:52,agg:58,con:58},
+  {num:88,name:"Ty Majeski",team:"ThorSport Racing",mfg:"Ford",ovr:80,ss:82,it:78,st:82,rc:74,agg:66,con:82},
+  {num:91,name:"Christian Eckes",team:"McAnally-Hilgemann Racing",mfg:"Chevy",ovr:82,ss:76,it:80,st:86,rc:78,agg:66,con:84},
+  {num:98,name:"Jake Garcia",team:"ThorSport Racing",mfg:"Ford",ovr:60,ss:62,it:58,st:62,rc:56,agg:60,con:64},
+  {num:99,name:"Ben Rhodes",team:"ThorSport Racing",mfg:"Ford",ovr:74,ss:78,it:72,st:76,rc:68,agg:62,con:80}
+];
+
+// ====================== F1 SERIES DRIVERS (2026) ======================
+let F1_DRIVERS = [
+  {num:1,name:"Max Verstappen",team:"Red Bull Racing",mfg:"Red Bull",ovr:98,ss:80,it:96,st:86,rc:98,agg:90,con:90},
+  {num:4,name:"Lando Norris",team:"McLaren",mfg:"McLaren",ovr:93,ss:72,it:88,st:82,rc:96,agg:60,con:88},
+  {num:81,name:"Oscar Piastri",team:"McLaren",mfg:"McLaren",ovr:86,ss:68,it:80,st:78,rc:90,agg:62,con:82},
+  {num:63,name:"George Russell",team:"Mercedes",mfg:"Mercedes",ovr:88,ss:74,it:84,st:82,rc:90,agg:66,con:86},
+  {num:12,name:"Andrea Kimi Antonelli",team:"Mercedes",mfg:"Mercedes",ovr:74,ss:64,it:70,st:68,rc:78,agg:72,con:68},
+  {num:6,name:"Isack Hadjar",team:"Red Bull Racing",mfg:"Red Bull",ovr:66,ss:60,it:64,st:64,rc:70,agg:68,con:60},
+  {num:16,name:"Charles Leclerc",team:"Ferrari",mfg:"Ferrari",ovr:94,ss:76,it:90,st:84,rc:96,agg:66,con:90},
+  {num:44,name:"Lewis Hamilton",team:"Ferrari",mfg:"Ferrari",ovr:95,ss:78,it:92,st:86,rc:94,agg:70,con:92},
+  {num:23,name:"Alex Albon",team:"Williams",mfg:"Williams",ovr:76,ss:68,it:74,st:72,rc:78,agg:66,con:72},
+  {num:55,name:"Carlos Sainz",team:"Williams",mfg:"Williams",ovr:82,ss:72,it:78,st:76,rc:84,agg:66,con:80},
+  {num:30,name:"Liam Lawson",team:"Racing Bulls",mfg:"Racing Bulls",ovr:72,ss:64,it:68,st:72,rc:78,agg:76,con:62},
+  {num:8,name:"Arvid Lindblad",team:"Racing Bulls",mfg:"Racing Bulls",ovr:64,ss:58,it:62,st:62,rc:68,agg:64,con:60},
+  {num:14,name:"Fernando Alonso",team:"Aston Martin",mfg:"Aston Martin",ovr:90,ss:70,it:84,st:80,rc:94,agg:78,con:82},
+  {num:18,name:"Lance Stroll",team:"Aston Martin",mfg:"Aston Martin",ovr:66,ss:62,it:64,st:64,rc:70,agg:70,con:62},
+  {num:31,name:"Esteban Ocon",team:"Haas",mfg:"Haas",ovr:76,ss:68,it:74,st:72,rc:78,agg:64,con:72},
+  {num:87,name:"Oliver Bearman",team:"Haas",mfg:"Haas",ovr:70,ss:62,it:66,st:64,rc:76,agg:68,con:66},
+  {num:27,name:"Nico Hulkenberg",team:"Audi",mfg:"Audi",ovr:78,ss:70,it:76,st:74,rc:78,agg:66,con:78},
+  {num:5,name:"Gabriel Bortoleto",team:"Audi",mfg:"Audi",ovr:66,ss:58,it:64,st:62,rc:70,agg:64,con:64},
+  {num:10,name:"Pierre Gasly",team:"Alpine",mfg:"Alpine",ovr:78,ss:68,it:76,st:74,rc:80,agg:66,con:74},
+  {num:43,name:"Franco Colapinto",team:"Alpine",mfg:"Alpine",ovr:68,ss:62,it:66,st:66,rc:72,agg:66,con:64},
+  {num:77,name:"Valtteri Bottas",team:"Cadillac",mfg:"Cadillac",ovr:74,ss:66,it:72,st:72,rc:76,agg:64,con:74},
+  {num:11,name:"Sergio Perez",team:"Cadillac",mfg:"Cadillac",ovr:80,ss:76,it:78,st:76,rc:80,agg:70,con:72}
+];
+
+// ====================== INDYCAR SERIES DRIVERS (2026) ======================
+let INDYCAR_DRIVERS = [
+  // Team Penske (Chevy)
+  {num:2,name:"Josef Newgarden",team:"Team Penske",mfg:"Chevy",ovr:92,ss:90,it:88,st:86,rc:88,agg:72,con:86},
+  {num:3,name:"Scott McLaughlin",team:"Team Penske",mfg:"Chevy",ovr:86,ss:80,it:84,st:84,rc:86,agg:60,con:86},
+  {num:12,name:"David Malukas",team:"Team Penske",mfg:"Chevy",ovr:74,ss:72,it:72,st:74,rc:76,agg:66,con:70},
+  // Chip Ganassi Racing (Honda)
+  {num:8,name:"Kyffin Simpson",team:"Chip Ganassi Racing",mfg:"Honda",ovr:64,ss:62,it:62,st:64,rc:68,agg:62,con:62},
+  {num:9,name:"Scott Dixon",team:"Chip Ganassi Racing",mfg:"Honda",ovr:94,ss:90,it:92,st:90,rc:90,agg:56,con:98},
+  {num:10,name:"Alex Palou",team:"Chip Ganassi Racing",mfg:"Honda",ovr:94,ss:82,it:94,st:90,rc:94,agg:60,con:94},
+  // Andretti Global (Honda)
+  {num:26,name:"Will Power",team:"Andretti Global",mfg:"Honda",ovr:90,ss:88,it:86,st:84,rc:90,agg:62,con:86},
+  {num:27,name:"Kyle Kirkwood",team:"Andretti Global",mfg:"Honda",ovr:82,ss:76,it:80,st:82,rc:84,agg:68,con:78},
+  {num:28,name:"Marcus Ericsson",team:"Andretti Global",mfg:"Honda",ovr:78,ss:76,it:76,st:78,rc:78,agg:66,con:80},
+  // Arrow McLaren (Chevy)
+  {num:5,name:"Pato O'Ward",team:"Arrow McLaren",mfg:"Chevy",ovr:89,ss:84,it:86,st:82,rc:90,agg:76,con:76},
+  {num:6,name:"Nolan Siegel",team:"Arrow McLaren",mfg:"Chevy",ovr:66,ss:64,it:64,st:66,rc:68,agg:66,con:64},
+  {num:7,name:"Christian Lundgaard",team:"Arrow McLaren",mfg:"Chevy",ovr:78,ss:70,it:76,st:76,rc:80,agg:64,con:76},
+  // AJ Foyt Racing (Chevy)
+  {num:4,name:"Caio Collet",team:"A.J. Foyt Racing",mfg:"Chevy",ovr:62,ss:64,it:60,st:62,rc:62,agg:62,con:60},
+  {num:14,name:"Santino Ferrucci",team:"A.J. Foyt Racing",mfg:"Chevy",ovr:72,ss:80,it:68,st:70,rc:68,agg:78,con:62},
+  // Rahal Letterman Lanigan (Honda)
+  {num:15,name:"Graham Rahal",team:"Rahal Letterman Lanigan",mfg:"Honda",ovr:72,ss:74,it:70,st:72,rc:70,agg:60,con:74},
+  {num:45,name:"Louis Foster",team:"Rahal Letterman Lanigan",mfg:"Honda",ovr:68,ss:66,it:66,st:68,rc:70,agg:62,con:66},
+  {num:47,name:"Mick Schumacher",team:"Rahal Letterman Lanigan",mfg:"Honda",ovr:66,ss:62,it:64,st:66,rc:70,agg:64,con:62},
+  // Ed Carpenter Racing (Chevy)
+  {num:20,name:"Alexander Rossi",team:"Ed Carpenter Racing",mfg:"Chevy",ovr:82,ss:80,it:80,st:80,rc:82,agg:64,con:78},
+  {num:21,name:"Christian Rasmussen",team:"Ed Carpenter Racing",mfg:"Chevy",ovr:64,ss:66,it:62,st:64,rc:62,agg:62,con:64},
+  // Meyer Shank Racing (Honda)
+  {num:60,name:"Felix Rosenqvist",team:"Meyer Shank Racing",mfg:"Honda",ovr:78,ss:76,it:76,st:76,rc:80,agg:62,con:74},
+  {num:66,name:"Marcus Armstrong",team:"Meyer Shank Racing",mfg:"Honda",ovr:68,ss:68,it:66,st:68,rc:70,agg:60,con:68},
+  // Dale Coyne Racing (Honda)
+  {num:18,name:"Romain Grosjean",team:"Dale Coyne Racing",mfg:"Honda",ovr:74,ss:72,it:72,st:70,rc:76,agg:74,con:62},
+  {num:19,name:"Dennis Hauger",team:"Dale Coyne Racing",mfg:"Honda",ovr:62,ss:62,it:60,st:62,rc:64,agg:62,con:60},
+  // Juncos Hollinger Racing (Chevy)
+  {num:76,name:"Rinus VeeKay",team:"Juncos Hollinger Racing",mfg:"Chevy",ovr:72,ss:76,it:70,st:72,rc:70,agg:64,con:72},
+  {num:77,name:"Sting Ray Robb",team:"Juncos Hollinger Racing",mfg:"Chevy",ovr:58,ss:60,it:56,st:58,rc:56,agg:62,con:58},
+  // Prema Racing (Chevy)
+  {num:83,name:"Robert Shwartzman",team:"Prema Racing",mfg:"Chevy",ovr:64,ss:62,it:62,st:64,rc:66,agg:62,con:62},
+  {num:90,name:"Callum Ilott",team:"Prema Racing",mfg:"Chevy",ovr:66,ss:64,it:64,st:66,rc:68,agg:64,con:64},
+  // Dreyer & Reinbold Racing (Chevy)
+  {num:23,name:"Conor Daly",team:"Dreyer & Reinbold Racing",mfg:"Chevy",ovr:64,ss:68,it:62,st:64,rc:62,agg:60,con:66}
+];
+
+const MFG_COLORS = {Chevy:"var(--chevy)",Ford:"var(--ford)",Toyota:"var(--toyota)",Dodge:"var(--dodge)",Honda:"#e30a17","Red Bull":"#1e41a1",McLaren:"#ff8700",Ferrari:"#dc0000",Mercedes:"#27f4d2","Aston Martin":"#006f62",Alpine:"#ff69b4",RB:"#294e7a",Haas:"#888888",Williams:"#00a2e6",Sauber:"#00e701",Cadillac:"#ffffff",Audi:"#8b0000","Racing Bulls":"#294e7a"};
+const FIELD_CAP = {cup:40,xfinity:40,truck:36,f1:22,indycar:33,eel:40};
+const QUAL_SPEEDS = {SS:197,INT:176,ST:106,RC:96};
+const RACE_SPEEDS = {SS:192,INT:170,ST:100,RC:91};
+const F1_QUAL_SPEEDS = {SS:197,INT:176,ST:130,RC:145};
+const F1_RACE_SPEEDS = {SS:192,INT:170,ST:125,RC:140};
+const INDYCAR_QUAL_SPEEDS = {SS:222,INT:192,ST:115,RC:125};
+const INDYCAR_RACE_SPEEDS = {SS:215,INT:187,ST:110,RC:120};
+function getQualSpeed(t){return currentSeries==='f1'?F1_QUAL_SPEEDS[t]:currentSeries==='indycar'?INDYCAR_QUAL_SPEEDS[t]:QUAL_SPEEDS[t];}
+function getRaceSpeed(t){return currentSeries==='f1'?F1_RACE_SPEEDS[t]:currentSeries==='indycar'?INDYCAR_RACE_SPEEDS[t]:RACE_SPEEDS[t];}
+const CAR_DEFAULTS = {cup:85,xfinity:85,truck:85,f1:80,indycar:88,eel:85};
+function getCarRating(d){return d.car!==undefined?d.car:(CAR_DEFAULTS[currentSeries]||85);}
+const SERIES_POINTS = {f1:[25,18,15,12,10,8,6,4,2,1],indycar:[50,40,35,32,30,28,26,24,22,20,19,18,17,16,15,14,13,12,11,10]};
+
+// ====================== TRACKS ======================
+const TRACKS = [
+  {id:"daytona",name:"Daytona International Speedway",type:"SS",typeName:"Superspeedway",laps:200,miles:2.5,stage1:65,stage2:65,stage3:70},
+  {id:"talladega",name:"Talladega Superspeedway",type:"SS",typeName:"Superspeedway",laps:188,miles:2.66,stage1:60,stage2:60,stage3:68},
+  {id:"latlanta",name:"Atlanta Motor Speedway",type:"SS",typeName:"Superspeedway",laps:260,miles:1.54,stage1:85,stage2:85,stage3:90},
+  {id:"autoclub",name:"Auto Club Speedway",type:"SS",typeName:"Superspeedway",laps:200,miles:2.0,stage1:65,stage2:65,stage3:70},
+  {id:"michigan",name:"Michigan International Speedway",type:"SS",typeName:"Superspeedway",laps:200,miles:2.0,stage1:65,stage2:65,stage3:70},
+  {id:"lasvegas",name:"Las Vegas Motor Speedway",type:"INT",typeName:"Intermediate",laps:267,miles:1.5,stage1:80,stage2:85,stage3:102},
+  {id:"charlotte",name:"Charlotte Motor Speedway",type:"INT",typeName:"Intermediate",laps:334,miles:1.5,stage1:100,stage2:115,stage3:119},
+  {id:"darlington",name:"Darlington Raceway",type:"INT",typeName:"Intermediate",laps:293,miles:1.366,stage1:90,stage2:95,stage3:108},
+  {id:"kansas",name:"Kansas Speedway",type:"INT",typeName:"Intermediate",laps:267,miles:1.5,stage1:80,stage2:85,stage3:102},
+  {id:"texas",name:"Texas Motor Speedway",type:"INT",typeName:"Intermediate",laps:334,miles:1.5,stage1:100,stage2:105,stage3:129},
+  {id:"homestead",name:"Homestead-Miami Speedway",type:"INT",typeName:"Intermediate",laps:267,miles:1.5,stage1:80,stage2:85,stage3:102},
+  {id:"nashville",name:"Nashville Superspeedway",type:"INT",typeName:"Intermediate",laps:300,miles:1.33,stage1:95,stage2:100,stage3:105},
+  {id:"gateway",name:"World Wide Technology Raceway",type:"INT",typeName:"Intermediate",laps:240,miles:1.25,stage1:80,stage2:80,stage3:80},
+  {id:"indianapolis",name:"Indianapolis Motor Speedway",type:"INT",typeName:"Intermediate",laps:160,miles:2.5,stage1:50,stage2:50,stage3:60},
+  {id:"pocono",name:"Pocono Raceway",type:"INT",typeName:"Intermediate",laps:160,miles:2.5,stage1:50,stage2:50,stage3:60},
+  {id:"chicago",name:"Chicagoland Speedway",type:"INT",typeName:"Intermediate",laps:267,miles:1.5,stage1:85,stage2:85,stage3:97},
+  {id:"newhampshire",name:"New Hampshire Motor Speedway",type:"INT",typeName:"Intermediate",laps:301,miles:1.058,stage1:100,stage2:100,stage3:101},
+  {id:"dover",name:"Dover Motor Speedway",type:"INT",typeName:"Intermediate",laps:400,miles:1.0,stage1:120,stage2:140,stage3:140},
+  {id:"iowa",name:"Iowa Speedway",type:"ST",typeName:"Short Track",laps:350,miles:0.875,stage1:115,stage2:115,stage3:120},
+  {id:"phoenix",name:"Phoenix Raceway",type:"ST",typeName:"Short Track",laps:312,miles:1.0,stage1:100,stage2:100,stage3:112},
+  {id:"martinsville",name:"Martinsville Speedway",type:"ST",typeName:"Short Track",laps:400,miles:0.526,stage1:130,stage2:130,stage3:140},
+  {id:"bristol",name:"Bristol Motor Speedway",type:"ST",typeName:"Short Track",laps:500,miles:0.533,stage1:165,stage2:165,stage3:170},
+  {id:"richmond",name:"Richmond Raceway",type:"ST",typeName:"Short Track",laps:400,miles:0.75,stage1:130,stage2:130,stage3:140},
+  {id:"milwaukee",name:"The Milwaukee Mile",type:"ST",typeName:"Short Track",laps:250,miles:1.0,stage1:85,stage2:85,stage3:80},
+  {id:"rockingham",name:"Rockingham Speedway",type:"ST",typeName:"Short Track",laps:399,miles:1.017,stage1:130,stage2:135,stage3:134},
+  {id:"nwilkesboro",name:"North Wilkesboro Speedway",type:"ST",typeName:"Short Track",laps:250,miles:0.625,stage1:85,stage2:85,stage3:80},
+  {id:"irp",name:"Lucas Oil Indianapolis Raceway Park",type:"ST",typeName:"Short Track",laps:200,miles:0.686,stage1:65,stage2:65,stage3:70},
+  {id:"watkins",name:"Watkins Glen International",type:"RC",typeName:"Road Course",laps:90,miles:3.4,stage1:30,stage2:30,stage3:30},
+  {id:"cota",name:"Circuit of the Americas",type:"RC",typeName:"Road Course",laps:68,miles:3.41,stage1:22,stage2:22,stage3:24},
+  {id:"sonoma",name:"Sonoma Raceway",type:"RC",typeName:"Road Course",laps:110,miles:1.99,stage1:35,stage2:35,stage3:40},
+  {id:"mexico",name:"Autodromo Hermanos Rodriguez",type:"RC",typeName:"Road Course",laps:80,miles:2.674,stage1:25,stage2:25,stage3:30},
+  {id:"sandiego",name:"San Diego Street Course",type:"ST",typeName:"Street Circuit",laps:75,miles:2.0,stage1:25,stage2:25,stage3:25},
+  {id:"lime",name:"Lime Rock Park",type:"RC",typeName:"Road Course",laps:90,miles:1.53,stage1:30,stage2:30,stage3:30},
+  {id:"stpete",name:"St. Petersburg Street Course",type:"ST",typeName:"Street Circuit",laps:100,miles:1.8,stage1:35,stage2:35,stage3:30},
+  {id:"monaco",name:"Monaco Grand Prix",type:"ST",typeName:"Street Circuit",laps:78,miles:2.074,stage1:26,stage2:26,stage3:26},
+  {id:"silverstone",name:"Silverstone Circuit",type:"RC",typeName:"Road Course",laps:52,miles:3.66,stage1:17,stage2:17,stage3:18},
+  {id:"monza",name:"Autodromo Nazionale di Monza",type:"RC",typeName:"Road Course",laps:53,miles:3.6,stage1:17,stage2:18,stage3:18},
+  {id:"spa",name:"Circuit de Spa-Francorchamps",type:"RC",typeName:"Road Course",laps:44,miles:4.352,stage1:14,stage2:15,stage3:15},
+  {id:"suzuka",name:"Suzuka International Racing Course",type:"RC",typeName:"Road Course",laps:53,miles:3.608,stage1:17,stage2:18,stage3:18},
+  {id:"longbeach",name:"Long Beach Street Circuit",type:"ST",typeName:"Street Circuit",laps:85,miles:1.968,stage1:28,stage2:28,stage3:29},
+  {id:"lagunaseca",name:"WeatherTech Raceway Laguna Seca",type:"RC",typeName:"Road Course",laps:95,miles:2.238,stage1:31,stage2:32,stage3:32},
+  // F1 / IndyCar additions
+  {id:"bahrain",name:"Bahrain International Circuit",type:"RC",typeName:"Road Course",laps:57,miles:3.363,stage1:19,stage2:19,stage3:19},
+  {id:"jeddah",name:"Jeddah Corniche Circuit",type:"ST",typeName:"Street Circuit",laps:50,miles:3.836,stage1:16,stage2:17,stage3:17},
+  {id:"albertpark",name:"Albert Park Grand Prix Circuit",type:"ST",typeName:"Street Circuit",laps:58,miles:3.28,stage1:19,stage2:19,stage3:20},
+  {id:"barcelona",name:"Circuit de Barcelona-Catalunya",type:"RC",typeName:"Road Course",laps:66,miles:2.894,stage1:22,stage2:22,stage3:22},
+  {id:"montreal",name:"Circuit Gilles Villeneuve",type:"RC",typeName:"Road Course",laps:70,miles:2.71,stage1:23,stage2:23,stage3:24},
+  {id:"zandvoort",name:"Circuit Zandvoort",type:"RC",typeName:"Road Course",laps:72,miles:2.646,stage1:24,stage2:24,stage3:24},
+  {id:"marina",name:"Marina Bay Street Circuit",type:"ST",typeName:"Street Circuit",laps:62,miles:3.063,stage1:20,stage2:21,stage3:21},
+  {id:"lusail",name:"Lusail International Circuit",type:"RC",typeName:"Road Course",laps:57,miles:3.367,stage1:19,stage2:19,stage3:19},
+  {id:"yasmarina",name:"Yas Marina Circuit",type:"RC",typeName:"Road Course",laps:58,miles:3.281,stage1:19,stage2:19,stage3:20},
+  {id:"interlagos",name:"Autodromo Jose Carlos Pace",type:"RC",typeName:"Road Course",laps:71,miles:2.677,stage1:23,stage2:24,stage3:24},
+  {id:"shanghai",name:"Shanghai International Circuit",type:"RC",typeName:"Road Course",laps:56,miles:3.387,stage1:18,stage2:19,stage3:19},
+  {id:"imola",name:"Autodromo Enzo e Dino Ferrari",type:"RC",typeName:"Road Course",laps:63,miles:3.05,stage1:21,stage2:21,stage3:21},
+  {id:"hungaroring",name:"Hungaroring",type:"RC",typeName:"Road Course",laps:70,miles:2.722,stage1:23,stage2:23,stage3:24},
+  {id:"miami",name:"Miami International Autodrome",type:"ST",typeName:"Street Circuit",laps:57,miles:3.362,stage1:19,stage2:19,stage3:19},
+  {id:"detroit",name:"Detroit Street Circuit",type:"ST",typeName:"Street Circuit",laps:100,miles:1.645,stage1:33,stage2:33,stage3:34},
+  {id:"roadamerica",name:"Road America",type:"RC",typeName:"Road Course",laps:55,miles:4.048,stage1:18,stage2:18,stage3:19},
+  {id:"portland",name:"Portland International Raceway",type:"RC",typeName:"Road Course",laps:105,miles:1.967,stage1:35,stage2:35,stage3:35},
+  {id:"midohio",name:"Mid-Ohio Sports Car Course",type:"RC",typeName:"Road Course",laps:90,miles:2.258,stage1:30,stage2:30,stage3:30},
+  {id:"toronto",name:"Honda Indy Toronto",type:"ST",typeName:"Street Circuit",laps:85,miles:1.786,stage1:28,stage2:28,stage3:29},
+  {id:"barber",name:"Barber Motorsports Park",type:"RC",typeName:"Road Course",laps:90,miles:2.38,stage1:30,stage2:30,stage3:30},
+  // 2026 IndyCar additions
+  {id:"arlington",name:"Streets of Arlington",type:"ST",typeName:"Street Circuit",laps:65,miles:2.73,stage1:22,stage2:22,stage3:21},
+  {id:"ims_rc",name:"Indianapolis Motor Speedway Road Course",type:"RC",typeName:"Road Course",laps:55,miles:2.439,stage1:18,stage2:18,stage3:19},
+  {id:"markham",name:"Streets of Markham",type:"ST",typeName:"Street Circuit",laps:85,miles:2.19,stage1:28,stage2:28,stage3:29},
+  {id:"washington_dc",name:"Freedom 250 Grand Prix of Washington, D.C.",type:"ST",typeName:"Street Circuit",laps:75,miles:1.7,stage1:25,stage2:25,stage3:25},
+  // 2026 F1 additions
+  {id:"redbullring",name:"Red Bull Ring",type:"RC",typeName:"Road Course",laps:71,miles:2.688,stage1:23,stage2:24,stage3:24},
+  {id:"madrid",name:"Madrid Street Circuit",type:"ST",typeName:"Street Circuit",laps:55,miles:3.4,stage1:18,stage2:18,stage3:19},
+  {id:"baku",name:"Baku City Circuit",type:"ST",typeName:"Street Circuit",laps:51,miles:3.73,stage1:17,stage2:17,stage3:17},
+  {id:"lasvegas_strip",name:"Las Vegas Strip Circuit",type:"ST",typeName:"Street Circuit",laps:50,miles:3.853,stage1:16,stage2:17,stage3:17}
+];
+
+const SCHEDULES = {
+  cup:[
+    "daytona","latlanta","cota","phoenix","lasvegas","darlington",
+    "martinsville","bristol","kansas","talladega","texas","watkins",
+    "charlotte","nashville","michigan","pocono","sandiego","sonoma",
+    "chicago","latlanta","nwilkesboro","indianapolis","iowa","richmond",
+    "newhampshire","daytona",
+    "darlington","gateway","bristol","kansas","lasvegas","charlotte",
+    "phoenix","talladega","martinsville","homestead"
+  ],
+  xfinity:[
+    "daytona","latlanta","cota","phoenix","lasvegas","darlington",
+    "martinsville","rockingham","bristol","kansas","talladega","texas",
+    "watkins","dover","charlotte","nashville","pocono","sandiego",
+    "sonoma","chicago","latlanta","indianapolis","iowa","daytona",
+    "darlington","gateway","bristol","lasvegas","charlotte",
+    "phoenix","talladega","martinsville","homestead"
+  ],
+  truck:[
+    "daytona","latlanta","stpete","darlington","rockingham","bristol",
+    "texas","watkins","dover","charlotte","nashville","michigan",
+    "sandiego","lime","nwilkesboro","irp",
+    "richmond","newhampshire",
+    "bristol","kansas","charlotte","phoenix","talladega","martinsville","homestead"
+  ],
+  f1:[
+    "albertpark","shanghai","suzuka","bahrain","jeddah","miami",
+    "montreal","monaco","barcelona","redbullring","silverstone","spa",
+    "hungaroring","zandvoort","monza","madrid","baku","marina",
+    "cota","mexico","interlagos","lasvegas_strip","lusail","yasmarina"
+  ],
+  indycar:[
+    "stpete","phoenix","arlington","barber","longbeach","ims_rc",
+    "indianapolis","detroit","gateway","roadamerica","midohio","nashville",
+    "portland","markham","washington_dc","milwaukee","milwaukee","lagunaseca"
+  ],
+  eel:[
+    "daytona","latlanta","cota","phoenix","lasvegas","darlington",
+    "martinsville","bristol","kansas","talladega","texas","watkins",
+    "charlotte","nashville","michigan","pocono","sandiego","sonoma",
+    "chicago","latlanta","nwilkesboro","indianapolis","iowa","richmond",
+    "newhampshire","daytona",
+    "darlington","gateway","bristol","kansas","lasvegas","charlotte",
+    "phoenix","talladega","martinsville","homestead"
+  ]
+};
+
+const CHASE_RACES = {cup:26, xfinity:26, truck:18, eel:26};
+const CHASE_SIZES = {cup:16, xfinity:12, truck:10, eel:16};
+function seriesTrackVal(track,prop){
+  const v=track[prop];
+  if(currentSeries==='cup'||currentSeries==='f1'||currentSeries==='indycar'||currentSeries==='eel')return v;
+  const mult=currentSeries==='xfinity'?0.65:0.5;
+  return Math.round(v*mult);
+}
+
+let schedulePresets = {cup:[["2026",SCHEDULES.cup]],xfinity:[["2026",SCHEDULES.xfinity]],truck:[["2026",SCHEDULES.truck]],f1:[["2026",SCHEDULES.f1]],indycar:[["2026",SCHEDULES.indycar]],eel:[["2026",SCHEDULES.eel]]};
+function loadSchedulePresets(){
+  try{
+    const d=localStorage.getItem('nascar_presets');
+    if(d){
+      const p=JSON.parse(d);
+      if(p.cup)schedulePresets.cup=p.cup;
+      if(p.xfinity)schedulePresets.xfinity=p.xfinity;
+      if(p.truck)schedulePresets.truck=p.truck;
+      if(p.f1)schedulePresets.f1=p.f1;
+      if(p.indycar)schedulePresets.indycar=p.indycar;
+      if(p.eel)schedulePresets.eel=p.eel;
+    }
+  }catch(e){}
+}
+function saveSchedulePresets(){
+  try{localStorage.setItem('nascar_presets',JSON.stringify(schedulePresets));}catch(e){}
+  syncToFirestore('presets', schedulePresets);
+}
+
+let currentSeries = 'cup';
+let DRIVERS = CUP_DRIVERS;
+let season = null;
+let sortCol = 'points';
+let sortAsc = false;
+
+function createSeason(driverArr){
+  const st={};
+  driverArr.forEach(d=>{st[d.num]={...d,points:0,wins:0,t5:0,t10:0,podiums:0,races:0,led:0,stagePts:0,stageWins:0,poles:0,totalFinish:0,totalStart:0}});
+  const seriesKey=driverArr===CUP_DRIVERS?'cup':driverArr===XFINITY_DRIVERS?'xfinity':driverArr===TRUCK_DRIVERS?'truck':driverArr===F1_DRIVERS?'f1':driverArr===INDYCAR_DRIVERS?'indycar':'eel';
+  const isNascar=seriesKey==='cup'||seriesKey==='xfinity'||seriesKey==='truck'||seriesKey==='eel';
+  return {
+    races:0,standings:st,results:[],
+    schedule:SCHEDULES[seriesKey]?[...SCHEDULES[seriesKey]]:[],
+    chaseEnabled:isNascar,
+    chaseActive:false,
+    chaseRound:0,
+    chaseDrivers:[],
+    eliminated:[],
+    chaseSize:CHASE_SIZES[seriesKey],
+    regularSeasonEnd:CHASE_RACES[seriesKey],
+    chaseElimRaces:[],
+    postInit(){
+      const total=this.schedule.length,regEnd=this.regularSeasonEnd;
+      this.chaseElimRaces=[];
+    },
+    addResult(result){
+      this.races++;
+      this.results.push(result);
+      const ptsArr=SERIES_POINTS[currentSeries];
+      result.finishOrder.forEach((d,i)=>{
+        const drv=d.driver||d;
+        const s=this.standings[drv.num];
+        if(!s)return;
+        s.races++;
+        let pts;
+        if(ptsArr&&i<ptsArr.length){
+          pts=ptsArr[i];
+        }else if(ptsArr){
+          pts=0;
+        }else{
+          pts=41-i+(i===0?5:0);
+        }
+        s.points+=pts;
+        if(i===0)s.wins++;
+        if(i<3)s.podiums++;
+        if(i<5)s.t5++;
+        if(i<10)s.t10++;
+        s.totalFinish+=i+1;
+        s.totalStart+=d.startPos||(i+1);
+      });
+      if(result.stagePoints){
+        Object.entries(result.stagePoints).forEach(([num,pts])=>{
+          const s=this.standings[num];
+          if(s){
+            s.points+=pts;
+            s.stagePts+=pts;
+            if(pts===10)s.stageWins++;
+          }
+        });
+      }
+    },
+    getSorted(col,asc){
+      const arr=Object.values(this.standings);
+      if(!col)col=sortCol;
+      if(asc===undefined)asc=sortAsc;
+      arr.sort((a,b)=>{
+        let va,vb;
+        if(col==='avgfin'){va=a.races>0?a.totalFinish/a.races:999;vb=b.races>0?b.totalFinish/b.races:999;}
+        else if(col==='avgstart'){va=a.races>0?a.totalStart/a.races:999;vb=b.races>0?b.totalStart/b.races:999;}
+        else if(col==='gap'){va=b.points-a.points;vb=a.points-b.points;}
+        else{va=a[col];vb=b[col];}
+        if(typeof va==='string'){va=va.toLowerCase();vb=vb.toLowerCase();}
+        if(va>vb)return asc?1:-1;
+        if(va<vb)return asc?-1:1;
+        if(b.points!==a.points)return b.points-a.points;
+        return a.num-b.num;
+      });
+      return arr;
+    },
+    initChase(){
+      if(!this.chaseEnabled||this.races!==this.regularSeasonEnd)return;
+      this.chaseActive=true;
+      this.chaseRound=1;
+      const sorted=this.getSorted('points',false);
+      this.chaseDrivers=sorted.slice(0,this.chaseSize).map(d=>d.num);
+      this.eliminated=[];
+      this._roundNames=['','Chase','Championship 4'];
+      addLog('CHASE begins with '+this.chaseDrivers.length+' drivers.','f');
+      this.chaseDrivers.forEach(num=>{
+        const s=this.standings[num];
+        s._origPoints=s.points;
+        s.points=2000+s.wins*5+s.stageWins;
+        addLog('  #'+num+' '+s.name+' reset to '+s.points+' pts ('+s.wins+' wins)','s');
+      });
+      // Save orig points for non-chase drivers too
+      Object.values(this.standings).forEach(s=>{if(s._origPoints===undefined)s._origPoints=s.points;});
+      // Save regular season stats snapshot
+      Object.values(this.standings).forEach(s=>{
+        s._regularStats={
+          points:s._origPoints||s.points,wins:s.wins,t5:s.t5,t10:s.t10,
+          podiums:s.podiums||0,poles:s.poles||0,
+          stageWins:s.stageWins||0,stagePts:s.stagePts||0,
+          totalFinish:s.totalFinish||0,totalStart:s.totalStart||0,
+          led:s.led||0,races:s.races
+        };
+      });
+    },
+    checkChaseAfterRace(){
+      if(!this.chaseActive||!this._roundNames)return;
+      if(this.races===this.schedule.length){
+        const lastResult=this.results[this.results.length-1];
+        const remaining=this.chaseDrivers.filter(d=>!this.eliminated.includes(d));
+        for(let i=0;i<lastResult.finishOrder.length;i++){
+          const d=lastResult.finishOrder[i];
+          if(remaining.includes(d.num)){
+            this.standings[d.num].champion=true;
+            addLog('CHAMPIONSHIP: #'+d.num+' '+d.name+' WINS THE CHAMPIONSHIP!','f');
+            break;
+          }
+        }
+      }
+    }
+  };
+}
+
+// Save originals for roster reset
+// Assign car ratings (NASCAR spec, F1 varied by team, IndyCar spec)
+[CUP_DRIVERS, XFINITY_DRIVERS, TRUCK_DRIVERS].forEach(arr => arr.forEach(d => d.car = 85));
+INDYCAR_DRIVERS.forEach(d => d.car = 88);
+const F1_CAR = {"Red Bull Racing":97,"McLaren":96,"Ferrari":94,"Mercedes":93,"Aston Martin":85,"Alpine":75,"Williams":78,"Haas":72,"Racing Bulls":70,"Audi":68,"Cadillac":65};
+F1_DRIVERS.forEach(d => d.car = F1_CAR[d.team] || 80);
+const DEFAULT_CUP = [...CUP_DRIVERS];
+const DEFAULT_XFINITY = [...XFINITY_DRIVERS];
+const DEFAULT_TRUCK = [...TRUCK_DRIVERS];
+const DEFAULT_F1 = [...F1_DRIVERS];
+const DEFAULT_INDYCAR = [...INDYCAR_DRIVERS];
+
+let EEL_DRIVERS = CUP_DRIVERS.map(d=>({...d}));
+const DEFAULT_EEL = EEL_DRIVERS.map(d=>({...d}));
+
+function loadCustomRosters(){
+  try{
+    const raw=localStorage.getItem('nascar_rosters');
+    if(!raw)return;
+    const data=JSON.parse(raw);
+    if(data.cup&&data.cup.length){CUP_DRIVERS=data.cup;}
+    if(data.xfinity&&data.xfinity.length){XFINITY_DRIVERS=data.xfinity;}
+    if(data.truck&&data.truck.length){TRUCK_DRIVERS=data.truck;}
+    if(data.f1&&data.f1.length){F1_DRIVERS=data.f1;}
+    if(data.indycar&&data.indycar.length){INDYCAR_DRIVERS=data.indycar;}
+    if(data.eel&&data.eel.length){EEL_DRIVERS=data.eel;}
+  }catch(e){console.error('Failed to load custom rosters',e);}
+}
+
+function seriesKeyForRoster(){
+  return currentSeries;
+}
+
+function rosterDataFromTable(){
+  const rows=document.getElementById('rosterBody').querySelectorAll('tr');
+  const drivers=[];
+  rows.forEach(row=>{
+    const inputs=row.querySelectorAll('input,select');
+    if(!inputs.length)return;
+    const num=inputs[0].value.trim();
+    if(num==='')return;
+    const ss=parseInt(inputs[4].value)||50;
+    const it=parseInt(inputs[5].value)||50;
+    const st=parseInt(inputs[6].value)||50;
+    const rc=parseInt(inputs[7].value)||50;
+    const agg=parseInt(inputs[8].value)||50;
+    const con=parseInt(inputs[9].value)||50;
+    const car=parseInt(inputs[10].value)||50;
+    drivers.push({
+      num: isNaN(Number(num))?num:Number(num),
+      name: inputs[1].value.trim()||'Unknown',
+      team: inputs[2].value.trim()||'Independent',
+      mfg: inputs[3].value,
+      ovr: Math.round((ss+it+st+rc+agg+con+car)/7),
+      ss:ss, it:it, st:st, rc:rc, agg:agg, con:con, car:car
+    });
+  });
+  return drivers;
+}
+
+let rosterSortCol = 'num';
+let rosterSortAsc = false;
+let rosterData = [];
+
+function openRosterEditor(){
+  const modal=document.getElementById('rosterModal');
+  const title=document.getElementById('rosterTitle');
+  const key=seriesKeyForRoster();
+  const names={cup:'Cup',xfinity:'Xfinity',truck:'Truck',f1:'F1',indycar:'IndyCar',eel:'EEL'};
+  title.textContent=names[key]+' Series Roster Editor';
+  // Load current drivers into rosterData
+  const drivers=key==='cup'?CUP_DRIVERS:(key==='xfinity'?XFINITY_DRIVERS:(key==='truck'?TRUCK_DRIVERS:(key==='f1'?F1_DRIVERS:(key==='indycar'?INDYCAR_DRIVERS:EEL_DRIVERS))));
+  rosterData = drivers.map(d=>({...d}));
+  rosterSortCol='num';
+  rosterSortAsc=false;
+  renderRosterEditor();
+  modal.style.display='flex';
+}
+
+function closeRosterEditor(){
+  document.getElementById('rosterModal').style.display='none';
+}
+
+function calcOvr(d){
+  return Math.round(((d.ss||0) + (d.it||0) + (d.st||0) + (d.rc||0) + (d.agg||0) + (d.con||0) + (getCarRating(d)||0)) / 7);
+}
+
+function recalcOvr(el){
+  const row = el.closest('tr');
+  const nums = row.querySelectorAll('input[type="number"]');
+  let sum = 0;
+  nums.forEach(n => sum += parseInt(n.value) || 0);
+  row.querySelector('.roster-ovr').textContent = Math.round(sum / nums.length);
+}
+
+function renderRosterEditor(){
+  const tbody=document.getElementById('rosterBody');
+  tbody.innerHTML='';
+  const mfgs=['Chevy','Ford','Toyota','Dodge','Honda','Red Bull','McLaren','Ferrari','Mercedes','Aston Martin','Alpine','RB','Haas','Williams','Sauber','Cadillac','Audi','Racing Bulls'];
+  const sorted=[...rosterData].sort((a,b)=>{
+    let va=a[rosterSortCol],vb=b[rosterSortCol];
+    if(typeof va==='string'){va=va.toLowerCase();vb=vb.toLowerCase();}
+    if(va>vb)return rosterSortAsc?1:-1;
+    if(va<vb)return rosterSortAsc?-1:1;
+    return 0;
+  });
+  sorted.forEach((d,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><input type="text" value="${d.num}" style="width:100%"></td>
+      <td><input type="text" value="${d.name.replace(/"/g,'&quot;')}"></td>
+      <td><input type="text" value="${d.team.replace(/"/g,'&quot;')}"></td>
+      <td><select style="background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:2px;padding:2px;width:100%">${mfgs.map(m=>`<option value="${m}"${d.mfg===m?' selected':''}>${m}</option>`).join('')}</select></td>
+      <td><span class="roster-ovr" style="font-weight:700;color:var(--yellow)">${calcOvr(d)}</span></td>
+      <td><input type="number" value="${d.ss}" min="0" max="100" oninput="recalcOvr(this)"></td>
+      <td><input type="number" value="${d.it}" min="0" max="100" oninput="recalcOvr(this)"></td>
+      <td><input type="number" value="${d.st}" min="0" max="100" oninput="recalcOvr(this)"></td>
+      <td><input type="number" value="${d.rc}" min="0" max="100" oninput="recalcOvr(this)"></td>
+      <td><input type="number" value="${d.agg}" min="0" max="100" oninput="recalcOvr(this)"></td>
+      <td><input type="number" value="${d.con}" min="0" max="100" oninput="recalcOvr(this)"></td>
+      <td><input type="number" value="${d.car!==undefined?d.car:getCarRating(d)}" min="0" max="100" oninput="recalcOvr(this)"></td>
+      <td style="white-space:nowrap"><button class="btn btn-gray btn-sm" style="padding:1px 5px;font-size:11px" onclick="duplicateRosterRow(this)" title="Duplicate">⧉</button> <button class="btn btn-gray btn-sm" style="padding:1px 6px;font-size:11px" onclick="removeRosterRow(this)">x</button></td>`;
+    tbody.appendChild(tr);
+  });
+  // Update sort arrows
+  document.querySelectorAll('#rosterModal .roster-sortable').forEach(th=>{
+    th.classList.remove('sort-asc','sort-desc');
+    if(th.dataset.col===rosterSortCol)th.classList.add(rosterSortAsc?'sort-asc':'sort-desc');
+  });
+}
+
+function duplicateRosterRow(btn){
+  const row=btn.closest('tr');
+  const inputs=row.querySelectorAll('input,select');
+  const num=inputs[0].value;
+  const name=inputs[1].value;
+  const team=inputs[2].value;
+  const mfg=inputs[3].value;
+  const ss=inputs[4].value;
+  const it=inputs[5].value;
+  const st=inputs[6].value;
+  const rc=inputs[7].value;
+  const agg=inputs[8].value;
+  const con=inputs[9].value;
+  const car=inputs[10].value;
+  const mfgs=['Chevy','Ford','Toyota','Dodge','Honda','Red Bull','McLaren','Ferrari','Mercedes','Aston Martin','Alpine','RB','Haas','Williams','Sauber','Cadillac','Audi','Racing Bulls'];
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td><input type="text" value="${num}" style="width:100%"></td>
+    <td><input type="text" value="${name.replace(/"/g,'&quot;')}"></td>
+    <td><input type="text" value="${team.replace(/"/g,'&quot;')}"></td>
+    <td><select style="background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:2px;padding:2px;width:100%">${mfgs.map(m=>`<option value="${m}"${mfg===m?' selected':''}>${m}</option>`).join('')}</select></td>
+    <td><span class="roster-ovr" style="font-weight:700;color:var(--yellow)">${calcOvr({ss:ss,it:it,st:st,rc:rc,agg:agg,con:con,car:parseInt(car)||0})}</span></td>
+    <td><input type="number" value="${ss}" min="0" max="100" oninput="recalcOvr(this)"></td>
+    <td><input type="number" value="${it}" min="0" max="100" oninput="recalcOvr(this)"></td>
+    <td><input type="number" value="${st}" min="0" max="100" oninput="recalcOvr(this)"></td>
+    <td><input type="number" value="${rc}" min="0" max="100" oninput="recalcOvr(this)"></td>
+    <td><input type="number" value="${agg}" min="0" max="100" oninput="recalcOvr(this)"></td>
+    <td><input type="number" value="${con}" min="0" max="100" oninput="recalcOvr(this)"></td>
+    <td><input type="number" value="${car}" min="0" max="100" oninput="recalcOvr(this)"></td>
+    <td style="white-space:nowrap"><button class="btn btn-gray btn-sm" style="padding:1px 5px;font-size:11px" onclick="duplicateRosterRow(this)" title="Duplicate">⧉</button> <button class="btn btn-gray btn-sm" style="padding:1px 6px;font-size:11px" onclick="removeRosterRow(this)">x</button></td>`;
+  row.parentNode.insertBefore(tr,row.nextSibling);
+}
+
+function sortRoster(col){
+  // Sync rosterData from table before sorting
+  rosterData = rosterDataFromTable();
+  if(col===rosterSortCol)rosterSortAsc=!rosterSortAsc;
+  else{rosterSortCol=col;rosterSortAsc=false;}
+  renderRosterEditor();
+}
+
+function addRosterRow(){
+  const tbody=document.getElementById('rosterBody');
+  const tr=document.createElement('tr');
+  const mfgs=['Chevy','Ford','Toyota','Dodge','Honda','Red Bull','McLaren','Ferrari','Mercedes','Aston Martin','Alpine','RB','Haas','Williams','Sauber','Cadillac','Audi','Racing Bulls'];
+  tr.innerHTML=`<td><input type="text" value="" style="width:100%"></td>
+    <td><input type="text" value=""></td>
+    <td><input type="text" value=""></td>
+    <td><select style="background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:2px;padding:2px;width:100%">${mfgs.map(m=>`<option value="${m}">${m}</option>`).join('')}</select></td>
+    <td><span class="roster-ovr" style="font-weight:700;color:var(--yellow)">50</span></td>
+    <td><input type="number" value="50" min="0" max="100" oninput="recalcOvr(this)"></td>
+    <td><input type="number" value="50" min="0" max="100" oninput="recalcOvr(this)"></td>
+    <td><input type="number" value="50" min="0" max="100" oninput="recalcOvr(this)"></td>
+    <td><input type="number" value="50" min="0" max="100" oninput="recalcOvr(this)"></td>
+    <td><input type="number" value="50" min="0" max="100" oninput="recalcOvr(this)"></td>
+    <td><input type="number" value="50" min="0" max="100" oninput="recalcOvr(this)"></td>
+    <td><input type="number" value="85" min="0" max="100" oninput="recalcOvr(this)"></td>
+    <td style="white-space:nowrap"><button class="btn btn-gray btn-sm" style="padding:1px 5px;font-size:11px" onclick="duplicateRosterRow(this)" title="Duplicate">⧉</button> <button class="btn btn-gray btn-sm" style="padding:1px 6px;font-size:11px" onclick="removeRosterRow(this)">x</button></td>`;
+  tbody.appendChild(tr);
+}
+
+function removeRosterRow(btn){
+  btn.closest('tr').remove();
+}
+
+function saveRoster(){
+  const drivers=rosterDataFromTable();
+  const key=seriesKeyForRoster();
+  if(!drivers.length){alert('Roster must have at least one driver.');return;}
+  try{
+    const raw=localStorage.getItem('nascar_rosters');
+    const data=raw?JSON.parse(raw):{};
+    data[key]=drivers;
+    localStorage.setItem('nascar_rosters',JSON.stringify(data));
+    syncToFirestore('rosters', data);
+    // Apply and reload
+    if(key==='cup'){CUP_DRIVERS=drivers;DRIVERS=drivers;}
+    else if(key==='xfinity'){XFINITY_DRIVERS=drivers;DRIVERS=drivers;}
+    else if(key==='truck'){TRUCK_DRIVERS=drivers;DRIVERS=drivers;}
+    else if(key==='f1'){F1_DRIVERS=drivers;DRIVERS=drivers;}
+    else if(key==='indycar'){INDYCAR_DRIVERS=drivers;DRIVERS=drivers;}
+    else {EEL_DRIVERS=drivers;DRIVERS=drivers;}
+    // Rebuild season
+    const ss=createSeason(drivers); ss.postInit();
+    if(key==='cup'){cupSeason=ss;season=ss;}
+    else if(key==='xfinity'){xfinitySeason=ss;season=ss;}
+    else if(key==='truck'){truckSeason=ss;season=ss;}
+    else if(key==='f1'){f1Season=ss;season=ss;}
+    else if(key==='indycar'){indycarSeason=ss;season=ss;}
+    else {eelSeason=ss;season=ss;}
+    saveSeason(key,ss);
+    renderStandings();
+    renderResults();
+    updateHeaderInfo();
+    const sn={cup:'Cup',xfinity:'Xfinity',truck:'Truck',f1:'F1',indycar:'IndyCar',eel:'EEL'};
+    addLog(`Roster saved for ${sn[key]} series.`,'s');
+    closeRosterEditor();
+  }catch(e){alert('Failed to save roster: '+e.message);}
+}
+
+function resetRoster(){
+  if(!confirm('Reset roster to defaults? This will reset the current season.'))return;
+  const key=seriesKeyForRoster();
+  // Override with defaults
+  if(key==='cup'){CUP_DRIVERS=[...DEFAULT_CUP];DRIVERS=CUP_DRIVERS;}
+  else if(key==='xfinity'){XFINITY_DRIVERS=[...DEFAULT_XFINITY];DRIVERS=XFINITY_DRIVERS;}
+  else if(key==='truck'){TRUCK_DRIVERS=[...DEFAULT_TRUCK];DRIVERS=TRUCK_DRIVERS;}
+  else if(key==='f1'){F1_DRIVERS=[...DEFAULT_F1];DRIVERS=F1_DRIVERS;}
+  else if(key==='indycar'){INDYCAR_DRIVERS=[...DEFAULT_INDYCAR];DRIVERS=INDYCAR_DRIVERS;}
+  else {EEL_DRIVERS=[...DEFAULT_EEL];DRIVERS=EEL_DRIVERS;}
+  // Remove custom from localStorage
+  try{
+    const raw=localStorage.getItem('nascar_rosters');
+    if(raw){
+      const data=JSON.parse(raw);
+      delete data[key];
+      if(Object.keys(data).length){localStorage.setItem('nascar_rosters',JSON.stringify(data));syncToFirestore('rosters', data);}
+      else {localStorage.removeItem('nascar_rosters');syncToFirestore('rosters', {});}
+    }
+  }catch(e){}
+  // Rebuild season
+  const drivers=key==='cup'?CUP_DRIVERS:(key==='xfinity'?XFINITY_DRIVERS:(key==='truck'?TRUCK_DRIVERS:(key==='f1'?F1_DRIVERS:(key==='indycar'?INDYCAR_DRIVERS:EEL_DRIVERS))));
+  const ss=createSeason(drivers); ss.postInit();
+  if(key==='cup'){cupSeason=ss;season=ss;}
+  else if(key==='xfinity'){xfinitySeason=ss;season=ss;}
+  else if(key==='truck'){truckSeason=ss;season=ss;}
+  else if(key==='f1'){f1Season=ss;season=ss;}
+  else if(key==='indycar'){indycarSeason=ss;season=ss;}
+  else {eelSeason=ss;season=ss;}
+  saveSeason(key,ss);
+  renderStandings();
+  renderResults();
+  updateHeaderInfo();
+  const sn={cup:'Cup',xfinity:'Xfinity',truck:'Truck',f1:'F1',indycar:'IndyCar',eel:'EEL'};
+  addLog(`Roster reset to defaults for ${sn[key]} series.`,'s');
+  closeRosterEditor();
+}
+
+loadCustomRosters();
+let cupSeason = createSeason(CUP_DRIVERS); cupSeason.postInit();
+let xfinitySeason = createSeason(XFINITY_DRIVERS); xfinitySeason.postInit();
+let truckSeason = createSeason(TRUCK_DRIVERS); truckSeason.postInit();
+let f1Season = createSeason(F1_DRIVERS); f1Season.postInit();
+let indycarSeason = createSeason(INDYCAR_DRIVERS); indycarSeason.postInit();
+let eelSeason = createSeason(EEL_DRIVERS); eelSeason.postInit();
+season = cupSeason;
+
+function switchSeries(key){
+  if(raceInterval){clearInterval(raceInterval);raceInterval=null;}
+  autoMode=false;
+  const autoBtn=document.getElementById('btnAuto');
+  if(autoBtn){autoBtn.textContent='Auto';autoBtn.className='btn btn-gray btn-sm';}
+  if(season)saveSeason(currentSeries,season);
+  currentSeries=key;
+  seasonView=false;
+  document.querySelectorAll('.series-btn').forEach(b=>b.classList.toggle('active',b.dataset.series===key));
+  if(key==='cup'){DRIVERS=CUP_DRIVERS;season=cupSeason;}
+  else if(key==='xfinity'){DRIVERS=XFINITY_DRIVERS;season=xfinitySeason;}
+  else if(key==='truck'){DRIVERS=TRUCK_DRIVERS;season=truckSeason;}
+  else if(key==='f1'){DRIVERS=F1_DRIVERS;season=f1Season;}
+  else if(key==='indycar'){DRIVERS=INDYCAR_DRIVERS;season=indycarSeason;}
+  else {DRIVERS=EEL_DRIVERS;season=eelSeason;}
+  resetSession();
+  renderStandings();
+  const stTitle=document.getElementById('stTitle');
+  const headerTitle=document.querySelector('header h1');
+  const stagesCb=document.getElementById('stagesToggle');
+  const chaseCb=document.getElementById('chaseToggle');
+  const svc={cup:'Cup Series',xfinity:'Xfinity Series',truck:'Truck Series',f1:'F1 Series',indycar:'IndyCar Series',eel:'EEL Series'};
+  const htv={cup:'<span class="red">&#9679;</span> <span class="yellow">NASCAR</span> CUP SERIES SIMULATOR',xfinity:'<span class="red">&#9679;</span> <span class="yellow">NASCAR</span> XFINITY SERIES SIMULATOR',truck:'<span class="red">&#9679;</span> <span class="yellow">NASCAR</span> TRUCK SERIES SIMULATOR',f1:'<span class="red">&#9679;</span> <span class="red">FORMULA 1</span> SERIES SIMULATOR',indycar:'<span class="blue">&#9679;</span> <span class="red">INDYCAR</span> SERIES SIMULATOR',eel:'<span class="green">&#9679;</span> <span class="yellow">EEL</span> SERIES SIMULATOR'};
+  stTitle.textContent=svc[key];stTitle.dataset.base=svc[key];
+  headerTitle.innerHTML=htv[key];
+  if(key==='f1'||key==='indycar'){
+    stagesCb.checked=false;
+    chaseCb.checked=false; season.chaseEnabled=false; season.chaseActive=false;
+  }else{
+    stagesCb.checked=season.stagesEnabled!==false;
+    chaseCb.checked=season.chaseEnabled;
+  }
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelector('.tab-btn[data-tab="race"]').classList.add('active');
+  document.getElementById('panel-race').classList.add('active');
+  const sn={cup:'Cup',xfinity:'Xfinity',truck:'Truck',f1:'F1',indycar:'IndyCar',eel:'EEL'};
+  addLog(`Switched to ${sn[key]} Series.`,'s');
+  document.getElementById('chaseToggle').checked=season.chaseEnabled;
+  updateHeaderInfo();
+}
+
+// ====================== RACE STATE ======================
+let race = null;
+let raceInterval = null;
+let paused = false;
+let speed = 1000;
+let autoMode = false;
+
+function getTrackAffinity(d,type){
+  const map={SS:'ss',INT:'it',ST:'st',RC:'rc'};
+  const key=map[type];
+  return d[key]||d.ovr;
+}
+
+// ====================== QUALIFYING ======================
+function runQualifying(){
+  resetSession();
+  if(season.schedule&&season.schedule.length>0){
+    if(season.races>=season.schedule.length){
+      return addLog("Season is complete! Start a new season.","s");
+    }
+    const trackId=season.schedule[season.races];
+    const track=TRACKS.find(t=>t.id===trackId);
+    if(!track)return addLog("Invalid track in schedule.","s");
+    document.getElementById('trackSelect').value=trackId;
+    startQualifyingSession(track);
+  }else{
+    const track=getSelectedTrack();
+    if(!track)return addLog("Please select a track first.",'s');
+    startQualifyingSession(track);
+  }
+}
+
+function startQualifyingSession(track){
+
+  addLog(`QUALIFYING - ${track.name}`, 's');
+  addLog("Drivers taking time trials...",'s');
+
+  // Weekly form fluctuation - tighter for F1/Indy
+  const formRange=currentSeries==='f1'?6:currentSeries==='indycar'?8:12;
+  const weeklyForm={};
+  DRIVERS.forEach(d=>weeklyForm[d.num]=(Math.random()-0.5)*formRange);
+
+  const results = DRIVERS.map(d=>{
+    const skill=Math.max(1,Math.min(99,getTrackAffinity(d,track.type)*0.3+getCarRating(d)*0.7+weeklyForm[d.num]));
+    const baseTime=(track.miles/getQualSpeed(track.type))*3600;
+    const rng=(Math.random()+Math.random()+Math.random())/3;
+    const conVar=((1-d.con/100)*0.6+0.1)*rng*0.8;
+    let skillFactor;
+    if(track.type==='SS'){skillFactor=1.0;}
+    else if(currentSeries==='f1'){skillFactor=1+(73-skill)/1500;}
+    else if(currentSeries==='indycar'){skillFactor=1+(73-skill)/1200;}
+    else{skillFactor=1+(73-skill)/800;}
+    const luck=(Math.random()-0.5)*0.4;
+    let time=baseTime*skillFactor+conVar+luck;
+    // SS qualifying tighter: all within ~0.75s
+    if(track.type==='SS'){
+      time=baseTime+(Math.random()-0.5)*0.75;
+    }
+    return {driver:d,time:time,raw:time};
+  });
+  results.sort((a,b)=>a.time-b.time);
+
+  // Deduplicate by car number (keep faster qualifier per number)
+  const seen={};
+  const deduped=[];
+  results.forEach(r=>{
+    const key=String(r.driver.num);
+    if(!seen[key]){seen[key]=true;deduped.push(r);}
+  });
+
+  // Apply field cap on deduped list
+  const cap=FIELD_CAP[currentSeries]||DRIVERS.length;
+  const qualified=deduped.slice(0,cap);
+
+  // DNQ = anyone not in qualified
+  const dnqList=results.filter(r=>!qualified.includes(r));
+  race = {
+    track: track,
+    fieldCap: qualified.length,
+    dnqList: dnqList,
+    startOrder: qualified.map(r=>r.driver),
+    currentOrder: qualified.map(r=>({driver:r.driver,time:0,lastLap:0,bestLap:Infinity,lapsLed:0,lapsSincePit:0,pitThreshold:pitThresholdFor(r.driver,track),pitStops:0,lastPitLap:0,stagePts:0,stageLapsLed:0,finishPos:null,status:'running',gaps:{}})),
+    laps: 0,
+    stage: 1,
+    flag: 'green',
+    cautionLaps: 0,
+    cautionTotalLaps: 0,
+    runningCars: cap,
+    leaderTime: 0,
+    finished: false,
+    stagePoints: {},
+    history: [],
+    lapsLed: {},
+    dnfs: [],
+    form: {},
+    greenLaps: 0,
+    fastestLap: Infinity
+  };
+  DRIVERS.forEach(d=>{race.lapsLed[d.num]=0;race.form[d.num]=weeklyForm[d.num];});
+
+  // Track pole position (results[0] is always the pole sitter)
+  if(season&&season.standings[results[0].driver.num]){
+    season.standings[results[0].driver.num].poles++;
+  }
+  results.forEach((r,i)=>{
+    r.qualPos=i;
+    r.driver._qualTime=r.time;
+  });
+
+  renderQualifying(results);
+  setStatus('Qualifying Complete','Qualifying');
+  updateButtons('qualified');
+  document.getElementById('headerTrack').textContent=track.name;
+
+  const poleTime=results[0].time;
+  addLog(`POLE - #${results[0].driver.num} ${results[0].driver.name}  ${formatTime(poleTime)}`,'s');
+  results.slice(1).forEach((r,i)=>{
+    const gap=r.time-poleTime;
+    addLog(`P${r.qualPos+1} - #${r.driver.num} ${r.driver.name}  +${gap.toFixed(3)}s`,'s');
+  });
+
+  if(dnqList.length>0){
+    addLog(`DNQ: ${dnqList.length} driver${dnqList.length>1?'s':''} failed to qualify. Field set to ${qualified.length}.`,'s');
+  }
+  addLog("Qualifying complete! Full field set.","s");
+}
+
+function qualPosStr(i){
+  if(i===0)return "POLE -";
+  if(i===1)return "FRONT ROW -";
+  if(i===2)return "ROW 2 -";
+  return `P${i+1} -`;
+}
+
+function formatTime(t){
+  const min=Math.floor(t/60);
+  const sec=t-min*60;
+  return `${min}:${String(sec.toFixed(3)).padStart(6,'0')}`;
+}
+
+function renderQualifying(results){
+  const tbody=document.getElementById('lbBody');
+  tbody.innerHTML='';
+  const poleTime=results[0].time;
+  const qualifiedDrivers=race&&race.startOrder?race.startOrder:[];
+  results.forEach((r,i)=>{
+    const gap=r.time-poleTime;
+    const dnq=qualifiedDrivers.length>0&&!qualifiedDrivers.includes(r.driver);
+    tbody.innerHTML+=qualRow(r.driver,gap,i+1,formatTime(r.time),gap,dnq);
+  });
+}
+
+function qualRow(d,gap,pos,timeDisplay,gapVal,dnq){
+  const mfgClass=`badge-${d.mfg.toLowerCase().replace(/\s+/g,'-')}`;
+  const gapStr=pos===1?'—':`+${(gapVal).toFixed(3)}s`;
+  const statusText=dnq?'<span style="color:var(--red);font-weight:700">DNQ</span>':pos===1?'&#9733;':'Q';
+  return `<tr class="${pos===1?'p1':''}${dnq?' dnq-row':''}">
+    <td class="pos-cell">${pos}</td>
+    <td class="pos-change neutral">-</td>
+    <td class="num-cell" style="color:${MFG_COLORS[d.mfg]}">${d.num}</td>
+    <td class="driver-cell">${d.name}</td>
+    <td class="team-cell">${d.team}</td>
+    <td class="mfg-cell"><span class="badge ${mfgClass}">${d.mfg}</span></td>
+    <td class="gap-cell">${timeDisplay}</td>
+    <td class="gap-cell">${gapStr}</td>
+    <td class="laps-led-cell">—</td>
+    <td class="pits-cell">—</td>
+    <td class="pits-cell">—</td>
+    <td class="pits-cell">—</td>
+    <td class="status-cell">${statusText}</td>
+  </tr>`;
+}
+
+// ====================== RACE ENGINE ======================
+function startRace(){
+  if(!race||race.finished){
+    if(!race)runQualifying();
+    if(race&&race.finished){
+      // reset and go again
+      resetSession();
+      runQualifying();
+      setTimeout(()=>startRace(),100);
+      return;
+    }
+  }
+  if(race.laps===0){
+    race.flag='green';
+    addLog(`GREEN FLAG! ${race.track.name} ${race.track.typeName} (${seriesTrackVal(race.track,'laps')} Laps)`,'g');
+    setStatus('Green Flag','Running');
+    updateButtons('racing');
+    document.getElementById('btnPause').disabled=false;
+    document.querySelectorAll('.speed-btn').forEach(b=>b.disabled=false);
+    runLap(); // first lap immediately
+    scheduleNext();
+  }
+}
+
+function scheduleNext(){
+  if(raceInterval)clearInterval(raceInterval);
+  if(race.finished)return;
+  if(paused)return;
+
+  if(speed===0){
+    raceInterval=setInterval(runLap,1);
+    return;
+  }
+  raceInterval=setInterval(runLap,speed);
+}
+
+function togglePause(){
+  paused=!paused;
+  document.getElementById('btnPause').textContent=paused?'Resume':'Pause';
+  document.getElementById('btnPause').className=paused?'btn btn-green btn-sm':'btn btn-gray btn-sm';
+  if(paused){
+    clearInterval(raceInterval);
+  }else if(!race.finished){
+    if(speed===0){
+      raceInterval=setInterval(runLap,1);
+    }else{
+      scheduleNext();
+    }
+    if(race.flag==='green'||race.flag==='caution')runLap();
+  }
+}
+
+function toggleAutoMode(){
+  autoMode=!autoMode;
+  const btn=document.getElementById('btnAuto');
+  if(autoMode){
+    btn.textContent='Stop';
+    btn.className='btn btn-red btn-sm';
+    addLog('Auto mode enabled. Simulating remaining races...','s');
+    document.getElementById('speedInstant').click();
+    if(season.schedule&&season.schedule.length>0&&season.races>=season.schedule.length){
+      addLog('Season is complete!','s');
+      toggleAutoMode();
+      return;
+    }
+    if(!race||race.finished){
+      runQualifying();
+      setTimeout(()=>startRace(),50);
+    }
+  }else{
+    btn.textContent='Auto';
+    btn.className='btn btn-gray btn-sm';
+    addLog('Auto mode stopped.','s');
+  }
+}
+
+function changeSpeed(btn,s){
+  speed=s;
+  document.querySelectorAll('.speed-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(race&&!race.finished&&!paused&&race.laps>0){
+    clearInterval(raceInterval);
+    if(s===0){
+      raceInterval=setInterval(runLap,1);
+    }else{
+      scheduleNext();
+    }
+  }
+}
+
+function sortOrder(){
+  const order=race.currentOrder;
+  order.sort((a,b)=>a.time-b.time);
+  const running=order.filter(d=>d.status!=='dnf');
+  const dnfd=order.filter(d=>d.status==='dnf');
+  dnfd.sort((a,b)=>(b._dnfLap||0)-(a._dnfLap||0));
+  order.length=0;
+  order.push(...running,...dnfd);
+}
+
+function stagesEnabled(){
+  return document.getElementById('stagesToggle').checked;
+}
+
+function runLap(){
+  runLapInternal();
+  renderFullField();
+  updateStatusBar();
+  if(race.finished)onRaceComplete();
+}
+
+function runLapInternal(){
+  if(race.finished||paused)return;
+
+  const {track,currentOrder}=race;
+
+  // If caution, decrement caution counter
+  if(race.flag==='caution'){
+    race.cautionLaps++;
+    if(race.cautionLaps>=race.cautionTotalLaps){
+      // Restart
+      race.flag='green';
+      race.cautionLaps=0;
+      race.cautionTotalLaps=0;
+      addLog(`GREEN FLAG! Race restarts on lap ${race.laps+1}`,'g');
+    }
+    // Even under caution, increment and process
+    race.laps++;
+    // reduce gaps under caution (bunch up)
+    const leader=currentOrder[0];
+    const avgLap=race._avgLap||(track.miles/getRaceSpeed(track.type))*3600;
+    currentOrder.forEach(d=>{
+      if(d.status==='dnf')return;
+      const lapsDown=Math.max(0,Math.floor((d.time-leader.time)/avgLap));
+      d.time=leader.time+(lapsDown*avgLap)+Math.random()*1.5;
+    });
+    return;
+  }
+
+  // ===== GREEN FLAG LAP =====
+  race.laps++;
+  race.greenLaps++;
+
+  // Calculate each driver's lap time
+  const leader=currentOrder[0];
+  let fastestTime=Infinity;
+  let fastestDriver=null;
+
+  currentOrder.forEach(d=>{
+    if(d.status==='dnf')return;
+    const skill=Math.max(1,Math.min(99,getTrackAffinity(d.driver,track.type)*0.3+getCarRating(d.driver)*0.7+(race.form[d.driver.num]||0)));
+    const raceBase=(track.miles/getRaceSpeed(track.type))*3600;
+    let skillFactor;
+    if(track.type==='SS'){skillFactor=1.0;}
+    else if(currentSeries==='f1'){skillFactor=1+(73-skill)/2000;}
+    else if(currentSeries==='indycar'){skillFactor=1+(73-skill)/1600;}
+    else{skillFactor=1+(73-skill)/1500;}
+    const baseLapTime=raceBase*skillFactor;
+
+    // Random variance (consistency) - moderate on SS for pack racing
+    const conFactor=(1-d.driver.con/100)*0.8+0.2;
+    const trackRand=track.type==='SS'?0.8:(track.type==='ST'?0.6:0.8);
+    const randomFactor=(Math.random()-0.5)*trackRand*conFactor;
+
+    // Tire wear penalty (seconds)
+    d.lapsSincePit++;
+    const tireLife=d.pitThreshold;
+    let tirePenalty=0;
+    if(d.lapsSincePit>tireLife*0.7){
+      const wear=(d.lapsSincePit-tireLife*0.7)/(tireLife*0.3);
+      const trackFactor=track.type==='SS'?1.0:(track.type==='ST'?1.5:1.0);
+      tirePenalty=Math.min(wear*trackFactor,3.0);
+    }
+
+    // Drafting bonus - check gap to car ahead
+    let draftBonus=0;
+    const idx=currentOrder.indexOf(d);
+    if(idx>0){
+      const carAhead=currentOrder[idx-1];
+      const gapAhead=d.time-carAhead.time;
+      let draftThreshold,draftFactor;
+      if(track.type==='SS'){draftThreshold=8.0;draftFactor=4.0;}
+      else if(track.type==='INT'){draftThreshold=3.0;draftFactor=1.2;}
+      else if(track.type==='ST'){draftThreshold=2.0;draftFactor=0.8;}
+      else{draftThreshold=1.5;draftFactor=0.5;}
+      if(gapAhead>0&&gapAhead<draftThreshold){
+        draftBonus=draftFactor*(1-gapAhead/draftThreshold);
+      }
+    }
+    // Pack bonus: more cars close together = faster (skip on first green lap to avoid all-at-zero artifact)
+    let packBonus=0;
+    if(race.greenLaps>1){
+      let packIdxMax,packRange,packClose,packFactor;
+      if(track.type==='SS'){packIdxMax=40;packRange=20;packClose=8.0;packFactor=0.22;}
+      else if(track.type==='INT'){packIdxMax=35;packRange=12;packClose=4.0;packFactor=0.12;}
+      else if(track.type==='ST'){packIdxMax=30;packRange=10;packClose=3.0;packFactor=0.10;}
+      else{packIdxMax=25;packRange=8;packClose=2.5;packFactor=0.06;}
+      if(idx<packIdxMax){
+        let closeCount=0;
+        for(let j=Math.max(0,idx-packRange);j<=Math.min(currentOrder.length-1,idx+packRange);j++){
+          if(j!==idx&&Math.abs(currentOrder[j].time-d.time)<packClose)closeCount++;
+        }
+        packBonus=closeCount*packFactor;
+      }
+    }
+
+    // Catch-up bonus: cars far back get a boost to stay close
+    let catchUp=0;
+    let cuThreshold,cuRate,cuMax;
+    if(track.type==='SS'){cuThreshold=0.3;cuRate=0.40;cuMax=4.0;}
+    else if(track.type==='INT'){cuThreshold=0.5;cuRate=0.20;cuMax=2.5;}
+    else if(track.type==='ST'){cuThreshold=0.5;cuRate=0.18;cuMax=2.0;}
+    else{cuThreshold=1.0;cuRate=0.12;cuMax=1.0;}
+    const leadGap=d.time-currentOrder[0].time;
+    if(leadGap>cuThreshold){
+      catchUp=Math.min((leadGap-cuThreshold)*cuRate,cuMax);
+    }
+
+    // Aggression factor
+    const aggPush=d.driver.agg>70?(d.driver.agg/100)*0.15*Math.random():0;
+
+    // Clean air penalty on SS: leader (no draft) is slower
+    let cleanAirPenalty=0;
+    if(track.type==='SS'&&idx===0){
+      cleanAirPenalty=0.3+Math.random()*0.2;
+    }
+
+    const bonuses=draftBonus+packBonus+catchUp;
+
+    let lapTime=baseLapTime+randomFactor+tirePenalty-bonuses+aggPush+cleanAirPenalty;
+    lapTime=Math.max(lapTime,raceBase*0.60);
+
+    d.lastLap=lapTime;
+    d.bestLap=Math.min(d.bestLap||Infinity,lapTime);
+    if(lapTime<race.fastestLap||!race.fastestLap)race.fastestLap=lapTime;
+    d.time+=lapTime;
+
+    if(lapTime<fastestTime){
+      fastestTime=lapTime;
+      fastestDriver=d;
+    }
+  });
+
+  // Sort by cumulative time
+  sortOrder();
+
+  // Update gaps and laps down
+  const leaderTime=currentOrder[0].time;
+  race.leaderTime=leaderTime;
+  // Use leader's last green-flag lap time as reference so caution time never inflates the avg
+  const raceBase=(track.miles/getRaceSpeed(track.type))*3600;
+  const refLap=currentOrder[0].lastLap||raceBase;
+  race._avgLap=refLap;
+  currentOrder.forEach(d=>{
+    d.gap=d.time-leaderTime;
+    if(d.status==='dnf'){
+      d.lapsDown=0;
+    }else{
+      d.lapsDown=Math.floor(d.gap/race._avgLap);
+    }
+  });
+
+  // Update laps led
+  if(currentOrder[0]&&currentOrder[0].driver){
+    race.lapsLed[currentOrder[0].driver.num]=(race.lapsLed[currentOrder[0].driver.num]||0)+1;
+  }
+
+  // Mechanical DNF check — lower car rating = higher failure chance
+  if(race.greenLaps>3&&Math.random()<0.008){
+    const candidates=currentOrder.filter(d=>d.status==='running');
+    if(candidates.length>0){
+      const weights=candidates.map(d=>Math.max(1,100-getCarRating(d.driver)));
+      const totalWeight=weights.reduce((a,b)=>a+b,0);
+      let r=Math.random()*totalWeight;
+      for(let i=0;i<candidates.length;i++){
+        r-=weights[i];
+        if(r<=0){
+          candidates[i].status='dnf';
+          candidates[i].mech=true;
+          candidates[i]._dnfLap=race.laps;
+          race.runningCars--;
+          race.dnfs.push({driver:candidates[i].driver,lap:race.laps});
+          addLog(`MECHANICAL! #${candidates[i].driver.num} ${candidates[i].driver.name} has a mechanical failure!`,'c');
+          break;
+        }
+      }
+    }
+  }
+
+  // Check for lead change
+  if(race._lastLeader!==currentOrder[0].driver.num){
+    const newLeader=currentOrder[0].driver;
+    if(race._lastLeader!==undefined){
+      addLog(`#${newLeader.num} ${newLeader.name} takes the lead!`,'l');
+    }
+    race._lastLeader=newLeader.num;
+  }
+
+  // Caution check
+  const cautionChance=track.type==='SS'?0.005:(track.type==='ST'?0.012:0.010);
+  // More chance if cars are close
+  const packFactor=currentOrder.slice(0,15).reduce((s,d,i)=>{
+    if(i===0)return s;
+    return s+(d.gap<1.0?1:0);
+  },0)/15;
+  const adjChance=cautionChance*(1+packFactor);
+
+  if(Math.random()<adjChance&&race.laps>5&&race.laps<seriesTrackVal(track,'laps')-5){
+    // CAUTION!
+    race.flag='caution';
+    race.cautionLaps=0;
+    race.cautionTotalLaps=track.type==='SS'?3+Math.floor(Math.random()*4):2+Math.floor(Math.random()*3); // 3-6 SS, 2-4 others
+
+    // Who caused it? Higher aggression more likely
+    const filtered=currentOrder.filter(d=>d.driver.agg>60);
+    const culprit=filtered.length>0?filtered[Math.floor(Math.random()*filtered.length)]:currentOrder[Math.floor(Math.random()*currentOrder.length)];
+
+    // DNF chance - multiple cars can be taken out
+    const ssMulti=track.type==='SS'?1.8:1.0;
+    const numDnf=Math.floor(Math.random()*3*ssMulti)+1;
+    const dnfTargets=new Set();
+    for(let i=0;i<numDnf;i++){
+      if(race.runningCars<=5)break;
+      const victim=currentOrder[Math.floor(Math.random()*Math.min(20,currentOrder.length))];
+      if(victim.status==='running'&&!dnfTargets.has(victim.driver.num)){
+        victim.status='dnf';
+        victim._dnfLap=race.laps;
+        race.runningCars--;
+        race.dnfs.push({driver:victim.driver,lap:race.laps});
+        dnfTargets.add(victim.driver.num);
+      }
+    }
+    if(dnfTargets.size>0){
+      const victimsStr=Array.from(dnfTargets).slice(0,3).map(n=>{
+        const drv=DRIVERS.find(d=>d.num===n);
+        return drv?`#${drv.num} ${drv.name}`:`#${n}`;
+      }).join(', ');
+      addLog(`BIG WRECK! ${victimsStr}${dnfTargets.size>3?` and ${dnfTargets.size-3} others`:''} involved!`,'c');
+    }
+
+    // Damage for others caught up in the wreck
+    const numInvolved=2+Math.floor(Math.random()*(track.type==='SS'?8:4));
+    const damagedSet=new Set();
+    for(let i=0;i<numInvolved;i++){
+      const idx=Math.floor(Math.random()*currentOrder.length);
+      const d=currentOrder[idx];
+      if(d.status==='running'&&!dnfTargets.has(d.driver.num)&&d.driver.num!==culprit.driver.num&&!damagedSet.has(d.driver.num)){
+        d.status='damaged';
+        d.time+=Math.random()*3.0+0.5;
+        damagedSet.add(d.driver.num);
+      }
+    }
+
+    const totalOut=dnfTargets.size+damagedSet.size;
+    const wreckDesc=totalOut>0?` ${totalOut} cars involved${dnfTargets.size>0?`, ${dnfTargets.size} out`:''}`:'';
+    addLog(`YELLOW FLAG! Lap ${race.laps} - Caution brought out by #${culprit.driver.num} ${culprit.driver.name}${wreckDesc}`,'c');
+
+    // Pit stops under caution - some drivers pit
+    const fieldSize=currentOrder.filter(d=>d.status!=='dnf').length;
+    currentOrder.forEach((d,idx)=>{
+      if(d.status==='dnf')return;
+      const pct=d.lapsSincePit/d.pitThreshold;
+      // Leaders more likely to cover (pit); backmarkers more likely to gamble
+      let posFactor=1;
+      if(idx<5)posFactor=1.4;       // top 5: pit aggressively
+      else if(idx>fieldSize-10)posFactor=0.6; // back 10: stay out, gamble
+      const remainingLaps=totalLaps-race.laps;
+      const shouldPit=pct>0.75||(pct>0.4&&Math.random()<0.5*posFactor);
+      // Don't pit under caution if too close to end
+      const tooLate=remainingLaps<=3||remainingLaps<=d.pitThreshold*0.2;
+      if(shouldPit&&!tooLate){
+        // Pit under yellow: 3-5s loss
+        d.time+=3+Math.random()*2;
+        d.lapsSincePit=0;d.pitStops++;d.lastPitLap=race.laps;
+        d.pitThreshold=pitThresholdFor(d.driver,race.track);
+        d.status='running'; // clear damage if pitted
+      }
+    });
+
+    // Re-sort
+    sortOrder();
+    return;
+  }
+
+  // Pit stops under green
+  const remainingLaps=totalLaps-race.laps;
+  currentOrder.forEach((d,idx)=>{
+    if(d.status==='dnf')return;
+    if(d.lapsSincePit>=d.pitThreshold){
+      // Don't pit if too close to end — stay out
+      if(remainingLaps<=5||remainingLaps<=d.pitThreshold*0.3){
+        d.lapsSincePit=Math.max(d.lapsSincePit,d.pitThreshold-1);
+        return;
+      }
+      // Must pit: 14-18s loss under green
+      const pitTime=14+Math.random()*4;
+      d.time+=pitTime;
+      d.lapsSincePit=0;d.pitStops++;d.lastPitLap=race.laps;
+      d.pitThreshold=pitThresholdFor(d.driver,race.track);
+      if(idx<=15){
+        addLog(`#${d.driver.num} ${d.driver.name} pits (P${idx+1})`,'c');
+      }
+    }
+  });
+
+  // Re-sort after pit stops
+  sortOrder();
+
+  // Check stage end
+  if(stagesEnabled()){
+    let stageEndLap=0;
+    if(race.stage===1)stageEndLap=seriesTrackVal(track,'stage1');
+    else if(race.stage===2)stageEndLap=seriesTrackVal(track,'stage1')+seriesTrackVal(track,'stage2');
+
+    if(race.laps>=stageEndLap&&race.stage<=2){
+      // Stage over!
+      const stageTop10=currentOrder.slice(0,10);
+      const stagePts=[10,9,8,7,6,5,4,3,2,1];
+      const winner=stageTop10[0]?.driver;
+      addLog(`END OF STAGE ${race.stage}! #${winner.num} ${winner.name} wins the stage!`,'s');
+      stageTop10.forEach((d,i)=>{
+        const pts=stagePts[i];
+        if(race.stagePoints[d.driver.num])race.stagePoints[d.driver.num]+=pts;
+        else race.stagePoints[d.driver.num]=pts;
+        addLog(`  Stage ${race.stage} Top 10: #${d.driver.num} ${d.driver.name} +${pts} pts`,'s');
+      });
+
+      race.stage++;
+      // Stage break caution
+      race.flag='caution';
+      race.cautionLaps=0;
+      race.cautionTotalLaps=3;
+      addLog(`Stage ${race.stage-1} break caution. Lap ${race.laps}`,'s');
+
+      // Pits during stage break - top 5 cover, mid-pack normal, back sometimes gamble
+      currentOrder.forEach((d,idx)=>{
+        if(d.status==='dnf')return;
+        let stagePitChance=0.5;
+        if(idx<5)stagePitChance=0.85;
+        else if(idx>currentOrder.filter(x=>x.status!=='dnf').length-8)stagePitChance=0.3;
+        if(d.lapsSincePit>10||Math.random()<stagePitChance){
+          d.time+=2+Math.random()*1.5;
+          d.lapsSincePit=0;d.pitStops++;d.lastPitLap=race.laps;
+          d.pitThreshold=pitThresholdFor(d.driver,race.track);
+          d.status='running';
+        }
+      });
+      sortOrder();
+    }
+  }
+
+  // Check race end
+  const totalLaps=seriesTrackVal(track,'stage1')+seriesTrackVal(track,'stage2')+seriesTrackVal(track,'stage3');
+  if(race.laps>=totalLaps){
+    race.finished=true;
+    race.laps=totalLaps;
+    currentOrder.forEach((d,i)=>{
+      d.finishPos=i+1;
+    });
+  }
+}
+
+function onRaceComplete(){
+  if(raceInterval){clearInterval(raceInterval);raceInterval=null;}
+  document.getElementById('btnPause').disabled=true;
+
+  const winner=race.currentOrder[0].driver;
+  addLog(`CHECKERED FLAG! #${winner.num} ${winner.name} WINS!`,'f');
+  setStatus('Checkered Flag','Checkered');
+
+  // Add race result
+  const result={
+    track:race.track,
+    laps:race.laps,
+    finishOrder:race.currentOrder.map(d=>({
+      driver:d.driver,
+      status:d.status,
+      lapsDown:d.lapsDown,
+      lapsLed:race.lapsLed[d.driver.num]||0,
+      pitStops:d.pitStops,
+      lastPitLap:d.lastPitLap,
+      dnfLap:d._dnfLap||0,
+      startPos:race.startOrder.indexOf(d.driver)+1,
+      mech:d.mech||false
+    })),
+    stagePoints:race.stagePoints,
+    lapsLed:race.lapsLed,
+    dnfs:race.dnfs,
+    dnqList:race.dnqList?race.dnqList.map(r=>({driver:r.driver,qualPos:r.qualPos,time:r.time})):[]
+  };
+  season.addResult(result);
+
+  // Chase/playoff check
+  if(season.chaseEnabled&&season.schedule.length>0){
+    if(season.races===season.regularSeasonEnd&&!season.chaseActive){
+      // Just completed regular season finale - initialize chase
+      season.initChase();
+      addLog(`CHASE FIELD SET! ${season.chaseDrivers.length} drivers advance. Points reset.`,'s');
+    }else if(season.chaseActive){
+      season.checkChaseAfterRace();
+    }
+  }
+
+  saveSeason(currentSeries,season);
+
+  updateButtons('finished');
+  renderStandings();
+  renderResults();
+  renderFullField();
+  updateStatusBar();
+  updateHeaderInfo();
+
+  // Auto mode: continue to next race
+  if(autoMode){
+    if(season.schedule&&season.schedule.length>0&&season.races>=season.schedule.length){
+      autoMode=false;
+      document.getElementById('btnAuto').textContent='Auto';
+      document.getElementById('btnAuto').className='btn btn-gray btn-sm';
+      addLog('Season complete! All races simulated.','s');
+    }else{
+      setTimeout(()=>{
+        runQualifying();
+        setTimeout(()=>startRace(),50);
+      },100);
+    }
+  }
+}
+
+// ====================== UI RENDERING ======================
+function renderFullField(){
+  const tbody=document.getElementById('lbBody');
+  if(!race||!race.currentOrder){tbody.innerHTML='<tr><td colspan="13" style="text-align:center;padding:20px;color:var(--text3)">Run qualifying first.</td></tr>';return;}
+  tbody.innerHTML='';
+  race.currentOrder.forEach((d,i)=>{
+    const pos=i+1;
+    let gap;
+    if(pos===1){
+      gap='Leader';
+    }else if(d.status==='dnf'){
+      gap=d.mech?'MEC':'DNF';
+    }else if(d.lapsDown>0){
+      gap=`-${d.lapsDown} lap${d.lapsDown>1?'s':''}`;
+    }else{
+      gap=formatGap(d.gap);
+    }
+    const mfgClass=`badge-${d.driver.mfg.toLowerCase().replace(/\s+/g,'-')}`;
+    const statusIcon=d.status==='dnf'?(d.mech?'MEC':'DNF'):d.status==='damaged'?'DAM':'';
+    const lapsLed=race.lapsLed[d.driver.num]||0;
+    const startPos=race.startOrder.indexOf(d.driver)+1;
+    const change=startPos-pos;
+    let changeStr,changeClass;
+    if(change>0){changeStr='+'+change;changeClass='up';}
+    else if(change<0){changeStr=String(change);changeClass='down';}
+    else{changeStr='—';changeClass='neutral';}
+    tbody.innerHTML+=`<tr class="${pos===1?'p1':''}${d.status==='dnf'?' caution-row':''}${d.status==='damaged'?' pit-row':''}">
+      <td class="pos-cell">${pos}</td>
+      <td class="pos-change ${changeClass}">${changeStr}</td>
+      <td class="num-cell" style="color:${MFG_COLORS[d.driver.mfg]}">${d.driver.num}</td>
+      <td class="driver-cell">${d.driver.name}</td>
+      <td class="team-cell">${d.driver.team}</td>
+      <td class="mfg-cell"><span class="badge ${mfgClass}">${d.driver.mfg}</span></td>
+      <td class="gap-cell">${gap}</td>
+      <td class="gap-cell">—</td>
+      <td class="laps-led-cell">${lapsLed>0?lapsLed:''}</td>
+      <td class="pits-cell">${d.status==='dnf'?d._dnfLap||'':race.laps-(d.lapsDown||0)}</td>
+      <td class="pits-cell">${d.pitStops>0?d.pitStops:''}</td>
+      <td class="pits-cell">${d.lastPitLap>0?d.lastPitLap:''}</td>
+      <td class="pits-cell${d.bestLap&&race.fastestLap&&Math.abs(d.bestLap-race.fastestLap)<0.0001?' fastest-lap':''}">${d.bestLap?formatTime(d.bestLap):''}</td>
+      <td class="status-cell">${statusIcon?`<span class="badge" style="background:rgba(225,6,0,0.2);color:var(--red)">${statusIcon}</span>`:''}</td>
+    </tr>`;
+  });
+}
+
+function formatGap(gap){
+  if(gap===undefined||gap===null)return '—';
+  if(gap<0)gap=0;
+  if(gap>120){
+    const min=Math.floor(gap/60);
+    const sec=gap-min*60;
+    return `+${min}:${String(sec.toFixed(1)).padStart(4,'0')}`;
+  }
+  return `+${gap.toFixed(1)}s`;
+}
+
+function updateHeaderInfo(){
+  const el=document.getElementById('headerRace');
+  if(!season||!season.schedule||season.schedule.length===0){el.textContent='';return;}
+  const total=season.schedule.length;
+  const nextRace=season.races+1;
+  if(nextRace>total){
+    el.textContent='Season Complete';
+    return;
+  }
+  let label='Race '+nextRace+' of '+total;
+  if(season.chaseActive){
+    let rn=season._roundNames;
+    if(!rn){
+      rn=['','Chase','Championship 4'];
+      season._roundNames=rn;
+    }
+    if(rn){
+      label+=' &middot; '+(rn[season.chaseRound]||'');
+      if(season.chaseElimRaces.length>0&&season.chaseRound>=1&&season.chaseRound<rn.length-1){
+        const er=season.chaseElimRaces;
+        const prevEnd=season.chaseRound===1?season.regularSeasonEnd:er[season.chaseRound-2];
+        const roundRaces=er[season.chaseRound-1]-prevEnd;
+        const roundRace=nextRace-prevEnd;
+        if(roundRaces>=2)label+=' (Race '+roundRace+'/'+roundRaces+')';
+      }
+    }
+  }
+  el.innerHTML=label;
+}
+
+function updateStatusBar(){
+  if(!race){const cap=FIELD_CAP[currentSeries]||DRIVERS.length;document.getElementById('sLap').textContent='-';document.getElementById('sStage').textContent='-';document.getElementById('sFlag').textContent='-';document.getElementById('sLeader').textContent='-';document.getElementById('sCautionLaps').textContent='-';document.getElementById('sRunning').textContent=`${cap}/${DRIVERS.length}`;return;}
+  const sl=document.getElementById('sLap');
+  sl.textContent=`${race.laps}/${seriesTrackVal(race.track,'laps')}`;
+  if(race.finished)sl.style.color='var(--yellow)';
+  else sl.style.color='';
+  if(!stagesEnabled()){
+    document.getElementById('sStage').textContent='Off';
+  }else{
+    document.getElementById('sStage').textContent=race.stage>3?'Final':`${race.stage}/3`;
+    // Show stage lap counter
+    const stageTotal=race.stage===1?seriesTrackVal(race.track,'stage1'):(race.stage===2?seriesTrackVal(race.track,'stage2'):(race.stage===3?seriesTrackVal(race.track,'stage3'):0));
+    const prevLaps=race.stage===1?0:(race.stage===2?seriesTrackVal(race.track,'stage1'):(race.stage===3?seriesTrackVal(race.track,'stage1')+seriesTrackVal(race.track,'stage2'):0));
+    const stageLap=race.laps-prevLaps;
+    const stageEl=document.getElementById('sStage');
+    if(race.stage<=3&&stageLap>0&&stageLap<=stageTotal){
+      stageEl.textContent=`${race.stage}/3 (${Math.max(0,stageLap)}/${stageTotal})`;
+    }
+  }
+  const flagEl=document.getElementById('sFlag');
+  if(race.finished){
+    flagEl.textContent='CHECKERED';
+    flagEl.className='stat-value';
+  }else{
+    flagEl.textContent=race.flag==='green'?'GREEN':'CAUTION';
+    flagEl.className='stat-value '+(race.flag==='green'?'under-green':'under-yellow');
+  }
+  const l=race.currentOrder[0]?.driver;
+  document.getElementById('sLeader').textContent=l?`#${l.num} ${l.name}`:'-';
+  document.getElementById('sCautionLaps').textContent=race.flag==='caution'?`${race.cautionLaps}/${race.cautionTotalLaps}`:'-';
+  document.getElementById('sRunning').textContent=`${race.runningCars}/${race.fieldCap||DRIVERS.length}`;
+}
+
+function setStatus(msg,session){
+  document.getElementById('headerSession').textContent=`${session}`;
+}
+
+function addLog(msg,type='i'){
+  const log=document.getElementById('raceLog');
+  const entry=document.createElement('div');
+  entry.className=`race-log-entry${type?` ${type}`:''}`;
+  entry.innerHTML=`<span class="lap-tag">[L${race?race.laps:'—'}]</span>${msg}`;
+  log.appendChild(entry);
+  log.scrollTop=log.scrollHeight;
+}
+
+let seasonView = false; // false = chase view (default), true = full season
+let teamView = false;
+
+function toggleTeamView(){
+  teamView=!teamView;
+  document.getElementById('teamViewToggle').textContent=teamView?'Driver Standings':'Team Standings';
+  renderStandings();
+}
+
+function toggleStandingsView(){
+  seasonView = !seasonView;
+  renderStandings();
+}
+
+// ====================== STANDINGS ======================
+function renderStandings(){
+  const tbody=document.getElementById('stBody');
+  const thead=document.getElementById('stHead');
+  const isOpen=currentSeries==='f1'||currentSeries==='indycar';
+
+  // Build header
+  const cols=isOpen
+    ?['pos','num','driver','team','points','gap','wins','podiums','poles','avgfin','avgstart','t5','t10','races']
+    :['pos','num','driver','team','points','gap','wins','poles','stageWins','stagePts','avgfin','avgstart','t5','t10','races'];
+  const labels=isOpen
+    ?['Pos','#','Driver','Team','Points','Gap','Wins','Pod','Poles','Avg F','Avg S','T5','T10','Races']
+    :['Pos','#','Driver','Team','Points','Gap','Wins','Poles','SW','SP','Avg F','Avg S','T5','T10','Races'];
+  thead.innerHTML='<tr>'+cols.map((c,i)=>`<th data-col="${c}">${labels[i]}<span class="sort-arrow">▼</span></th>`).join('')+'</tr>';
+
+  if(teamView)return renderTeamStandings();
+  const chaseActive=season.chaseActive;
+  const toggleEl=document.getElementById('viewToggle');
+  if(toggleEl){
+    toggleEl.style.display=chaseActive?'':'none';
+    toggleEl.textContent=seasonView?'Regular Season Standings':'Chase Standings';
+    toggleEl.style.background=seasonView?'rgba(0,200,100,0.2)':'var(--bg3)';
+    toggleEl.style.color=seasonView?'#0c8':'var(--text2)';
+  }
+
+  // Update title with view indicator
+  const stTitle=document.getElementById('stTitle');
+  const baseTitle=stTitle.dataset.base||stTitle.textContent.replace(/ \(Regular Season\)/,'');
+  stTitle.dataset.base=baseTitle;
+  stTitle.textContent=!chaseActive?baseTitle:(seasonView?baseTitle+' (Regular Season)':baseTitle);
+
+  // Build display list based on view
+  let displayList;
+  if(!chaseActive){
+    displayList=Object.values(season.standings);
+  } else if(!seasonView){
+    // Chase Standings: all drivers with current stats
+    displayList=Object.values(season.standings);
+  } else {
+    // Regular Season Standings: all drivers use frozen regular season stats
+    displayList=Object.values(season.standings).map(s=>{
+      const rs=s._regularStats||s;
+      return {...s,...rs};
+    });
+  }
+
+  // Determine points field for sorting/display
+  const isChaseView=chaseActive&&!seasonView;
+  displayList.forEach(d=>{d._displayPoints=isChaseView?d.points:(d._origPoints||d.points);});
+
+  // Sort using _displayPoints
+  const col=sortCol==='points'||sortCol==='gap'?'_displayPoints':sortCol;
+  if(col==='avgfin'){
+    displayList.sort((a,b)=>{const av=(d)=>d.races>0?d.totalFinish/d.races:999;return sortAsc?av(a)-av(b):av(b)-av(a);});
+  } else if(col==='avgstart'){
+    displayList.sort((a,b)=>{const av=(d)=>d.races>0?d.totalStart/d.races:999;return sortAsc?av(a)-av(b):av(b)-av(a);});
+  } else {
+    displayList.sort((a,b)=>sortAsc?a[col]-b[col]:b[col]-a[col]);
+  }
+
+  tbody.innerHTML='';
+  const chaseDrivers=season.chaseDrivers||[];
+  const eliminated=season.eliminated||[];
+  displayList.forEach((d,i)=>{
+    const posClass=i===0?'top1':(i===1?'top2':(i===2?'top3':''));
+    let chaseBadge='';
+    const isChase=chaseActive&&chaseDrivers.includes(d.num);
+    if(isChase){
+      if(d.champion){chaseBadge='<span class="badge" style="background:var(--yellow);color:#000;margin-right:4px" title="Champion">C</span>';}
+      else if(eliminated.includes(d.num)){chaseBadge='<span class="badge" style="background:rgba(225,6,0,0.3);color:var(--red);margin-right:4px" title="Eliminated">E</span>';}
+      else{chaseBadge='<span class="badge" style="background:rgba(0,200,100,0.3);color:#0c8;margin-right:4px" title="Playoffs">P</span>';}
+    }
+    const rowClass=isChase&&!eliminated.includes(d.num)?' chase-active':'';
+    const displayPoints=d._displayPoints;
+    const ptsLeader=displayList[0];
+    const leaderPts=ptsLeader._displayPoints;
+    const gapToLeader=leaderPts-displayPoints;
+    const prev=i>0?displayList[i-1]:null;
+    const prevPts=prev?prev._displayPoints:0;
+    const gapToFront=i>0?prevPts-displayPoints:'';
+    const gapStr=gapToFront!==''?'-'+gapToLeader+' / -'+gapToFront:'-'+gapToLeader;
+    const avgFin=d.races>0?(d.totalFinish/d.races).toFixed(1):'—';
+    const avgStart=d.races>0?(d.totalStart/d.races).toFixed(1):'—';
+    const extraCols=isOpen
+      ?`<td class="st-podiums">${d.podiums||0}</td>`
+      :`<td class="st-stagewins">${d.stageWins||0}</td><td class="st-stagepts">${d.stagePts||0}</td>`;
+    tbody.innerHTML+=`<tr class="${posClass}${rowClass}">
+      <td class="st-pos ${posClass}">${i+1}</td>
+      <td class="st-num" style="color:${MFG_COLORS[d.mfg]}">${d.num}</td>
+      <td class="st-driver">${chaseBadge}${d.name}</td>
+      <td class="st-team">${d.team}</td>
+      <td class="st-points">${displayPoints}</td>
+      <td class="st-gap">${gapStr}</td>
+      <td class="st-wins">${d.wins}</td>
+      ${extraCols}
+      <td class="st-poles">${d.poles}</td>
+      <td class="st-avgfin">${avgFin}</td>
+      <td class="st-avgstart">${avgStart}</td>
+      <td class="st-top5">${d.t5}</td>
+      <td class="st-top10">${d.t10}</td>
+      <td class="st-races">${d.races}</td>
+    </tr>`;
+  });
+  // Update sort arrows
+  document.querySelectorAll('.st-table th').forEach(th=>{
+    th.classList.remove('sort-asc','sort-desc');
+    if(th.dataset.col===sortCol)th.classList.add(sortAsc?'sort-asc':'sort-desc');
+  });
+}
+
+function getRealPoints(d){
+  if(!season.chaseActive||!season.chaseDrivers||!season.chaseDrivers.includes(d.num))return d.points;
+  const rs=d._regularStats;
+  if(!rs)return d.points;
+  const chaseRacePoints=d.points-(2000+rs.wins*5+(rs.stageWins||0));
+  return rs.points+Math.max(0,chaseRacePoints);
+}
+
+function renderTeamStandings(){
+  const tbody=document.getElementById('stBody');
+  const thead=document.getElementById('stHead');
+  const stTitle=document.getElementById('stTitle');
+  const isOpen=currentSeries==='f1'||currentSeries==='indycar';
+  stTitle.textContent=(stTitle.dataset.base||'Standings')+' — Teams';
+
+  // Build team header
+  const cols=isOpen
+    ?['pos','team','cars','points','avgpts','gap','wins','podiums','poles','avgfin','avgstart','t5','t10','races']
+    :['pos','team','cars','points','avgpts','gap','wins','poles','stageWins','stagePts','avgfin','avgstart','t5','t10','races'];
+  const labels=isOpen
+    ?['Pos','Team','Cars','Points','Avg Pts','Gap','Wins','Pod','Poles','Avg F','Avg S','T5','T10','Races']
+    :['Pos','Team','Cars','Points','Avg Pts','Gap','Wins','Poles','SW','SP','Avg F','Avg S','T5','T10','Races'];
+  thead.innerHTML='<tr>'+cols.map((c,i)=>`<th data-col="${c}">${labels[i]}<span class="sort-arrow">▼</span></th>`).join('')+'</tr>';
+
+  // Aggregate by team
+  const teams={};
+  Object.values(season.standings).forEach(d=>{
+    const team=d.team;
+    if(!teams[team])teams[team]={name:team,points:0,wins:0,podiums:0,poles:0,t5:0,t10:0,races:0,stageWins:0,stagePts:0,totalFinish:0,totalStart:0,drivers:[],mfg:d.mfg};
+    const t=teams[team];
+    t.points+=getRealPoints(d);
+    t.wins+=d.wins;
+    t.podiums+=d.podiums||0;
+    t.poles+=d.poles||0;
+    t.t5+=d.t5;
+    t.t10+=d.t10;
+    t.races+=d.races;
+    t.stageWins+=d.stageWins||0;
+    t.stagePts+=d.stagePts||0;
+    t.totalFinish+=d.totalFinish||0;
+    t.totalStart+=d.totalStart||0;
+    t.drivers.push(d.name);
+  });
+  let teamArr=Object.values(teams);
+
+  // Sort
+  if(sortCol==='avgpts'){
+    const avg=(t)=>t.drivers.length>0?t.points/t.drivers.length:0;
+    teamArr.sort((a,b)=>sortAsc?avg(a)-avg(b):avg(b)-avg(a));
+  } else if(sortCol==='avgfin'){
+    teamArr.sort((a,b)=>{const av=(t)=>t.races>0?t.totalFinish/t.races:999;return sortAsc?av(a)-av(b):av(b)-av(a);});
+  } else if(sortCol==='avgstart'){
+    teamArr.sort((a,b)=>{const av=(t)=>t.races>0?t.totalStart/t.races:999;return sortAsc?av(a)-av(b):av(b)-av(a);});
+  } else {
+    teamArr.sort((a,b)=>sortAsc?a[sortCol]-b[sortCol]:b[sortCol]-a[sortCol]);
+  }
+
+  tbody.innerHTML='';
+  teamArr.forEach((t,i)=>{
+    const ptsLeader=teamArr[0].points;
+    const gap=ptsLeader-t.points;
+    const avgPts=t.drivers.length>0?(t.points/t.drivers.length).toFixed(1):'—';
+    const avgFin=t.races>0?(t.totalFinish/t.races).toFixed(1):'—';
+    const avgStart=t.races>0?(t.totalStart/t.races).toFixed(1):'—';
+    const extraCols=isOpen
+      ?`<td class="st-podiums">${t.podiums}</td>`
+      :`<td class="st-stagewins">${t.stageWins}</td><td class="st-stagepts">${t.stagePts}</td>`;
+    tbody.innerHTML+=`<tr>
+      <td class="st-pos">${i+1}</td>
+      <td class="st-team" style="color:${MFG_COLORS[t.mfg]};font-weight:700">${t.name}</td>
+      <td class="st-cars">${t.drivers.length}</td>
+      <td class="st-points">${t.points}</td>
+      <td class="st-avgpts">${avgPts}</td>
+      <td class="st-gap">-${gap}</td>
+      <td class="st-wins">${t.wins}</td>
+      ${extraCols}
+      <td class="st-poles">${t.poles}</td>
+      <td class="st-avgfin">${avgFin}</td>
+      <td class="st-avgstart">${avgStart}</td>
+      <td class="st-top5">${t.t5}</td>
+      <td class="st-top10">${t.t10}</td>
+      <td class="st-races">${t.races}</td>
+    </tr>`;
+  });
+}
+
+// ====================== RESULTS ======================
+function renderResults(){
+  const container=document.getElementById('resultsContainer');
+  if(season.results.length===0){
+    container.innerHTML='<p style="color:var(--text3);padding:20px;text-align:center">No races completed yet. Run a race to see results.</p>';
+    return;
+  }
+  container.innerHTML='';
+  season.results.slice().reverse().forEach((r,idx)=>{
+    const winner=r.finishOrder[0];
+    const w=(winner.driver||winner);
+    const isFirst=idx===0;
+    const tblId='resultTable_'+idx;
+    let html=`<div class="result-card slide-in">
+      <div class="collapsible-header${isFirst?'':' collapsed'}" onclick="toggleResult('${tblId}')">
+        <span class="toggle-arrow">▼</span>
+        <strong>${r.track.name}</strong> <span style="color:var(--text3);font-size:11px">— Race #${season.races - idx} &bull; ${r.laps} laps &bull; Winner: #${w.num} ${w.name}</span>
+      </div>
+      <div id="${tblId}" class="collapsible-body${isFirst?'':' collapsed'}">
+        <table class="result-table">
+          <thead><tr><th>Pos</th><th>St</th><th>#</th><th>Driver</th><th>Team</th><th>Mfg</th><th>Laps</th><th>Led</th><th>Pits</th><th>Status</th></tr></thead>
+          <tbody>`;
+    r.finishOrder.forEach((d,i)=>{
+      const drv=d.driver||d;
+      const laps=d.dnfLap||r.laps;
+      const led=d.lapsLed||0;
+      const pits=d.pitStops||'';
+      const st=d.status||'';
+      const stIcon=st==='dnf'?(d.mech?'MEC':'DNF'):st==='damaged'?'DAM':'';
+      html+=`<tr${i===0?' style="background:rgba(255,215,0,0.05)"':''}>
+        <td>${i+1}</td>
+        <td style="color:var(--text2);font-size:11px">${d.startPos||''}</td>
+        <td style="color:${MFG_COLORS[drv.mfg]};font-weight:700">${drv.num}</td>
+        <td>${drv.name}</td>
+        <td style="color:var(--text2);font-size:11px">${drv.team}</td>
+        <td><span class="badge badge-${drv.mfg.toLowerCase().replace(/\s+/g,'-')}">${drv.mfg}</span></td>
+        <td>${laps}</td>
+        <td>${led>0?led:''}</td>
+        <td>${pits}</td>
+        <td>${stIcon?`<span style="color:var(--red)">${stIcon}</span>`:''}</td>
+      </tr>`;
+    });
+    html+=`</tbody></table>`;
+    if(r.dnfs&&r.dnfs.length>0){
+      html+=`<div style="margin-top:6px;font-size:11px;color:var(--red)">DNF: ${r.dnfs.map(d=>`#${d.driver.num} ${d.driver.name} (L${d.lap})`).join(', ')}</div>`;
+    }
+    if(r.dnqList&&r.dnqList.length>0){
+      html+=`<div style="margin-top:4px;font-size:11px;color:var(--text3)">DNQ (${r.dnqList.length}): ${r.dnqList.map(d=>`#${d.driver.num} ${d.driver.name}`).join(', ')}</div>`;
+    }
+    html+=`</div></div>`;
+    container.innerHTML+=html;
+  });
+}
+
+function newSeason(){
+  if(confirm('Start a new season? This will reset all standings and results.')){
+    Object.values(season.standings).forEach(s=>{s.points=0;s.wins=0;s.t5=0;s.t10=0;s.races=0;s.led=0;s.stagePts=0;s.stageWins=0;s.champion=false;s.poles=0;s.totalFinish=0;s.totalStart=0;s._origPoints=0;delete s._regularStats;});
+    season.races=0;
+    season.results=[];
+    const sk=currentSeries;
+    season.schedule=[...SCHEDULES[sk]];
+    season.postInit();
+    season.chaseActive=false;
+    season.chaseRound=0;
+    season.chaseDrivers=[];
+    season.eliminated=[];
+    renderStandings();
+    renderResults();
+    resetSession();
+    saveSeason(currentSeries,season);
+    updateHeaderInfo();
+    addLog("New season started!","s");
+  }
+}
+
+function resetSeason(){
+  Object.values(season.standings).forEach(s=>{s.points=0;s.wins=0;s.t5=0;s.t10=0;s.races=0;s.led=0;s.stagePts=0;s.stageWins=0;s.champion=false;s.poles=0;s.totalFinish=0;s.totalStart=0;s._origPoints=0;delete s._regularStats;});
+  season.races=0;
+  season.results=[];
+  season.chaseActive=false;
+  season.chaseRound=0;
+  season.chaseDrivers=[];
+  season.eliminated=[];
+  renderStandings();
+  renderResults();
+  resetSession();
+  updateHeaderInfo();
+  saveSeason(currentSeries,season);
+  addLog("Season reset!","s");
+}
+
+// ====================== HELPERS ======================
+function toggleResult(id){
+  const body=document.getElementById(id);
+  if(!body)return;
+  const header=body.previousElementSibling;
+  body.classList.toggle('collapsed');
+  header.classList.toggle('collapsed');
+}
+function pitThresholdFor(d,track){
+  let base;
+  if(currentSeries==='f1'){
+    if(track.type==='SS')base=55;
+    else if(track.type==='INT')base=45;
+    else if(track.type==='ST')base=22;
+    else base=18;
+  }else if(currentSeries==='indycar'){
+    if(track.type==='SS')base=65;
+    else if(track.type==='INT')base=55;
+    else if(track.type==='ST')base=30;
+    else base=28;
+  }else{
+    if(track.type==='SS')base=55;
+    else if(track.type==='INT')base=45;
+    else if(track.type==='ST')base=35;
+    else base=28;
+  }
+  const conBonus=Math.round((d.con-50)/10);
+  return base+conBonus+Math.floor(Math.random()*15);
+}
+function getSelectedTrack(){
+  const sel=document.getElementById('trackSelect');
+  return TRACKS.find(t=>t.id===sel.value);
+}
+
+function toggleChase(){
+  if(!season)return;
+  season.chaseEnabled=document.getElementById('chaseToggle').checked;
+  saveSeason(currentSeries,season);
+  renderStandings();
+  addLog(`Chase/Playoffs ${season.chaseEnabled?'enabled':'disabled'}.`,'s');
+}
+
+function openScheduleEditor(){
+  const modal=document.getElementById('scheduleModal');
+  modal.style.display='flex';
+  // Populate add track dropdown
+  const sel=document.getElementById('scheduleAddTrack');
+  sel.innerHTML='';
+  TRACKS.sort((a,b)=>a.name.localeCompare(b.name)).forEach(t=>{
+    const o=document.createElement('option');
+    o.value=t.id;
+    o.textContent=t.name+' ('+t.typeName+')';
+    sel.appendChild(o);
+  });
+  // Set manual mode toggle
+  document.getElementById('manualScheduleToggle').checked=
+    season.schedule.length===0||season.schedule[0]===undefined;
+  renderScheduleList();
+  refreshPresetSelect();
+  const ps=document.getElementById('presetSelect');
+  if(ps.options.length>0)ps.selectedIndex=0;
+}
+
+function closeScheduleEditor(){
+  document.getElementById('scheduleModal').style.display='none';
+}
+
+function toggleManualSchedule(){
+  const manual=document.getElementById('manualScheduleToggle').checked;
+  if(manual){
+    season.schedule=[];
+    season.postInit();
+    addLog('Manual track selection enabled.','s');
+  }else{
+    const sk=currentSeries;
+    season.schedule=[...SCHEDULES[sk]];
+    season.postInit();
+    addLog('Schedule restored to default.','s');
+  }
+  renderScheduleList();
+  updateHeaderInfo();
+  saveSeason(currentSeries,season);
+}
+
+function renderScheduleList(){
+  const container=document.getElementById('scheduleList');
+  container.innerHTML='';
+  if(!season.schedule||season.schedule.length===0){
+    container.innerHTML='<div style="color:var(--text3);padding:8px;font-size:12px">Free pick mode — no schedule set.</div>';
+    return;
+  }
+  const currentRace=season.races;
+  season.schedule.forEach((trackId,i)=>{
+    const track=TRACKS.find(t=>t.id===trackId);
+    if(!track)return;
+    const div=document.createElement('div');
+    div.className='schedule-entry'+(i===currentRace?' selected':'');
+    const isPast=i<currentRace;
+    const isUpcoming=i===currentRace;
+    const nameCol=isPast?'var(--text3)':(isUpcoming?'var(--yellow)':'var(--text)');
+    const prefix=isPast?'\u2713 ':(isUpcoming?'\u25B6 ':'');
+    div.innerHTML='<span class="sched-race-num">'+prefix+(i+1)+'</span>'+
+      '<span class="sched-track-name" style="color:'+nameCol+'">'+track.name+'</span>'+
+      '<button class="btn btn-gray btn-sm" onclick="moveScheduleItem('+i+',-1)"'+(i===0||isPast?' disabled':'')+'>&#9650;</button>'+
+      '<button class="btn btn-gray btn-sm" onclick="moveScheduleItem('+i+',1)"'+(i===season.schedule.length-1||isPast?' disabled':'')+'>&#9660;</button>'+
+      '<button class="btn btn-gray btn-sm" onclick="removeScheduleItem('+i+')"'+(isPast?' disabled':'')+'>X</button>';
+    container.appendChild(div);
+  });
+}
+
+function addToSchedule(){
+  const sel=document.getElementById('scheduleAddTrack');
+  const trackId=sel.value;
+  if(!season.schedule)season.schedule=[];
+  season.schedule.push(trackId);
+  season.postInit();
+  renderScheduleList();
+  saveSeason(currentSeries,season);
+}
+
+function removeScheduleItem(idx){
+  if(!season.schedule||idx>=season.schedule.length)return;
+  if(idx<season.races){
+    addLog('Cannot remove a completed race from the schedule.','s');
+    return;
+  }
+  season.schedule.splice(idx,1);
+  season.postInit();
+  renderScheduleList();
+  updateHeaderInfo();
+  saveSeason(currentSeries,season);
+}
+
+function moveScheduleItem(idx,dir){
+  if(!season.schedule||idx<season.races)return;
+  const newIdx=idx+dir;
+  if(newIdx<season.races||newIdx>=season.schedule.length)return;
+  [season.schedule[idx],season.schedule[newIdx]]=[season.schedule[newIdx],season.schedule[idx]];
+  renderScheduleList();
+  saveSeason(currentSeries,season);
+}
+
+function resetToDefaultSchedule(){
+  if(confirm('Reset schedule to default? This will also clear any manual changes.')){
+    const sk=currentSeries;
+    season.schedule=[...SCHEDULES[sk]];
+    season.postInit();
+    document.getElementById('manualScheduleToggle').checked=false;
+    renderScheduleList();
+    updateHeaderInfo();
+    saveSeason(currentSeries,season);
+    addLog('Schedule reset to default.','s');
+  }
+}
+
+function refreshPresetSelect(){
+  const sel=document.getElementById('presetSelect');
+  sel.innerHTML='';
+  const presets=schedulePresets[currentSeries]||[];
+  presets.forEach(([name])=>{
+    const o=document.createElement('option');
+    o.value=name;
+    o.textContent=name;
+    sel.appendChild(o);
+  });
+}
+function loadPreset(){
+  const sel=document.getElementById('presetSelect');
+  const name=sel.value;
+  if(!name)return addLog('No preset selected.','s');
+  const presets=schedulePresets[currentSeries]||[];
+  const preset=presets.find(p=>p[0]===name);
+  if(!preset)return addLog('Preset not found.','s');
+  if(season.races>0&&!confirm('Load preset "'+name+'"? This will overwrite the current schedule.'))return;
+  season.schedule=[...preset[1]];
+  season.postInit();
+  renderScheduleList();
+  updateHeaderInfo();
+  document.getElementById('manualScheduleToggle').checked=false;
+  saveSeason(currentSeries,season);
+  addLog('Loaded preset: '+name,'s');
+}
+function savePreset(){
+  const name=prompt('Enter a name for this preset:');
+  if(!name||!name.trim())return;
+  const trimmed=name.trim();
+  const presets=schedulePresets[currentSeries]||[];
+  const existing=presets.findIndex(p=>p[0]===trimmed);
+  if(existing>=0){
+    if(!confirm('Preset "'+trimmed+'" already exists. Overwrite?'))return;
+    presets[existing]=[trimmed,[...season.schedule]];
+  }else{
+    presets.push([trimmed,[...season.schedule]]);
+  }
+  schedulePresets[currentSeries]=presets;
+  saveSchedulePresets();
+  refreshPresetSelect();
+  document.getElementById('presetSelect').value=trimmed;
+  addLog('Saved preset: '+trimmed,'s');
+}
+function deletePreset(){
+  const sel=document.getElementById('presetSelect');
+  const name=sel.value;
+  if(!name)return addLog('No preset selected.','s');
+  if(name==='2026')return addLog('Cannot delete the default 2026 preset.','s');
+  if(!confirm('Delete preset "'+name+'"? This cannot be undone.'))return;
+  const presets=schedulePresets[currentSeries]||[];
+  const idx=presets.findIndex(p=>p[0]===name);
+  if(idx<0)return;
+  presets.splice(idx,1);
+  schedulePresets[currentSeries]=presets;
+  saveSchedulePresets();
+  refreshPresetSelect();
+  addLog('Deleted preset: '+name,'s');
+}
+
+function resetSession(){
+  if(raceInterval){clearInterval(raceInterval);raceInterval=null;}
+  paused=false;
+  document.getElementById('btnPause').textContent='Pause';
+  document.getElementById('btnPause').className='btn btn-gray btn-sm';
+  document.getElementById('btnPause').disabled=true;
+  race=null;
+  document.getElementById('raceLog').innerHTML='<div class="race-log-entry" style="color:var(--text3)">Session reset. Select a track and qualify.</div>';
+  document.getElementById('lbBody').innerHTML='<tr><td colspan="13" style="text-align:center;padding:20px;color:var(--text3)">Select a track and run qualifying.</td></tr>';
+  document.getElementById('sLap').textContent='-';
+  document.getElementById('sStage').textContent='-';
+  document.getElementById('sFlag').textContent='-';
+  document.getElementById('sLeader').textContent='-';
+  document.getElementById('sCautionLaps').textContent='-';
+  document.getElementById('sRunning').textContent=`${FIELD_CAP[currentSeries]||DRIVERS.length}/${DRIVERS.length}`;
+  document.getElementById('headerSession').textContent='Ready';
+  document.getElementById('headerTrack').textContent=getSelectedTrack()?.name||'Select a Track';
+  updateHeaderInfo();
+  updateButtons('reset');
+}
+
+function updateButtons(state){
+  const q=document.getElementById('btnQualify');
+  const r=document.getElementById('btnRace');
+  const reset=document.getElementById('btnReset');
+  if(state==='reset'){
+    q.disabled=false;r.disabled=true;
+  }else if(state==='qualified'){
+    q.disabled=true;r.disabled=false;r.textContent='Start Race';
+  }else if(state==='racing'){
+    q.disabled=true;r.disabled=true;
+  }else if(state==='finished'){
+    q.disabled=false;q.textContent='Next Race';
+    r.disabled=true;r.textContent='Race Complete';
+  }
+}
+
+// ====================== FIREBASE ======================
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyC8Gbx9ZBkBzaTb_v3uyMiTeCO2kfOAnTA",
+  authDomain: "racing-simulator-b9b36.firebaseapp.com",
+  projectId: "racing-simulator-b9b36",
+  storageBucket: "racing-simulator-b9b36.firebasestorage.app",
+  messagingSenderId: "591949889452",
+  appId: "1:591949889452:web:a1959f6a6c6642973c0409"
+};
+
+let firebaseApp, fbDb, fbAuth;
+let fbUser = null;
+let fbReady = false;
+
+function initFirebase(){
+  try{
+    firebaseApp = firebase.initializeApp(FIREBASE_CONFIG);
+    fbDb = firebase.firestore(firebaseApp);
+    fbAuth = firebase.auth(firebaseApp);
+    fbAuth.onAuthStateChanged(async user => {
+      fbUser = user;
+      updateAuthUI();
+      if(user) await loadFromFirestore();
+      fbReady = true;
+      document.getElementById('loadingOverlay').style.display='none';
+      proceedInit();
+    });
+  }catch(e){
+    console.error('Firebase init failed:', e);
+    fbReady = true;
+    document.getElementById('loadingOverlay').style.display='none';
+    proceedInit();
+  }
+}
+
+async function loadFromFirestore(){
+  try{
+    const doc = await fbDb.collection('users').doc(fbUser.uid).get();
+    if(!doc.exists) return;
+    const data = doc.data();
+    if(data.rosters) localStorage.setItem('nascar_rosters', JSON.stringify(data.rosters));
+    if(data.presets) localStorage.setItem('nascar_presets', JSON.stringify(data.presets));
+    for(const k of ['cup','xfinity','truck','f1','indycar','eel']){
+      if(data[k]) localStorage.setItem('nascar_'+k, JSON.stringify(data[k]));
+    }
+  }catch(e){ console.error('Firestore load error:', e); }
+}
+
+async function syncToFirestore(key, value){
+  if(!fbUser) return;
+  try{
+    await fbDb.collection('users').doc(fbUser.uid).set({ [key]: value }, { merge: true });
+  }catch(e){ console.error('Firestore sync error:', e); }
+}
+
+function signIn(){
+  if(!fbAuth)return;
+  fbAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(()=>location.reload()).catch(e=>console.error(e));
+}
+function signOut(){
+  if(!fbAuth)return;
+  fbAuth.signOut().then(()=>location.reload()).catch(e=>console.error(e));
+}
+
+function updateAuthUI(){
+  const el = document.getElementById('authSection');
+  if(!el) return;
+  if(fbUser){
+    el.innerHTML = `<span style="font-size:11px;color:var(--text2)">${fbUser.displayName||fbUser.email}</span> <button onclick="signOut()" style="font-size:10px;padding:2px 6px;background:var(--bg4);color:var(--text);border:1px solid var(--border);border-radius:3px;cursor:pointer">Sign Out</button>`;
+  } else {
+    el.innerHTML = `<button onclick="signIn()" style="font-size:10px;padding:2px 8px;background:var(--blue);color:#fff;border:none;border-radius:3px;cursor:pointer;font-weight:600">Sign in with Google</button>`;
+  }
+}
+
+// ====================== INIT ======================
+function init(){
+  try{ initFirebase(); }catch(e){
+    console.error('Firebase init failed:', e);
+    fbReady = true;
+    document.getElementById('loadingOverlay').style.display='none';
+    proceedInit();
+  }
+}
+function proceedInit(){
+  // Populate track select
+  const sel=document.getElementById('trackSelect');
+  [...TRACKS].sort((a,b)=>a.name.localeCompare(b.name)).forEach(t=>{
+    const o=document.createElement('option');
+    o.value=t.id;
+    o.textContent=`${t.name} (${t.typeName})`;
+    sel.appendChild(o);
+  });
+  sel.addEventListener('change',()=>{
+    if(!race||race.finished){
+      const t=getSelectedTrack();
+      document.getElementById('headerTrack').textContent=t?t.name:'Select a Track';
+    }
+  });
+
+  // Speed buttons
+  document.querySelectorAll('.speed-btn').forEach(b=>{
+    b.addEventListener('click',function(){
+      if(this.id==='speedInstant')changeSpeed(this,0);
+      else changeSpeed(this,parseInt(this.dataset.speed));
+    });
+  });
+
+  // Tab switching
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click',function(){
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+      this.classList.add('active');
+      document.getElementById(`panel-${this.dataset.tab}`).classList.add('active');
+      if(this.dataset.tab==='standings')renderStandings();
+      if(this.dataset.tab==='results')renderResults();
+    });
+  });
+
+  // Sortable standings columns (event delegation)
+  document.querySelector('.st-table').addEventListener('click',function(e){
+    const th=e.target.closest('th');
+    if(!th||!th.dataset.col)return;
+    const col=th.dataset.col;
+    if(col===sortCol)sortAsc=!sortAsc;
+    else{sortCol=col;sortAsc=false;}
+    renderStandings();
+  });
+
+  resetSession();
+  renderStandings();
+  document.getElementById('headerTrack').textContent=TRACKS[0].name;
+  loadAllSeasons();
+  loadSchedulePresets();
+  document.getElementById('chaseToggle').checked=season.chaseEnabled;
+  updateHeaderInfo();
+}
+
+function saveSeason(seriesKey, seasonObj){
+  const data={
+    races: seasonObj.races,
+    standings: seasonObj.standings,
+    schedule: seasonObj.schedule,
+    chaseEnabled: seasonObj.chaseEnabled,
+    chaseActive: seasonObj.chaseActive,
+    chaseRound: seasonObj.chaseRound,
+    chaseDrivers: seasonObj.chaseDrivers,
+    eliminated: seasonObj.eliminated,
+    results: seasonObj.results.map(r=>({
+      trackId: r.track.id,
+      laps: r.laps,
+      finishOrder: r.finishOrder.map(f=>({
+        driverNum: f.driver.num,
+        status: f.status,
+        lapsDown: f.lapsDown,
+        lapsLed: f.lapsLed,
+        pitStops: f.pitStops,
+        lastPitLap: f.lastPitLap,
+        dnfLap: f.dnfLap,
+        startPos: f.startPos,
+        mech: f.mech
+      })),
+      stagePoints: r.stagePoints,
+      lapsLed: r.lapsLed,
+      dnfs: (r.dnfs||[]).map(d=>({driverNum: d.driver.num, lap: d.lap})),
+      dnqList: (r.dnqList||[]).map(d=>({driverNum: d.driver.num, qualPos: d.qualPos, time: d.time}))
+    }))
+  };
+  try{localStorage.setItem('nascar_'+seriesKey,JSON.stringify(data));}catch(e){}
+  syncToFirestore(seriesKey, data);
+}
+
+function loadSeason(seriesKey, seasonObj, driverArr){
+  try{
+    const raw=localStorage.getItem('nascar_'+seriesKey);
+    if(!raw)return;
+    const data=JSON.parse(raw);
+    seasonObj.races=data.races;
+    // Restore standings (driver stat spread is already in seasonObj.standings from construction)
+    Object.entries(data.standings).forEach(([num,s])=>{
+      if(seasonObj.standings[num]){
+        seasonObj.standings[num].points=s.points;
+        seasonObj.standings[num].wins=s.wins;
+        seasonObj.standings[num].podiums=s.podiums||0;
+        seasonObj.standings[num].t5=s.t5;
+        seasonObj.standings[num].t10=s.t10;
+        seasonObj.standings[num].races=s.races;
+        seasonObj.standings[num].led=s.led;
+        seasonObj.standings[num].stagePts=s.stagePts||0;
+        seasonObj.standings[num].stageWins=s.stageWins||0;
+        seasonObj.standings[num].champion=s.champion||false;
+        seasonObj.standings[num].poles=s.poles||0;
+        seasonObj.standings[num].totalFinish=s.totalFinish||0;
+        seasonObj.standings[num].totalStart=s.totalStart||0;
+        seasonObj.standings[num]._origPoints=s._origPoints||s.points;
+        if(s._regularStats)seasonObj.standings[num]._regularStats=s._regularStats;
+      }
+    });
+    // Restore results
+    seasonObj.results=data.results.map(r=>{
+      const track=TRACKS.find(t=>t.id===r.trackId);
+      const driverMap={};
+      driverArr.forEach(d=>{driverMap[d.num]=d;});
+      return {
+        track: track||TRACKS[0],
+        laps: r.laps,
+        finishOrder: r.finishOrder.map(f=>({
+          driver: driverMap[f.driverNum]||driverArr[0],
+          status: f.status,
+          lapsDown: f.lapsDown,
+          lapsLed: f.lapsLed,
+          pitStops: f.pitStops,
+          lastPitLap: f.lastPitLap,
+          dnfLap: f.dnfLap,
+          startPos: f.startPos||0,
+          mech: f.mech||false
+        })),
+        stagePoints: r.stagePoints,
+        lapsLed: r.lapsLed,
+        dnfs: (r.dnfs||[]).map(d=>({driver: driverMap[d.driverNum]||driverArr[0], lap: d.lap})),
+        dnqList: (r.dnqList||[]).map(d=>({driver: driverMap[d.driverNum]||driverArr[0], qualPos: d.qualPos, time: d.time}))
+      };
+    });
+    if(data.schedule)seasonObj.schedule=data.schedule;
+    else{
+      const sk=driverArr===CUP_DRIVERS?'cup':driverArr===XFINITY_DRIVERS?'xfinity':driverArr===TRUCK_DRIVERS?'truck':driverArr===F1_DRIVERS?'f1':driverArr===INDYCAR_DRIVERS?'indycar':'eel';
+      seasonObj.schedule=[...SCHEDULES[sk]];
+    }
+    seasonObj.postInit();
+    if(data.chaseEnabled!==undefined)seasonObj.chaseEnabled=data.chaseEnabled;
+    if(data.chaseActive!==undefined)seasonObj.chaseActive=data.chaseActive;
+    if(data.chaseRound!==undefined)seasonObj.chaseRound=data.chaseRound;
+    if(data.chaseDrivers)seasonObj.chaseDrivers=data.chaseDrivers;
+    if(data.eliminated)seasonObj.eliminated=data.eliminated;
+    if(seasonObj.chaseActive&&!seasonObj._roundNames){
+      seasonObj._roundNames=['','Chase','Championship 4'];
+    }
+    // Create _regularStats for old saves that predate the feature
+    if(seasonObj.chaseActive){
+      Object.values(seasonObj.standings).forEach(s=>{
+        if(!s._regularStats)s._regularStats={
+          points:s._origPoints||s.points,wins:s.wins,t5:s.t5,t10:s.t10,
+          podiums:s.podiums||0,poles:s.poles||0,
+          stageWins:s.stageWins||0,stagePts:s.stagePts||0,
+          totalFinish:s.totalFinish||0,totalStart:s.totalStart||0,
+          led:s.led||0,races:s.races
+        };
+      });
+    }
+  }catch(e){console.error('Failed to load season data',e);}
+}
+
+function loadAllSeasons(){
+  loadSeason('cup',cupSeason,CUP_DRIVERS);
+  loadSeason('xfinity',xfinitySeason,XFINITY_DRIVERS);
+  loadSeason('truck',truckSeason,TRUCK_DRIVERS);
+  loadSeason('f1',f1Season,F1_DRIVERS);
+  loadSeason('indycar',indycarSeason,INDYCAR_DRIVERS);
+  loadSeason('eel',eelSeason,EEL_DRIVERS);
+  renderStandings();
+  renderResults();
+  updateHeaderInfo();
+}
+
+document.addEventListener('DOMContentLoaded',init);
+</script>
+
+<!-- ROSTER EDITOR MODAL -->
+<div class="modal-overlay" id="rosterModal" style="display:none" onclick="if(event.target===this)closeRosterEditor()">
+  <div class="modal-content roster-modal">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <h3 id="rosterTitle">Edit Roster</h3>
+      <button class="btn btn-gray btn-sm" onclick="closeRosterEditor()">Close</button>
+    </div>
+    <div class="roster-actions">
+      <button class="btn btn-sm" style="background:var(--green);color:#000;font-weight:700" onclick="saveRoster()">Save Roster</button>
+      <button class="btn btn-gray btn-sm" onclick="resetRoster()">Reset to Defaults</button>
+      <span style="font-size:10px;color:var(--text3);align-self:center">Saving resets the current season</span>
+    </div>
+    <div class="modal-body">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30px;cursor:pointer" class="roster-sortable" data-col="num" onclick="sortRoster('num')">#<span class="sort-arrow">▼</span></th>
+            <th style="width:130px;cursor:pointer" class="roster-sortable" data-col="name" onclick="sortRoster('name')">Name<span class="sort-arrow">▼</span></th>
+            <th style="width:180px;cursor:pointer" class="roster-sortable" data-col="team" onclick="sortRoster('team')">Team<span class="sort-arrow">▼</span></th>
+            <th style="width:60px;cursor:pointer" class="roster-sortable" data-col="mfg" onclick="sortRoster('mfg')">Mfg<span class="sort-arrow">▼</span></th>
+            <th style="width:40px;cursor:pointer" class="roster-sortable" data-col="ovr" onclick="sortRoster('ovr')">OVR<span class="sort-arrow">▼</span></th>
+            <th style="width:36px;cursor:pointer" class="roster-sortable" data-col="ss" onclick="sortRoster('ss')">SS<span class="sort-arrow">▼</span></th>
+            <th style="width:36px;cursor:pointer" class="roster-sortable" data-col="it" onclick="sortRoster('it')">IT<span class="sort-arrow">▼</span></th>
+            <th style="width:36px;cursor:pointer" class="roster-sortable" data-col="st" onclick="sortRoster('st')">ST<span class="sort-arrow">▼</span></th>
+            <th style="width:36px;cursor:pointer" class="roster-sortable" data-col="rc" onclick="sortRoster('rc')">RC<span class="sort-arrow">▼</span></th>
+            <th style="width:36px;cursor:pointer" class="roster-sortable" data-col="agg" onclick="sortRoster('agg')">AGG<span class="sort-arrow">▼</span></th>
+            <th style="width:36px;cursor:pointer" class="roster-sortable" data-col="con" onclick="sortRoster('con')">CON<span class="sort-arrow">▼</span></th>
+            <th style="width:36px;cursor:pointer" class="roster-sortable" data-col="car" onclick="sortRoster('car')">CAR<span class="sort-arrow">▼</span></th>
+            <th style="width:60px"><button class="btn btn-gray btn-sm" style="padding:1px 5px;font-size:11px" onclick="addRosterRow()">+ ⧉</button></th>
+          </tr>
+        </thead>
+        <tbody id="rosterBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
