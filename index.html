@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NASCAR Cup Series Simulator</title>
+<title>Racing Simulator</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -1172,7 +1172,7 @@ function switchSeries(key){
   const stagesCb=document.getElementById('stagesToggle');
   const chaseCb=document.getElementById('chaseToggle');
   const svc={cup:'Cup Series',xfinity:'Xfinity Series',truck:'Truck Series',f1:'F1 Series',indycar:'IndyCar Series',eel:'EEL Series'};
-  const htv={cup:'<span class="red">&#9679;</span> <span class="yellow">NASCAR</span> CUP SERIES SIMULATOR',xfinity:'<span class="red">&#9679;</span> <span class="yellow">NASCAR</span> XFINITY SERIES SIMULATOR',truck:'<span class="red">&#9679;</span> <span class="yellow">NASCAR</span> TRUCK SERIES SIMULATOR',f1:'<span class="red">&#9679;</span> <span class="red">FORMULA 1</span> SERIES SIMULATOR',indycar:'<span class="blue">&#9679;</span> <span class="red">INDYCAR</span> SERIES SIMULATOR',eel:'<span class="green">&#9679;</span> <span class="yellow">EEL</span> SERIES SIMULATOR'};
+  const htv={cup:'<span class="red">&#9679;</span> <span class="yellow">NASCAR</span> CUP SERIES SIMULATOR',xfinity:'<span class="red">&#9679;</span> <span class="yellow">NASCAR</span> XFINITY SERIES SIMULATOR',truck:'<span class="red">&#9679;</span> <span class="yellow">NASCAR</span> TRUCK SERIES SIMULATOR',f1:'<span class="red">&#9679;</span> <span class="red">FORMULA 1</span> SIMULATOR',indycar:'<span class="blue">&#9679;</span> <span class="red">INDYCAR</span> SIMULATOR',eel:'<span class="green">&#9679;</span> <span class="yellow">CUSTOM NASCAR</span> SIMULATOR'};
   stTitle.textContent=svc[key];stTitle.dataset.base=svc[key];
   headerTitle.innerHTML=htv[key];
   if(key==='f1'||key==='indycar'){
