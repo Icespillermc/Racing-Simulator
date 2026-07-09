@@ -231,12 +231,13 @@ select:focus{outline:none;border-color:var(--yellow)}
       <button class="series-btn" data-series="truck" onclick="switchSeries('truck')">Truck</button>
       <button class="series-btn" data-series="f1" onclick="switchSeries('f1')">F1</button>
       <button class="series-btn" data-series="indycar" onclick="switchSeries('indycar')">IndyCar</button>
-      <button class="series-btn" data-series="eel" onclick="switchSeries('eel')">EEL</button>
+      <button class="series-btn" data-series="cf1" onclick="switchSeries('cf1')">Custom F1</button>
+      <button class="series-btn" data-series="eel" onclick="switchSeries('eel')">Custom NASCAR</button>
     </div>
     <div class="track-name" id="headerTrack">Select a Track</div>
     <div id="headerRace"></div>
     <div id="headerSession">Ready</div>
-    <div id="authSection"></div>
+    <div id="authSection"><button onclick="signIn()" style="font-size:10px;padding:2px 8px;background:var(--blue);color:#fff;border:none;border-radius:3px;cursor:pointer;font-weight:600" id="fbBtn">Sign in with Google</button></div>
   </div>
 </header>
 
@@ -407,7 +408,7 @@ let CUP_DRIVERS = [
   {num:51,name:"Cody Ware",team:"Rick Ware Racing",mfg:"Chevy",ovr:55,ss:56,it:54,st:56,rc:50,agg:48,con:60},
   {num:54,name:"Ty Gibbs",team:"Joe Gibbs Racing",mfg:"Toyota",ovr:80,ss:68,it:82,st:78,rc:76,agg:78,con:68},
   {num:60,name:"Ryan Preece",team:"RFK Racing",mfg:"Ford",ovr:64,ss:68,it:62,st:64,rc:60,agg:60,con:74},
-  {num:67,name:"Corey Heim",team:"23XI Racing",mfg:"Toyota",ovr:60,ss:66,it:58,st:56,rc:52,agg:58,con:68},
+  {num:67,name:"Corey Heim",team:"23XI Racing",mfg:"Toyota",ovr:60,ss:72,it:78,st:76,rc:72,agg:78,con:78},
   {num:71,name:"Michael McDowell",team:"Spire Motorsports",mfg:"Chevy",ovr:74,ss:88,it:70,st:66,rc:72,agg:55,con:82},
   {num:77,name:"Carson Hocevar",team:"Spire Motorsports",mfg:"Chevy",ovr:71,ss:66,it:70,st:74,rc:66,agg:76,con:62},
   {num:78,name:"BJ McLeod",team:"Live Fast Motorsports",mfg:"Chevy",ovr:56,ss:58,it:54,st:54,rc:50,agg:50,con:60},
@@ -503,28 +504,28 @@ let TRUCK_DRIVERS = [
 
 // ====================== F1 SERIES DRIVERS (2026) ======================
 let F1_DRIVERS = [
-  {num:1,name:"Max Verstappen",team:"Red Bull Racing",mfg:"Red Bull",ovr:98,ss:80,it:96,st:86,rc:98,agg:90,con:90},
-  {num:4,name:"Lando Norris",team:"McLaren",mfg:"McLaren",ovr:93,ss:72,it:88,st:82,rc:96,agg:60,con:88},
-  {num:81,name:"Oscar Piastri",team:"McLaren",mfg:"McLaren",ovr:86,ss:68,it:80,st:78,rc:90,agg:62,con:82},
-  {num:63,name:"George Russell",team:"Mercedes",mfg:"Mercedes",ovr:88,ss:74,it:84,st:82,rc:90,agg:66,con:86},
-  {num:12,name:"Andrea Kimi Antonelli",team:"Mercedes",mfg:"Mercedes",ovr:74,ss:64,it:70,st:68,rc:78,agg:72,con:68},
-  {num:6,name:"Isack Hadjar",team:"Red Bull Racing",mfg:"Red Bull",ovr:66,ss:60,it:64,st:64,rc:70,agg:68,con:60},
-  {num:16,name:"Charles Leclerc",team:"Ferrari",mfg:"Ferrari",ovr:94,ss:76,it:90,st:84,rc:96,agg:66,con:90},
-  {num:44,name:"Lewis Hamilton",team:"Ferrari",mfg:"Ferrari",ovr:95,ss:78,it:92,st:86,rc:94,agg:70,con:92},
-  {num:23,name:"Alex Albon",team:"Williams",mfg:"Williams",ovr:76,ss:68,it:74,st:72,rc:78,agg:66,con:72},
-  {num:55,name:"Carlos Sainz",team:"Williams",mfg:"Williams",ovr:82,ss:72,it:78,st:76,rc:84,agg:66,con:80},
-  {num:30,name:"Liam Lawson",team:"Racing Bulls",mfg:"Racing Bulls",ovr:72,ss:64,it:68,st:72,rc:78,agg:76,con:62},
-  {num:8,name:"Arvid Lindblad",team:"Racing Bulls",mfg:"Racing Bulls",ovr:64,ss:58,it:62,st:62,rc:68,agg:64,con:60},
-  {num:14,name:"Fernando Alonso",team:"Aston Martin",mfg:"Aston Martin",ovr:90,ss:70,it:84,st:80,rc:94,agg:78,con:82},
-  {num:18,name:"Lance Stroll",team:"Aston Martin",mfg:"Aston Martin",ovr:66,ss:62,it:64,st:64,rc:70,agg:70,con:62},
-  {num:31,name:"Esteban Ocon",team:"Haas",mfg:"Haas",ovr:76,ss:68,it:74,st:72,rc:78,agg:64,con:72},
-  {num:87,name:"Oliver Bearman",team:"Haas",mfg:"Haas",ovr:70,ss:62,it:66,st:64,rc:76,agg:68,con:66},
-  {num:27,name:"Nico Hulkenberg",team:"Audi",mfg:"Audi",ovr:78,ss:70,it:76,st:74,rc:78,agg:66,con:78},
-  {num:5,name:"Gabriel Bortoleto",team:"Audi",mfg:"Audi",ovr:66,ss:58,it:64,st:62,rc:70,agg:64,con:64},
-  {num:10,name:"Pierre Gasly",team:"Alpine",mfg:"Alpine",ovr:78,ss:68,it:76,st:74,rc:80,agg:66,con:74},
-  {num:43,name:"Franco Colapinto",team:"Alpine",mfg:"Alpine",ovr:68,ss:62,it:66,st:66,rc:72,agg:66,con:64},
-  {num:77,name:"Valtteri Bottas",team:"Cadillac",mfg:"Cadillac",ovr:74,ss:66,it:72,st:72,rc:76,agg:64,con:74},
-  {num:11,name:"Sergio Perez",team:"Cadillac",mfg:"Cadillac",ovr:80,ss:76,it:78,st:76,rc:80,agg:70,con:72}
+  {num:1,name:"Max Verstappen",team:"Red Bull Racing",mfg:"Red Bull",ovr:98,ss:95,it:95,st:95,rc:95,agg:95,con:95},
+  {num:4,name:"Lando Norris",team:"McLaren",mfg:"McLaren",ovr:93,ss:92,it:92,st:92,rc:92,agg:92,con:92},
+  {num:81,name:"Oscar Piastri",team:"McLaren",mfg:"McLaren",ovr:86,ss:91,it:91,st:91,rc:91,agg:91,con:91},
+  {num:63,name:"George Russell",team:"Mercedes",mfg:"Mercedes",ovr:88,ss:92,it:92,st:92,rc:92,agg:92,con:92},
+  {num:12,name:"Andrea Kimi Antonelli",team:"Mercedes",mfg:"Mercedes",ovr:74,ss:91,it:91,st:91,rc:91,agg:91,con:91},
+  {num:6,name:"Isack Hadjar",team:"Red Bull Racing",mfg:"Red Bull",ovr:66,ss:84,it:84,st:84,rc:84,agg:84,con:84},
+  {num:16,name:"Charles Leclerc",team:"Ferrari",mfg:"Ferrari",ovr:94,ss:92,it:92,st:92,rc:92,agg:92,con:92},
+  {num:44,name:"Lewis Hamilton",team:"Ferrari",mfg:"Ferrari",ovr:95,ss:92,it:92,st:92,rc:92,agg:92,con:92},
+  {num:23,name:"Alex Albon",team:"Williams",mfg:"Williams",ovr:76,ss:84,it:84,st:84,rc:84,agg:84,con:84},
+  {num:55,name:"Carlos Sainz",team:"Williams",mfg:"Williams",ovr:82,ss:85,it:85,st:85,rc:85,agg:85,con:85},
+  {num:30,name:"Liam Lawson",team:"Racing Bulls",mfg:"Racing Bulls",ovr:72,ss:80,it:80,st:80,rc:80,agg:80,con:80},
+  {num:8,name:"Arvid Lindblad",team:"Racing Bulls",mfg:"Racing Bulls",ovr:64,ss:79,it:79,st:79,rc:79,agg:79,con:79},
+  {num:14,name:"Fernando Alonso",team:"Aston Martin",mfg:"Aston Martin",ovr:90,ss:89,it:89,st:89,rc:89,agg:89,con:89},
+  {num:18,name:"Lance Stroll",team:"Aston Martin",mfg:"Aston Martin",ovr:66,ss:77,it:77,st:77,rc:77,agg:77,con:77},
+  {num:31,name:"Esteban Ocon",team:"Haas",mfg:"Haas",ovr:76,ss:83,it:83,st:83,rc:83,agg:83,con:83},
+  {num:87,name:"Oliver Bearman",team:"Haas",mfg:"Haas",ovr:70,ss:84,it:84,st:84,rc:84,agg:84,con:84},
+  {num:27,name:"Nico Hulkenberg",team:"Audi",mfg:"Audi",ovr:78,ss:83,it:83,st:83,rc:83,agg:83,con:83},
+  {num:5,name:"Gabriel Bortoleto",team:"Audi",mfg:"Audi",ovr:66,ss:82,it:82,st:82,rc:82,agg:82,con:82},
+  {num:10,name:"Pierre Gasly",team:"Alpine",mfg:"Alpine",ovr:78,ss:85,it:85,st:85,rc:85,agg:85,con:85},
+  {num:43,name:"Franco Colapinto",team:"Alpine",mfg:"Alpine",ovr:68,ss:77,it:77,st:77,rc:77,agg:77,con:77},
+  {num:77,name:"Valtteri Bottas",team:"Cadillac",mfg:"Cadillac",ovr:74,ss:81,it:81,st:81,rc:81,agg:81,con:81},
+  {num:11,name:"Sergio Perez",team:"Cadillac",mfg:"Cadillac",ovr:80,ss:83,it:83,st:83,rc:83,agg:83,con:83}
 ];
 
 // ====================== INDYCAR SERIES DRIVERS (2026) ======================
@@ -572,7 +573,7 @@ let INDYCAR_DRIVERS = [
 ];
 
 const MFG_COLORS = {Chevy:"var(--chevy)",Ford:"var(--ford)",Toyota:"var(--toyota)",Dodge:"var(--dodge)",Honda:"#e30a17","Red Bull":"#1e41a1",McLaren:"#ff8700",Ferrari:"#dc0000",Mercedes:"#27f4d2","Aston Martin":"#006f62",Alpine:"#ff69b4",RB:"#294e7a",Haas:"#888888",Williams:"#00a2e6",Sauber:"#00e701",Cadillac:"#ffffff",Audi:"#8b0000","Racing Bulls":"#294e7a"};
-const FIELD_CAP = {cup:40,xfinity:40,truck:36,f1:22,indycar:33,eel:40};
+const FIELD_CAP = {cup:40,xfinity:40,truck:36,f1:22,indycar:33,cf1:22,eel:40};
 const QUAL_SPEEDS = {SS:197,INT:176,ST:106,RC:96};
 const RACE_SPEEDS = {SS:192,INT:170,ST:100,RC:91};
 const F1_QUAL_SPEEDS = {SS:197,INT:176,ST:130,RC:145};
@@ -581,7 +582,7 @@ const INDYCAR_QUAL_SPEEDS = {SS:222,INT:192,ST:115,RC:125};
 const INDYCAR_RACE_SPEEDS = {SS:215,INT:187,ST:110,RC:120};
 function getQualSpeed(t){return currentSeries==='f1'?F1_QUAL_SPEEDS[t]:currentSeries==='indycar'?INDYCAR_QUAL_SPEEDS[t]:QUAL_SPEEDS[t];}
 function getRaceSpeed(t){return currentSeries==='f1'?F1_RACE_SPEEDS[t]:currentSeries==='indycar'?INDYCAR_RACE_SPEEDS[t]:RACE_SPEEDS[t];}
-const CAR_DEFAULTS = {cup:85,xfinity:85,truck:85,f1:80,indycar:88,eel:85};
+const CAR_DEFAULTS = {cup:85,xfinity:85,truck:85,f1:80,indycar:88,cf1:80,eel:85};
 function getCarRating(d){return d.car!==undefined?d.car:(CAR_DEFAULTS[currentSeries]||85);}
 const SERIES_POINTS = {f1:[25,18,15,12,10,8,6,4,2,1],indycar:[50,40,35,32,30,28,26,24,22,20,19,18,17,16,15,14,13,12,11,10]};
 
@@ -692,6 +693,12 @@ const SCHEDULES = {
     "hungaroring","zandvoort","monza","madrid","baku","marina",
     "cota","mexico","interlagos","lasvegas_strip","lusail","yasmarina"
   ],
+  cf1:[
+    "albertpark","shanghai","suzuka","bahrain","jeddah","miami",
+    "montreal","monaco","barcelona","redbullring","silverstone","spa",
+    "hungaroring","zandvoort","monza","madrid","baku","marina",
+    "cota","mexico","interlagos","lasvegas_strip","lusail","yasmarina"
+  ],
   indycar:[
     "stpete","phoenix","arlington","barber","longbeach","ims_rc",
     "indianapolis","detroit","gateway","roadamerica","midohio","nashville",
@@ -708,16 +715,16 @@ const SCHEDULES = {
   ]
 };
 
-const CHASE_RACES = {cup:26, xfinity:26, truck:18, eel:26};
-const CHASE_SIZES = {cup:16, xfinity:12, truck:10, eel:16};
+const CHASE_RACES = {cup:26, xfinity:26, truck:18, cf1:0, eel:26};
+const CHASE_SIZES = {cup:16, xfinity:12, truck:10, cf1:0, eel:16};
 function seriesTrackVal(track,prop){
   const v=track[prop];
-  if(currentSeries==='cup'||currentSeries==='f1'||currentSeries==='indycar'||currentSeries==='eel')return v;
+  if(currentSeries==='cup'||currentSeries==='f1'||currentSeries==='cf1'||currentSeries==='indycar'||currentSeries==='eel')return v;
   const mult=currentSeries==='xfinity'?0.65:0.5;
   return Math.round(v*mult);
 }
 
-let schedulePresets = {cup:[["2026",SCHEDULES.cup]],xfinity:[["2026",SCHEDULES.xfinity]],truck:[["2026",SCHEDULES.truck]],f1:[["2026",SCHEDULES.f1]],indycar:[["2026",SCHEDULES.indycar]],eel:[["2026",SCHEDULES.eel]]};
+let schedulePresets = {cup:[["2026",SCHEDULES.cup]],xfinity:[["2026",SCHEDULES.xfinity]],truck:[["2026",SCHEDULES.truck]],f1:[["2026",SCHEDULES.f1]],indycar:[["2026",SCHEDULES.indycar]],cf1:[["2026",SCHEDULES.cf1]],eel:[["2026",SCHEDULES.eel]]};
 function loadSchedulePresets(){
   try{
     const d=localStorage.getItem('nascar_presets');
@@ -728,6 +735,7 @@ function loadSchedulePresets(){
       if(p.truck)schedulePresets.truck=p.truck;
       if(p.f1)schedulePresets.f1=p.f1;
       if(p.indycar)schedulePresets.indycar=p.indycar;
+      if(p.cf1)schedulePresets.cf1=p.cf1;
       if(p.eel)schedulePresets.eel=p.eel;
     }
   }catch(e){}
@@ -865,9 +873,9 @@ function createSeason(driverArr){
 
 // Save originals for roster reset
 // Assign car ratings (NASCAR spec, F1 varied by team, IndyCar spec)
-[CUP_DRIVERS, XFINITY_DRIVERS, TRUCK_DRIVERS].forEach(arr => arr.forEach(d => d.car = 85));
-INDYCAR_DRIVERS.forEach(d => d.car = 88);
-const F1_CAR = {"Red Bull Racing":97,"McLaren":96,"Ferrari":94,"Mercedes":93,"Aston Martin":85,"Alpine":75,"Williams":78,"Haas":72,"Racing Bulls":70,"Audi":68,"Cadillac":65};
+[CUP_DRIVERS, XFINITY_DRIVERS, TRUCK_DRIVERS].forEach(arr => arr.forEach(d => d.car = 95));
+INDYCAR_DRIVERS.forEach(d => d.car = 85);
+const F1_CAR = {"Red Bull Racing":90,"McLaren":94,"Ferrari":95,"Mercedes":96,"Aston Martin":68,"Alpine":85,"Williams":78,"Haas":80,"Racing Bulls":82,"Audi":78,"Cadillac":70};
 F1_DRIVERS.forEach(d => d.car = F1_CAR[d.team] || 80);
 const DEFAULT_CUP = [...CUP_DRIVERS];
 const DEFAULT_XFINITY = [...XFINITY_DRIVERS];
@@ -877,6 +885,8 @@ const DEFAULT_INDYCAR = [...INDYCAR_DRIVERS];
 
 let EEL_DRIVERS = CUP_DRIVERS.map(d=>({...d}));
 const DEFAULT_EEL = EEL_DRIVERS.map(d=>({...d}));
+let CUSTOM_F1_DRIVERS = F1_DRIVERS.map(d=>({...d}));
+const DEFAULT_CUSTOM_F1 = CUSTOM_F1_DRIVERS.map(d=>({...d}));
 
 function loadCustomRosters(){
   try{
@@ -888,6 +898,7 @@ function loadCustomRosters(){
     if(data.truck&&data.truck.length){TRUCK_DRIVERS=data.truck;}
     if(data.f1&&data.f1.length){F1_DRIVERS=data.f1;}
     if(data.indycar&&data.indycar.length){INDYCAR_DRIVERS=data.indycar;}
+    if(data.cf1&&data.cf1.length){CUSTOM_F1_DRIVERS=data.cf1;}
     if(data.eel&&data.eel.length){EEL_DRIVERS=data.eel;}
   }catch(e){console.error('Failed to load custom rosters',e);}
 }
@@ -931,7 +942,7 @@ function openRosterEditor(){
   const modal=document.getElementById('rosterModal');
   const title=document.getElementById('rosterTitle');
   const key=seriesKeyForRoster();
-  const names={cup:'Cup',xfinity:'Xfinity',truck:'Truck',f1:'F1',indycar:'IndyCar',eel:'EEL'};
+  const names={cup:'Cup',xfinity:'Xfinity',truck:'Truck',f1:'F1',indycar:'IndyCar',cf1:'Custom F1',eel:'Custom NASCAR'};
   title.textContent=names[key]+' Series Roster Editor';
   // Load current drivers into rosterData
   const drivers=key==='cup'?CUP_DRIVERS:(key==='xfinity'?XFINITY_DRIVERS:(key==='truck'?TRUCK_DRIVERS:(key==='f1'?F1_DRIVERS:(key==='indycar'?INDYCAR_DRIVERS:EEL_DRIVERS))));
@@ -2623,25 +2634,23 @@ async function syncToFirestore(key,value){
 }
 function signIn(){
   loadFirebase(()=>{
-    fbAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(()=>location.reload()).catch(e=>console.error(e));
+    if(fbUser)return;
+    fbAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>console.error(e));
   });
 }
 function signOut(){
   if(!fbAuth)return;
-  fbAuth.signOut().then(()=>location.reload()).catch(e=>console.error(e));
+  fbAuth.signOut().then(()=>{fbUser=null;updateAuthUI();}).catch(e=>console.error(e));
 }
 function updateAuthUI(){
   const el=document.getElementById('authSection');
   if(!el)return;
-  if(fbUser){
-    el.innerHTML=`<span style="font-size:11px;color:var(--text2)">${fbUser.displayName||fbUser.email}</span> <button onclick="signOut()" style="font-size:10px;padding:2px 6px;background:var(--bg4);color:var(--text);border:1px solid var(--border);border-radius:3px;cursor:pointer">Sign Out</button>`;
-  }else{
-    el.innerHTML=`<button onclick="signIn()" style="font-size:10px;padding:2px 8px;background:var(--blue);color:#fff;border:none;border-radius:3px;cursor:pointer;font-weight:600">Sign in with Google</button>`;
-  }
+  if(fbUser)el.innerHTML=`<span style="font-size:11px;color:var(--text2)">${fbUser.displayName||fbUser.email}</span> <button onclick="signOut()" style="font-size:10px;padding:2px 6px;background:var(--bg4);color:var(--text);border:1px solid var(--border);border-radius:3px;cursor:pointer">Sign Out</button>`;
+  else el.innerHTML=`<button onclick="signIn()" style="font-size:10px;padding:2px 8px;background:var(--blue);color:#fff;border:none;border-radius:3px;cursor:pointer;font-weight:600">Sign in with Google</button>`;
 }
 
 // ====================== INIT ======================
-function init(){updateAuthUI();proceedInit();}
+function init(){proceedInit();}
 function proceedInit(){
   // Populate track select
   const sel=document.getElementById('trackSelect');
