@@ -755,7 +755,7 @@ let sortAsc = false;
 
 function createSeason(driverArr){
   const st={};
-  driverArr.forEach(d=>{st[d.num]={...d,points:0,wins:0,t5:0,t10:0,podiums:0,races:0,led:0,stagePts:0,stageWins:0,poles:0,totalFinish:0,totalStart:0}});
+  driverArr.forEach(d=>{st[d.num]={...d,points:0,wins:0,t5:0,t10:0,podiums:0,races:0,finishes:0,led:0,stagePts:0,stageWins:0,poles:0,totalFinish:0,totalStart:0}});
   const seriesKey=driverArr===CUP_DRIVERS?'cup':driverArr===XFINITY_DRIVERS?'xfinity':driverArr===TRUCK_DRIVERS?'truck':driverArr===F1_DRIVERS?'f1':driverArr===CUSTOM_F1_DRIVERS?'cf1':driverArr===INDYCAR_DRIVERS?'indycar':'eel';
   const isNascar=seriesKey==='cup'||seriesKey==='xfinity'||seriesKey==='truck'||seriesKey==='eel';
   return {
@@ -797,6 +797,7 @@ function createSeason(driverArr){
         if(i<10)s.t10++;
         s.totalFinish+=i+1;
         s.totalStart+=d.startPos||(i+1);
+        if(d.status!=='dnf')s.finishes++;
       });
       if(result.stagePoints){
         Object.entries(result.stagePoints).forEach(([num,pts])=>{
@@ -851,7 +852,7 @@ function createSeason(driverArr){
           podiums:s.podiums||0,poles:s.poles||0,
           stageWins:s.stageWins||0,stagePts:s.stagePts||0,
           totalFinish:s.totalFinish||0,totalStart:s.totalStart||0,
-          led:s.led||0,races:s.races
+          led:s.led||0,races:s.races,finishes:s.finishes||0
         };
       });
     },
@@ -1706,7 +1707,7 @@ function runLapInternal(){
   }
 
   // Mechanical DNF check — lower car rating = higher failure chance
-  if(race.greenLaps>3&&Math.random()<0.008){
+  if(race.greenLaps>3&&Math.random()<0.003){
     const candidates=currentOrder.filter(d=>d.status==='running');
     if(candidates.length>0){
       const weights=candidates.map(d=>Math.max(1,100-getCarRating(d.driver)));
@@ -1737,7 +1738,7 @@ function runLapInternal(){
   }
 
   // Caution check
-  const cautionChance=track.type==='SS'?0.005:(track.type==='ST'?0.012:0.010);
+  const cautionChance=track.type==='SS'?0.003:(track.type==='ST'?0.006:0.005);
   // More chance if cars are close
   const packFactor=currentOrder.slice(0,15).reduce((s,d,i)=>{
     if(i===0)return s;
@@ -1869,7 +1870,7 @@ function runLapInternal(){
       // Stage break caution
       race.flag='caution';
       race.cautionLaps=0;
-      race.cautionTotalLaps=3;
+      race.cautionTotalLaps=2;
       addLog(`Stage ${race.stage-1} break caution. Lap ${race.laps}`,'s');
 
       // Pits during stage break - top 5 cover, mid-pack normal, back sometimes gamble
@@ -2111,11 +2112,11 @@ function renderStandings(){
 
   // Build header
   const cols=isOpen
-    ?['pos','num','driver','team','points','gap','wins','podiums','poles','avgfin','avgstart','t5','t10','races']
-    :['pos','num','driver','team','points','gap','wins','stageWins','stagePts','poles','avgfin','avgstart','t5','t10','races'];
+    ?['pos','num','driver','team','points','gap','wins','podiums','poles','avgfin','avgstart','t5','t10','races','finishes']
+    :['pos','num','driver','team','points','gap','wins','stageWins','stagePts','poles','avgfin','avgstart','t5','t10','races','finishes'];
   const labels=isOpen
-    ?['Pos','#','Driver','Team','Points','Gap','Wins','Pod','Poles','Avg F','Avg S','T5','T10','Races']
-    :['Pos','#','Driver','Team','Points','Gap','Wins','SW','SP','Poles','Avg F','Avg S','T5','T10','Races'];
+    ?['Pos','#','Driver','Team','Points','Gap','Wins','Pod','Poles','Avg F','Avg S','T5','T10','Races','Fin']
+    :['Pos','#','Driver','Team','Points','Gap','Wins','SW','SP','Poles','Avg F','Avg S','T5','T10','Races','Fin'];
   thead.innerHTML='<tr>'+cols.map((c,i)=>`<th data-col="${c}">${labels[i]}<span class="sort-arrow">▼</span></th>`).join('')+'</tr>';
 
   if(teamView)return renderTeamStandings();
@@ -2204,6 +2205,7 @@ function renderStandings(){
       <td class="st-top5">${d.t5}</td>
       <td class="st-top10">${d.t10}</td>
       <td class="st-races">${d.races}</td>
+      <td class="st-finishes">${d.finishes||0}</td>
     </tr>`;
   });
   // Update sort arrows
@@ -2229,18 +2231,18 @@ function renderTeamStandings(){
 
   // Build team header
   const cols=isOpen
-    ?['pos','team','cars','points','avgpts','gap','wins','podiums','poles','avgfin','avgstart','t5','t10','races']
-    :['pos','team','cars','points','avgpts','gap','wins','stageWins','stagePts','poles','avgfin','avgstart','t5','t10','races'];
+    ?['pos','team','cars','points','avgpts','gap','wins','podiums','poles','avgfin','avgstart','t5','t10','races','finishes']
+    :['pos','team','cars','points','avgpts','gap','wins','stageWins','stagePts','poles','avgfin','avgstart','t5','t10','races','finishes'];
   const labels=isOpen
-    ?['Pos','Team','Cars','Points','Avg Pts','Gap','Wins','Pod','Poles','Avg F','Avg S','T5','T10','Races']
-    :['Pos','Team','Cars','Points','Avg Pts','Gap','Wins','SW','SP','Poles','Avg F','Avg S','T5','T10','Races'];
+    ?['Pos','Team','Cars','Points','Avg Pts','Gap','Wins','Pod','Poles','Avg F','Avg S','T5','T10','Races','Fin']
+    :['Pos','Team','Cars','Points','Avg Pts','Gap','Wins','SW','SP','Poles','Avg F','Avg S','T5','T10','Races','Fin'];
   thead.innerHTML='<tr>'+cols.map((c,i)=>`<th data-col="${c}">${labels[i]}<span class="sort-arrow">▼</span></th>`).join('')+'</tr>';
 
   // Aggregate by team
   const teams={};
   Object.values(season.standings).forEach(d=>{
     const team=d.team;
-    if(!teams[team])teams[team]={name:team,points:0,wins:0,podiums:0,poles:0,t5:0,t10:0,races:0,stageWins:0,stagePts:0,totalFinish:0,totalStart:0,drivers:[],mfg:d.mfg};
+    if(!teams[team])teams[team]={name:team,points:0,wins:0,podiums:0,poles:0,t5:0,t10:0,races:0,finishes:0,stageWins:0,stagePts:0,totalFinish:0,totalStart:0,drivers:[],mfg:d.mfg};
     const t=teams[team];
     t.points+=getRealPoints(d);
     t.wins+=d.wins;
@@ -2249,6 +2251,7 @@ function renderTeamStandings(){
     t.t5+=d.t5;
     t.t10+=d.t10;
     t.races+=d.races;
+    t.finishes+=d.finishes||0;
     t.stageWins+=d.stageWins||0;
     t.stagePts+=d.stagePts||0;
     t.totalFinish+=d.totalFinish||0;
@@ -2294,6 +2297,7 @@ function renderTeamStandings(){
       <td class="st-top5">${t.t5}</td>
       <td class="st-top10">${t.t10}</td>
       <td class="st-races">${t.races}</td>
+      <td class="st-finishes">${t.finishes||0}</td>
     </tr>`;
   });
 }
@@ -2361,7 +2365,7 @@ function exportSeasonCSV(){
   csv+='Pos,#,Driver,Team,Points,Wins,Podiums,Poles,Stage Wins,Stage Pts,T5,T10,Races,Avg Finish,Avg Start,Laps Led\r\n';
   const sorted=season.getSorted('points',false);
   sorted.forEach((d,i)=>{
-    csv+=`${i+1},${d.num},"${d.name}","${d.team}",${d.points},${d.wins},${d.podiums||0},${d.poles||0},${d.stageWins||0},${d.stagePts||0},${d.t5||0},${d.t10||0},${d.races},${d.races>0?(d.totalFinish/d.races).toFixed(2):'-'},${d.races>0?(d.totalStart/d.races).toFixed(2):'-'},${d.led||0}\r\n`;
+    csv+=`${i+1},${d.num},"${d.name}","${d.team}",${d.points},${d.wins},${d.podiums||0},${d.poles||0},${d.stageWins||0},${d.stagePts||0},${d.t5||0},${d.t10||0},${d.races},${d.finishes||0},${d.races>0?(d.totalFinish/d.races).toFixed(2):'-'},${d.races>0?(d.totalStart/d.races).toFixed(2):'-'},${d.led||0}\r\n`;
   });
   // --- RESULTS ---
   csv+='\r\nRace #,Track,Type,Laps,Pos,Start,#,Driver,Team,Mfg,Status,Laps Led,Pit Stops\r\n';
@@ -2384,7 +2388,7 @@ function exportSeasonCSV(){
 
 function newSeason(){
   if(confirm('Start a new season? This will reset all standings and results.')){
-    Object.values(season.standings).forEach(s=>{s.points=0;s.wins=0;s.t5=0;s.t10=0;s.races=0;s.led=0;s.stagePts=0;s.stageWins=0;s.champion=false;s.poles=0;s.totalFinish=0;s.totalStart=0;s._origPoints=0;delete s._regularStats;});
+    Object.values(season.standings).forEach(s=>{s.points=0;s.wins=0;s.t5=0;s.t10=0;s.races=0;s.led=0;s.stagePts=0;s.stageWins=0;s.champion=false;s.poles=0;s.totalFinish=0;s.totalStart=0;s.finishes=0;s._origPoints=0;delete s._regularStats;});
     season.races=0;
     season.results=[];
     season.schedule=[];
@@ -2404,7 +2408,7 @@ function newSeason(){
 }
 
 function resetSeason(){
-  Object.values(season.standings).forEach(s=>{s.points=0;s.wins=0;s.t5=0;s.t10=0;s.races=0;s.led=0;s.stagePts=0;s.stageWins=0;s.champion=false;s.poles=0;s.totalFinish=0;s.totalStart=0;s._origPoints=0;delete s._regularStats;});
+  Object.values(season.standings).forEach(s=>{s.points=0;s.wins=0;s.t5=0;s.t10=0;s.races=0;s.led=0;s.stagePts=0;s.stageWins=0;s.champion=false;s.poles=0;s.totalFinish=0;s.totalStart=0;s.finishes=0;s._origPoints=0;delete s._regularStats;});
   season.races=0;
   season.results=[];
   season.chaseActive=false;
@@ -3065,6 +3069,7 @@ function loadSeason(seriesKey, seasonObj, driverArr){
         seasonObj.standings[num].t5=s.t5;
         seasonObj.standings[num].t10=s.t10;
         seasonObj.standings[num].races=s.races;
+        seasonObj.standings[num].finishes=s.finishes||0;
         seasonObj.standings[num].led=s.led;
         seasonObj.standings[num].stagePts=s.stagePts||0;
         seasonObj.standings[num].stageWins=s.stageWins||0;
@@ -3123,7 +3128,7 @@ function loadSeason(seriesKey, seasonObj, driverArr){
           podiums:s.podiums||0,poles:s.poles||0,
           stageWins:s.stageWins||0,stagePts:s.stagePts||0,
           totalFinish:s.totalFinish||0,totalStart:s.totalStart||0,
-          led:s.led||0,races:s.races
+          led:s.led||0,races:s.races,finishes:s.finishes||0
         };
       });
     }
