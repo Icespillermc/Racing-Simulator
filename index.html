@@ -227,7 +227,10 @@ select:focus{outline:none;border-color:var(--yellow)}
 <body>
 
 <header>
-  <h1><span class="red">&#9679;</span> <span class="yellow">NASCAR</span> CUP SERIES SIMULATOR</h1>
+  <div style="display:flex;align-items:center;gap:8px">
+    <h1 style="margin:0"><span class="red">&#9679;</span> <span class="yellow">NASCAR</span> CUP SERIES SIMULATOR</h1>
+    <button onclick="openHelp()" style="font-size:12px;padding:0 8px;background:var(--bg3);color:var(--text2);border:1px solid var(--border);border-radius:3px;cursor:pointer;height:24px;font-weight:700;line-height:22px">?</button>
+  </div>
   <div class="race-info">
     <div style="display:flex;gap:8px;margin-bottom:4px" id="seriesSelector">
       <button class="series-btn active" data-series="cup" onclick="switchSeries('cup')">Cup</button>
@@ -350,6 +353,68 @@ select:focus{outline:none;border-color:var(--yellow)}
 
 </div>
 
+<!-- HELP MODAL -->
+<div class="modal-overlay" id="helpModal" style="display:none" onclick="if(event.target===this)closeHelp()">
+  <div class="modal-content" style="min-width:650px;max-width:700px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <h3 style="margin:0">Racing Simulator Guide</h3>
+      <button class="btn btn-gray btn-sm" onclick="closeHelp()">X</button>
+    </div>
+    <div style="overflow-y:auto;max-height:65vh;font-size:12px;line-height:1.6;color:var(--text)">
+      <p>Welcome! This is a multi-series racing simulator. Here's how it works:</p>
+
+      <h4 style="color:var(--yellow);margin:12px 0 4px">Getting Started</h4>
+      <ol style="margin:0 0 8px;padding-left:18px">
+        <li>Select a <strong>series</strong> from the top bar (Cup, Xfinity, Truck, F1, IndyCar, Custom F1, Custom NASCAR).</li>
+        <li>Pick a <strong>track</strong> from the dropdown below.</li>
+        <li>Click <strong>Qualify</strong> to set the starting grid, then <strong>Start Race</strong> to run it.</li>
+        <li>View <strong>Standings</strong> and <strong>Results</strong> via the tab bar.</li>
+      </ol>
+
+      <h4 style="color:var(--yellow);margin:12px 0 4px">Race Controls</h4>
+      <ul style="margin:0 0 8px;padding-left:18px">
+        <li><strong>Speed buttons</strong> (1x / 3x / 10x / 25x / Full) control simulation speed.</li>
+        <li><strong>Auto</strong> mode automatically runs Qualify + Race for you.</li>
+        <li><strong>Pause</strong> pauses the race; click <strong>Resume</strong> to continue.</li>
+        <li><strong>Stages</strong> toggle enables stage cautions and stage points (NASCAR series only).</li>
+        <li><strong>Chase</strong> toggle enables the playoff/chase format (NASCAR series only).</li>
+      </ul>
+
+      <h4 style="color:var(--yellow);margin:12px 0 4px">Schedule Editor</h4>
+      <p style="margin:0 0 8px">Click <strong>Schedule</strong> to open the schedule editor. You can add/remove tracks, reorder races (drag via arrows), save presets, and enable <em>Free Pick</em> mode to ignore the schedule and pick any track each race.</p>
+
+      <h4 style="color:var(--yellow);margin:12px 0 4px">Standings</h4>
+      <ul style="margin:0 0 8px;padding-left:18px">
+        <li>Click column headers to sort (Points, Wins, Avg Finish, etc.).</li>
+        <li><strong>Team Standings</strong> toggle shows combined points per team.</li>
+        <li>During the Chase, <strong>Season View</strong> toggle switches between chase and regular season points.</li>
+        <li>Use <strong>Reset Season</strong> to clear standings and results (keeps schedule).</li>
+        <li>Use <strong>New Season</strong> to reset everything including the schedule.</li>
+      </ul>
+
+      <h4 style="color:var(--yellow);margin:12px 0 4px">Editors</h4>
+      <ul style="margin:0 0 8px;padding-left:18px">
+        <li><strong>Rosters</strong> — Edit driver names, numbers, teams, manufacturers, and ratings (OVR, SS, IT, ST, RC, AGG, CON, CAR). Save resets the current season.</li>
+        <li><strong>Tracks</strong> — Add, edit, or delete tracks from the database. Track ID is used in schedules.</li>
+        <li><strong>Points</strong> — Edit the points awarded per finishing position. Also adjust Chase format (regular season length, chase field size).</li>
+        <li><strong>Export CSV</strong> — Downloads standings and race results as a CSV file for spreadsheets.</li>
+      </ul>
+
+      <h4 style="color:var(--yellow);margin:12px 0 4px">Cloud Save (Firebase)</h4>
+      <ul style="margin:0 0 8px;padding-left:18px">
+        <li>Sign in with Google to sync your data (rosters, seasons, presets, tracks, points) to the cloud.</li>
+        <li>Data syncs automatically on save. Sign in on another device to restore.</li>
+      </ul>
+
+      <h4 style="color:var(--yellow);margin:12px 0 4px">Series Differences</h4>
+      <ul style="margin:0 0 4px;padding-left:18px">
+        <li><strong>NASCAR series</strong> (Cup, Xfinity, Truck, Custom NASCAR): Stages enabled, Chase/playoff format, 36–40 car fields.</li>
+        <li><strong>Open-wheel series</strong> (F1, IndyCar, Custom F1): No stages, no chase, formula-style points, different physics and pit strategies.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
 <!-- SCHEDULE EDITOR MODAL -->
 <div class="modal-overlay" id="scheduleModal" style="display:none" onclick="if(event.target===this)closeScheduleEditor()">
   <div class="modal-content schedule-modal">
@@ -358,7 +423,7 @@ select:focus{outline:none;border-color:var(--yellow)}
       <button class="btn btn-gray btn-sm" onclick="closeScheduleEditor()">X</button>
     </div>
     <div style="margin-bottom:8px;display:flex;gap:6px;align-items:center">
-      <label class="toggle-wrapper"><input type="checkbox" id="manualScheduleToggle" onchange="toggleManualSchedule()"><span class="toggle-slider"></span></label>
+      <label class="toggle-wrapper"><input type="checkbox" id="manualScheduleToggle" onchange="toggleManualSchedule()" checked><span class="toggle-slider"></span></label>
       <span style="font-size:11px;color:var(--text2)">Free Pick (ignore schedule)</span>
     </div>
     <div id="scheduleListContainer" style="max-height:400px;overflow-y:auto;margin-bottom:8px;border:1px solid var(--border);border-radius:4px;padding:8px;background:var(--bg2)">
@@ -848,7 +913,7 @@ function createSeason(driverArr){
   const isNascar=seriesKey==='cup'||seriesKey==='xfinity'||seriesKey==='truck'||seriesKey==='eel';
   return {
     races:0,standings:st,results:[],
-    schedule:SCHEDULES[seriesKey]?[...SCHEDULES[seriesKey]]:[],
+    schedule:[],
     chaseEnabled:isNascar,
     chaseActive:false,
     chaseRound:0,
@@ -2451,9 +2516,9 @@ function newSeason(){
     Object.values(season.standings).forEach(s=>{s.points=0;s.wins=0;s.t5=0;s.t10=0;s.races=0;s.led=0;s.stagePts=0;s.stageWins=0;s.champion=false;s.poles=0;s.totalFinish=0;s.totalStart=0;s._origPoints=0;delete s._regularStats;});
     season.races=0;
     season.results=[];
-    const sk=currentSeries;
-    season.schedule=[...SCHEDULES[sk]];
+    season.schedule=[];
     season.postInit();
+    document.getElementById('manualScheduleToggle').checked=true;
     season.chaseActive=false;
     season.chaseRound=0;
     season.chaseDrivers=[];
@@ -2549,6 +2614,10 @@ function openScheduleEditor(){
 function closeScheduleEditor(){
   document.getElementById('scheduleModal').style.display='none';
 }
+
+// ====================== HELP MODAL ======================
+function openHelp(){document.getElementById('helpModal').style.display='flex';}
+function closeHelp(){document.getElementById('helpModal').style.display='none';}
 
 // ====================== TRACK EDITOR ======================
 let _editingTrackId=null;
@@ -2799,11 +2868,10 @@ function moveScheduleItem(idx,dir){
 }
 
 function resetToDefaultSchedule(){
-  if(confirm('Reset schedule to default? This will also clear any manual changes.')){
-    const sk=currentSeries;
-    season.schedule=[...SCHEDULES[sk]];
+  if(confirm('Reset schedule to default (Free Pick)? This will clear the current schedule.')){
+    season.schedule=[];
     season.postInit();
-    document.getElementById('manualScheduleToggle').checked=false;
+    document.getElementById('manualScheduleToggle').checked=true;
     renderScheduleList();
     updateHeaderInfo();
     saveSeason(currentSeries,season);
