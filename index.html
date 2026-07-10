@@ -2241,10 +2241,10 @@ function renderStandings(){
   // Build header
   const cols=isOpen
     ?['pos','num','driver','team','points','gap','wins','podiums','poles','avgfin','avgstart','t5','t10','races']
-    :['pos','num','driver','team','points','gap','wins','poles','stageWins','stagePts','avgfin','avgstart','t5','t10','races'];
+    :['pos','num','driver','team','points','gap','wins','stageWins','stagePts','poles','avgfin','avgstart','t5','t10','races'];
   const labels=isOpen
     ?['Pos','#','Driver','Team','Points','Gap','Wins','Pod','Poles','Avg F','Avg S','T5','T10','Races']
-    :['Pos','#','Driver','Team','Points','Gap','Wins','Poles','SW','SP','Avg F','Avg S','T5','T10','Races'];
+    :['Pos','#','Driver','Team','Points','Gap','Wins','SW','SP','Poles','Avg F','Avg S','T5','T10','Races'];
   thead.innerHTML='<tr>'+cols.map((c,i)=>`<th data-col="${c}">${labels[i]}<span class="sort-arrow">▼</span></th>`).join('')+'</tr>';
 
   if(teamView)return renderTeamStandings();
@@ -2359,10 +2359,10 @@ function renderTeamStandings(){
   // Build team header
   const cols=isOpen
     ?['pos','team','cars','points','avgpts','gap','wins','podiums','poles','avgfin','avgstart','t5','t10','races']
-    :['pos','team','cars','points','avgpts','gap','wins','poles','stageWins','stagePts','avgfin','avgstart','t5','t10','races'];
+    :['pos','team','cars','points','avgpts','gap','wins','stageWins','stagePts','poles','avgfin','avgstart','t5','t10','races'];
   const labels=isOpen
     ?['Pos','Team','Cars','Points','Avg Pts','Gap','Wins','Pod','Poles','Avg F','Avg S','T5','T10','Races']
-    :['Pos','Team','Cars','Points','Avg Pts','Gap','Wins','Poles','SW','SP','Avg F','Avg S','T5','T10','Races'];
+    :['Pos','Team','Cars','Points','Avg Pts','Gap','Wins','SW','SP','Poles','Avg F','Avg S','T5','T10','Races'];
   thead.innerHTML='<tr>'+cols.map((c,i)=>`<th data-col="${c}">${labels[i]}<span class="sort-arrow">▼</span></th>`).join('')+'</tr>';
 
   // Aggregate by team
