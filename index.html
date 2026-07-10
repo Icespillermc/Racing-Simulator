@@ -394,7 +394,7 @@ select:focus{outline:none;border-color:var(--yellow)}
 
       <h4 style="color:var(--yellow);margin:12px 0 4px">Editors</h4>
       <ul style="margin:0 0 8px;padding-left:18px">
-        <li><strong>Rosters</strong> — Edit driver names, numbers, teams, manufacturers, and ratings (OVR, SS, IT, ST, RC, AGG, CON, CAR). Save resets the current season.</li>
+        <li><strong>Rosters</strong> — Edit driver names, numbers, teams, manufacturers, and ratings (OVR, SS, IT, ST, RC, AGG, CON, CAR). Driver changes take effect immediately without resetting the season.</li>
         <li><strong>Tracks</strong> — Add, edit, or delete tracks from the database. Track ID is used in schedules.</li>
         <li><strong>Points</strong> — Edit the points awarded per finishing position. Also adjust Chase format (regular season length, chase field size).</li>
         <li><strong>Export CSV</strong> — Downloads standings and race results as a CSV file for spreadsheets.</li>
@@ -1122,8 +1122,31 @@ function saveRoster(){
     else if(key==='indycar'){INDYCAR_DRIVERS=drivers;DRIVERS=drivers;}
     else if(key==='cf1'){CUSTOM_F1_DRIVERS=drivers;DRIVERS=drivers;}
     else {EEL_DRIVERS=drivers;DRIVERS=drivers;}
-    // Rebuild season
-    const ss=createSeason(drivers); ss.postInit();
+    // Update existing season in-place
+    const ss=key==='cup'?cupSeason:(key==='xfinity'?xfinitySeason:(key==='truck'?truckSeason:(key==='f1'?f1Season:(key==='cf1'?cf1Season:(key==='indycar'?indycarSeason:eelSeason)))));
+    const st=ss.standings;
+    const newNums=new Set(drivers.map(d=>String(d.num)));
+    // Remove drivers no longer in roster
+    Object.keys(st).forEach(num=>{if(!newNums.has(String(num)))delete st[num];});
+    // Add or update drivers
+    drivers.forEach(d=>{
+      const num=String(d.num);
+      if(st[num]){
+        // Update profile fields, preserve stats
+        Object.assign(st[num],{
+          name:d.name,team:d.team,mfg:d.mfg,
+          ovr:d.ovr,ss:d.ss,it:d.it,st:d.st,rc:d.rc,agg:d.agg,con:d.con,car:d.car
+        });
+      }else{
+        // New driver: add with 0 stats
+        st[num]={...d,points:0,wins:0,t5:0,t10:0,podiums:0,races:0,finishes:0,led:0,stagePts:0,stageWins:0,poles:0,totalFinish:0,totalStart:0};
+      }
+    });
+    // Update chase driver list in case any were removed
+    if(ss.chaseDrivers){
+      ss.chaseDrivers=ss.chaseDrivers.filter(n=>st[n]);
+      ss.eliminated=(ss.eliminated||[]).filter(n=>st[n]);
+    }
     if(key==='cup'){cupSeason=ss;season=ss;}
     else if(key==='xfinity'){xfinitySeason=ss;season=ss;}
     else if(key==='truck'){truckSeason=ss;season=ss;}
@@ -3162,7 +3185,7 @@ document.addEventListener('DOMContentLoaded',init);
       <button class="btn btn-sm" style="background:var(--green);color:#000;font-weight:700" onclick="saveRoster()">Save Roster</button>
       <button class="btn btn-gray btn-sm" onclick="resetRoster()">Reset to Defaults</button>
       <button class="btn btn-gray btn-sm" onclick="copyRosterInfo()">Copy Roster Info</button>
-      <span style="font-size:10px;color:var(--text3);align-self:center">Saving resets the current season</span>
+      <span style="font-size:10px;color:var(--text3);align-self:center">Season data is preserved</span>
     </div>
     <div class="modal-body">
       <table>
