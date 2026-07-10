@@ -306,6 +306,7 @@ select:focus{outline:none;border-color:var(--yellow)}
       <div class="stat"><span class="stat-label">Leader:</span><span class="stat-value" id="sLeader">-</span></div>
       <div class="stat"><span class="stat-label">Caution Laps:</span><span class="stat-value" id="sCautionLaps">-</span></div>
       <div class="stat"><span class="stat-label">Running:</span><span class="stat-value" id="sRunning">40/40</span></div>
+      <div class="stat"><span class="stat-label">FT:</span><span class="stat-value" id="sFullTime">-</span></div>
     </div>
   </div>
   <div class="race-side">
@@ -526,17 +527,17 @@ select:focus{outline:none;border-color:var(--yellow)}
 <script>
 // ====================== CUP SERIES DRIVERS ======================
 let CUP_DRIVERS = [
-{"num":97,"name":"Shane van Gisbergen","team":"Trackhouse Racing","mfg":"Chevy","ovr":79,"ss":69,"it":76,"st":75,"rc":99,"agg":69,"con":74,"car":93},{"num":88,"name":"Connor Zilisch","team":"Trackhouse Racing","mfg":"Chevy","ovr":72,"ss":64,"it":68,"st":64,"rc":84,"agg":70,"con":63,"car":93},{"num":84,"name":"Jimmie Johnson","team":"Legacy Motor Club","mfg":"Toyota","ovr":59,"ss":58,"it":56,"st":52,"rc":52,"agg":48,"con":55,"car":93},{"num":78,"name":"BJ McLeod","team":"Live Fast Motorsports","mfg":"Chevy","ovr":58,"ss":55,"it":52,"st":52,"rc":50,"agg":52,"con":56,"car":91},{"num":77,"name":"Carson Hocevar","team":"Spire Motorsports","mfg":"Chevy","ovr":81,"ss":79,"it":81,"st":82,"rc":76,"agg":77,"con":76,"car":94},{"num":71,"name":"Michael McDowell","team":"Spire Motorsports","mfg":"Chevy","ovr":74,"ss":88,"it":66,"st":68,"rc":72,"agg":54,"con":78,"car":94},{"num":67,"name":"Corey Heim","team":"23XI Racing","mfg":"Toyota","ovr":85,"ss":82,"it":88,"st":85,"rc":84,"agg":75,"con":84,"car":95},{"num":60,"name":"Ryan Preece","team":"RFK Racing","mfg":"Ford","ovr":74,"ss":76,"it":68,"st":68,"rc":68,"agg":70,"con":74,"car":93},{"num":54,"name":"Ty Gibbs","team":"Joe Gibbs Racing","mfg":"Toyota","ovr":85,"ss":80,"it":89,"st":88,"rc":86,"agg":72,"con":82,"car":95},{"num":51,"name":"Cody Ware","team":"Rick Ware Racing","mfg":"Chevy","ovr":60,"ss":58,"it":52,"st":54,"rc":50,"agg":55,"con":57,"car":91},{"num":48,"name":"Alex Bowman","team":"Hendrick Motorsports","mfg":"Chevy","ovr":71,"ss":72,"it":72,"st":66,"rc":70,"agg":51,"con":72,"car":95},{"num":47,"name":"Ricky Stenhouse Jr","team":"HYAK Motorsports","mfg":"Chevy","ovr":76,"ss":88,"it":70,"st":70,"rc":66,"agg":76,"con":68,"car":93},{"num":45,"name":"Tyler Reddick","team":"23XI Racing","mfg":"Toyota","ovr":94,"ss":99,"it":99,"st":99,"rc":97,"agg":70,"con":96,"car":95},{"num":43,"name":"Erik Jones","team":"Legacy Motor Club","mfg":"Toyota","ovr":77,"ss":88,"it":76,"st":76,"rc":69,"agg":58,"con":80,"car":93},{"num":42,"name":"John H. Nemechek","team":"Legacy Motor Club","mfg":"Toyota","ovr":69,"ss":70,"it":62,"st":65,"rc":60,"agg":64,"con":68,"car":93},{"num":41,"name":"Cole Custer","team":"Haas Factory Team","mfg":"Chevy","ovr":65,"ss":62,"it":59,"st":62,"rc":56,"agg":60,"con":62,"car":92},{"num":38,"name":"Zane Smith","team":"Front Row Motorsports","mfg":"Ford","ovr":75,"ss":78,"it":80,"st":82,"rc":72,"agg":58,"con":78,"car":93},{"num":36,"name":"Chandler Smith","team":"Front Row Motorsports","mfg":"Ford","ovr":76,"ss":78,"it":74,"st":75,"rc":71,"agg":62,"con":76,"car":93},{"num":35,"name":"Riley Herbst","team":"23XI Racing","mfg":"Toyota","ovr":71,"ss":73,"it":64,"st":66,"rc":65,"agg":66,"con":66,"car":95},{"num":34,"name":"Todd Gilliland","team":"Front Row Motorsports","mfg":"Ford","ovr":72,"ss":77,"it":68,"st":68,"rc":63,"agg":62,"con":71,"car":93},{"num":33,"name":"Austin Hill","team":"Richard Childress Racing","mfg":"Chevy","ovr":80,"ss":94,"it":71,"st":72,"rc":66,"agg":90,"con":76,"car":93},{"num":24,"name":"William Byron","team":"Hendrick Motorsports","mfg":"Chevy","ovr":85,"ss":88,"it":94,"st":86,"rc":86,"agg":58,"con":88,"car":95},{"num":23,"name":"Bubba Wallace","team":"23XI Racing","mfg":"Toyota","ovr":83,"ss":93,"it":84,"st":80,"rc":78,"agg":66,"con":82,"car":95},{"num":22,"name":"Joey Logano","team":"Team Penske","mfg":"Ford","ovr":77,"ss":85,"it":74,"st":74,"rc":68,"agg":74,"con":70,"car":93},{"num":21,"name":"Josh Berry","team":"Wood Brothers Racing","mfg":"Ford","ovr":69,"ss":67,"it":64,"st":68,"rc":61,"agg":62,"con":67,"car":92},{"num":20,"name":"Christopher Bell","team":"Joe Gibbs Racing","mfg":"Toyota","ovr":87,"ss":83,"it":93,"st":93,"rc":92,"agg":67,"con":84,"car":95},{"num":19,"name":"Chase Briscoe","team":"Joe Gibbs Racing","mfg":"Toyota","ovr":86,"ss":88,"it":95,"st":92,"rc":89,"agg":64,"con":80,"car":95},{"num":17,"name":"Chris Buescher","team":"RFK Racing","mfg":"Ford","ovr":82,"ss":83,"it":88,"st":85,"rc":80,"agg":55,"con":92,"car":93},{"num":16,"name":"AJ Allmendinger","team":"Kaulig Racing","mfg":"Chevy","ovr":74,"ss":64,"it":68,"st":66,"rc":89,"agg":66,"con":72,"car":92},{"num":12,"name":"Ryan Blaney","team":"Team Penske","mfg":"Ford","ovr":89,"ss":99,"it":97,"st":93,"rc":90,"agg":58,"con":94,"car":93},{"num":11,"name":"Denny Hamlin","team":"Joe Gibbs Racing","mfg":"Toyota","ovr":94,"ss":99,"it":99,"st":99,"rc":95,"agg":77,"con":95,"car":95},{"num":10,"name":"Ty Dillon","team":"Kaulig Racing","mfg":"Chevy","ovr":66,"ss":66,"it":62,"st":63,"rc":58,"agg":58,"con":64,"car":92},{"num":9,"name":"Chase Elliott","team":"Hendrick Motorsports","mfg":"Chevy","ovr":87,"ss":86,"it":93,"st":94,"rc":96,"agg":58,"con":90,"car":95},{"num":7,"name":"Daniel Suarez","team":"Spire Motorsports","mfg":"Chevy","ovr":82,"ss":76,"it":76,"st":73,"rc":80,"agg":68,"con":81,"car":94},{"num":6,"name":"Brad Keselowski","team":"RFK Racing","mfg":"Ford","ovr":78,"ss":85,"it":77,"st":75,"rc":69,"agg":68,"con":76,"car":93},{"num":5,"name":"Kyle Larson","team":"Hendrick Motorsports","mfg":"Chevy","ovr":89,"ss":88,"it":99,"st":94,"rc":91,"agg":67,"con":88,"car":95},{"num":4,"name":"Noah Gragson","team":"Front Row Motorsports","mfg":"Ford","ovr":71,"ss":72,"it":64,"st":68,"rc":62,"agg":76,"con":63,"car":93},{"num":3,"name":"Austin Dillon","team":"Richard Childress Racing","mfg":"Chevy","ovr":72,"ss":76,"it":66,"st":66,"rc":61,"agg":74,"con":68,"car":93},{"num":2,"name":"Austin Cindric","team":"Team Penske","mfg":"Ford","ovr":78,"ss":88,"it":76,"st":72,"rc":76,"agg":62,"con":76,"car":93},{"num":1,"name":"Ross Chastain","team":"Trackhouse Racing","mfg":"Chevy","ovr":80,"ss":76,"it":76,"st":78,"rc":82,"agg":86,"con":66,"car":93}
+[{"num":"45","name":"Tyler Reddick","team":"23XI Racing","mfg":"Toyota","ovr":94,"ss":99,"it":99,"st":99,"rc":97,"agg":70,"con":96,"fullTime":true,"car":95},{"num":"11","name":"Denny Hamlin","team":"Joe Gibbs Racing","mfg":"Toyota","ovr":94,"ss":99,"it":99,"st":99,"rc":95,"agg":77,"con":95,"fullTime":true,"car":95},{"num":"12","name":"Ryan Blaney","team":"Team Penske","mfg":"Ford","ovr":89,"ss":99,"it":97,"st":93,"rc":90,"agg":58,"con":94,"fullTime":true,"car":93},{"num":"5","name":"Kyle Larson","team":"Hendrick Motorsports","mfg":"Chevy","ovr":89,"ss":88,"it":99,"st":94,"rc":91,"agg":67,"con":88,"fullTime":true,"car":95},{"num":"20","name":"Christopher Bell","team":"Joe Gibbs Racing","mfg":"Toyota","ovr":87,"ss":83,"it":93,"st":93,"rc":92,"agg":67,"con":84,"fullTime":true,"car":95},{"num":"9","name":"Chase Elliott","team":"Hendrick Motorsports","mfg":"Chevy","ovr":87,"ss":86,"it":93,"st":94,"rc":96,"agg":58,"con":90,"fullTime":true,"car":95},{"num":"19","name":"Chase Briscoe","team":"Joe Gibbs Racing","mfg":"Toyota","ovr":86,"ss":88,"it":95,"st":92,"rc":89,"agg":64,"con":80,"fullTime":true,"car":95},{"num":"67","name":"Corey Heim","team":"23XI Racing","mfg":"Toyota","ovr":85,"ss":82,"it":88,"st":85,"rc":84,"agg":75,"con":84,"fullTime":false,"car":95},{"num":"54","name":"Ty Gibbs","team":"Joe Gibbs Racing","mfg":"Toyota","ovr":85,"ss":80,"it":89,"st":88,"rc":86,"agg":72,"con":82,"fullTime":true,"car":95},{"num":"24","name":"William Byron","team":"Hendrick Motorsports","mfg":"Chevy","ovr":85,"ss":88,"it":94,"st":86,"rc":86,"agg":58,"con":88,"fullTime":true,"car":95},{"num":"23","name":"Bubba Wallace","team":"23XI Racing","mfg":"Toyota","ovr":83,"ss":93,"it":84,"st":80,"rc":78,"agg":66,"con":82,"fullTime":true,"car":95},{"num":"17","name":"Chris Buescher","team":"RFK Racing","mfg":"Ford","ovr":82,"ss":83,"it":88,"st":85,"rc":80,"agg":55,"con":92,"fullTime":true,"car":93},{"num":"77","name":"Carson Hocevar","team":"Spire Motorsports","mfg":"Chevy","ovr":81,"ss":79,"it":81,"st":82,"rc":76,"agg":77,"con":76,"fullTime":true,"car":94},{"num":"33","name":"Austin Hill","team":"Richard Childress Racing","mfg":"Chevy","ovr":80,"ss":94,"it":71,"st":72,"rc":66,"agg":90,"con":76,"fullTime":true,"car":93},{"num":"1","name":"Ross Chastain","team":"Trackhouse Racing","mfg":"Chevy","ovr":80,"ss":76,"it":76,"st":78,"rc":82,"agg":86,"con":66,"fullTime":true,"car":93},{"num":"97","name":"Shane van Gisbergen","team":"Trackhouse Racing","mfg":"Chevy","ovr":79,"ss":69,"it":76,"st":75,"rc":99,"agg":69,"con":74,"fullTime":true,"car":93},{"num":"7","name":"Daniel Suarez","team":"Spire Motorsports","mfg":"Chevy","ovr":78,"ss":76,"it":76,"st":73,"rc":80,"agg":68,"con":81,"fullTime":true,"car":94},{"num":"6","name":"Brad Keselowski","team":"RFK Racing","mfg":"Ford","ovr":78,"ss":85,"it":77,"st":75,"rc":69,"agg":68,"con":76,"fullTime":true,"car":93},{"num":"2","name":"Austin Cindric","team":"Team Penske","mfg":"Ford","ovr":78,"ss":88,"it":76,"st":72,"rc":76,"agg":62,"con":76,"fullTime":true,"car":93},{"num":"43","name":"Erik Jones","team":"Legacy Motor Club","mfg":"Toyota","ovr":77,"ss":88,"it":76,"st":76,"rc":69,"agg":58,"con":80,"fullTime":true,"car":93},{"num":"38","name":"Zane Smith","team":"Front Row Motorsports","mfg":"Ford","ovr":77,"ss":78,"it":80,"st":82,"rc":72,"agg":58,"con":78,"fullTime":true,"car":93},{"num":"22","name":"Joey Logano","team":"Team Penske","mfg":"Ford","ovr":77,"ss":85,"it":74,"st":74,"rc":68,"agg":74,"con":70,"fullTime":true,"car":93},{"num":"47","name":"Ricky Stenhouse Jr","team":"HYAK Motorsports","mfg":"Chevy","ovr":76,"ss":88,"it":70,"st":70,"rc":66,"agg":76,"con":68,"fullTime":true,"car":93},{"num":"36","name":"Chandler Smith","team":"Front Row Motorsports","mfg":"Ford","ovr":76,"ss":78,"it":74,"st":75,"rc":71,"agg":62,"con":76,"fullTime":false,"car":93},{"num":"71","name":"Michael McDowell","team":"Spire Motorsports","mfg":"Chevy","ovr":74,"ss":88,"it":66,"st":68,"rc":72,"agg":54,"con":78,"fullTime":true,"car":94},{"num":"60","name":"Ryan Preece","team":"RFK Racing","mfg":"Ford","ovr":74,"ss":76,"it":68,"st":68,"rc":68,"agg":70,"con":74,"fullTime":true,"car":93},{"num":"16","name":"AJ Allmendinger","team":"Kaulig Racing","mfg":"Chevy","ovr":74,"ss":64,"it":68,"st":66,"rc":89,"agg":66,"con":72,"fullTime":true,"car":92},{"num":"88","name":"Connor Zilisch","team":"Trackhouse Racing","mfg":"Chevy","ovr":72,"ss":64,"it":68,"st":64,"rc":84,"agg":70,"con":63,"fullTime":true,"car":93},{"num":"34","name":"Todd Gilliland","team":"Front Row Motorsports","mfg":"Ford","ovr":72,"ss":77,"it":68,"st":68,"rc":63,"agg":62,"con":71,"fullTime":true,"car":93},{"num":"3","name":"Austin Dillon","team":"Richard Childress Racing","mfg":"Chevy","ovr":72,"ss":76,"it":66,"st":66,"rc":61,"agg":74,"con":68,"fullTime":true,"car":93},{"num":"48","name":"Alex Bowman","team":"Hendrick Motorsports","mfg":"Chevy","ovr":71,"ss":72,"it":72,"st":66,"rc":70,"agg":51,"con":72,"fullTime":true,"car":95},{"num":"35","name":"Riley Herbst","team":"23XI Racing","mfg":"Toyota","ovr":71,"ss":73,"it":64,"st":66,"rc":65,"agg":66,"con":66,"fullTime":true,"car":95},{"num":"4","name":"Noah Gragson","team":"Front Row Motorsports","mfg":"Ford","ovr":71,"ss":72,"it":64,"st":68,"rc":62,"agg":76,"con":63,"fullTime":true,"car":93},{"num":"42","name":"John H. Nemechek","team":"Legacy Motor Club","mfg":"Toyota","ovr":69,"ss":70,"it":62,"st":65,"rc":60,"agg":64,"con":68,"fullTime":true,"car":93},{"num":"21","name":"Josh Berry","team":"Wood Brothers Racing","mfg":"Ford","ovr":69,"ss":67,"it":64,"st":68,"rc":61,"agg":62,"con":67,"fullTime":true,"car":92},{"num":"10","name":"Ty Dillon","team":"Kaulig Racing","mfg":"Chevy","ovr":66,"ss":66,"it":62,"st":63,"rc":58,"agg":58,"con":64,"fullTime":true,"car":92},{"num":"41","name":"Cole Custer","team":"Haas Factory Team","mfg":"Chevy","ovr":65,"ss":62,"it":59,"st":62,"rc":56,"agg":60,"con":62,"fullTime":true,"car":92},{"num":"51","name":"Cody Ware","team":"Rick Ware Racing","mfg":"Chevy","ovr":60,"ss":58,"it":52,"st":54,"rc":50,"agg":55,"con":57,"fullTime":true,"car":91},{"num":"84","name":"Jimmie Johnson","team":"Legacy Motor Club","mfg":"Toyota","ovr":59,"ss":58,"it":56,"st":52,"rc":52,"agg":48,"con":55,"fullTime":false,"car":93},{"num":"78","name":"BJ McLeod","team":"Live Fast Motorsports","mfg":"Chevy","ovr":58,"ss":55,"it":52,"st":52,"rc":50,"agg":52,"con":56,"fullTime":false,"car":91}
 ];
 
 // ====================== XFINITY SERIES DRIVERS ======================
 let XFINITY_DRIVERS = [
-{"num":99,"name":"Parker Retzlaff","team":"Viking Motorsports","mfg":"Chevy","ovr":78,"ss":80,"it":76,"st":80,"rc":72,"agg":64,"con":78,"car":95},{"num":96,"name":"Anthony Alfredo","team":"Viking Motorsports","mfg":"Chevy","ovr":77,"ss":80,"it":76,"st":77,"rc":73,"agg":61,"con":76,"car":95},{"num":92,"name":"Josh Williams","team":"DGM Racing","mfg":"Chevy","ovr":70,"ss":64,"it":64,"st":67,"rc":71,"agg":66,"con":66,"car":95},{"num":91,"name":"Mason Maggio","team":"DGM Racing","mfg":"Chevy","ovr":66,"ss":64,"it":61,"st":65,"rc":56,"agg":58,"con":63,"car":95},{"num":88,"name":"Rajah Caruth","team":"JR Motorsports","mfg":"Chevy","ovr":77,"ss":78,"it":76,"st":80,"rc":73,"agg":61,"con":79,"car":95},{"num":87,"name":"Austin Green","team":"Peterson Racing","mfg":"Chevy","ovr":71,"ss":66,"it":69,"st":72,"rc":66,"agg":60,"con":70,"car":95},{"num":66,"name":"Timmy Hill","team":"MBM Motorsports","mfg":"Toyota","ovr":69,"ss":66,"it":64,"st":67,"rc":64,"agg":60,"con":68,"car":95},{"num":54,"name":"Taylor Gray","team":"Joe Gibbs Racing","mfg":"Toyota","ovr":81,"ss":80,"it":80,"st":83,"rc":80,"agg":72,"con":78,"car":95},{"num":53,"name":"Brad Perez","team":"Joey Gase Motorsports","mfg":"Toyota","ovr":65,"ss":60,"it":60,"st":60,"rc":60,"agg":60,"con":60,"car":95},{"num":51,"name":"Jeremy Clements","team":"Jeremy Clements Racing","mfg":"Chevy","ovr":75,"ss":76,"it":72,"st":76,"rc":72,"agg":61,"con":74,"car":95},{"num":48,"name":"Patrick Staropoli","team":"Big Machine Racing","mfg":"Chevy","ovr":71,"ss":66,"it":71,"st":68,"rc":70,"agg":59,"con":70,"car":95},{"num":45,"name":"Lavar Scott","team":"Alpha Prime Racing","mfg":"Chevy","ovr":73,"ss":68,"it":72,"st":72,"rc":70,"agg":63,"con":68,"car":95},{"num":44,"name":"Brennan Poole","team":"Alpha Prime Racing","mfg":"Chevy","ovr":72,"ss":74,"it":73,"st":70,"rc":66,"agg":56,"con":73,"car":95},{"num":42,"name":"Nick Leitz","team":"Young's Motorsports","mfg":"Chevy","ovr":67,"ss":64,"it":63,"st":62,"rc":63,"agg":60,"con":64,"car":95},{"num":41,"name":"Sam Mayer","team":"Haas Factory Team","mfg":"Chevy","ovr":85,"ss":85,"it":86,"st":89,"rc":83,"agg":78,"con":78,"car":95},{"num":39,"name":"Ryan Sieg","team":"RSS Racing","mfg":"Chevy","ovr":80,"ss":83,"it":81,"st":80,"rc":78,"agg":66,"con":80,"car":95},{"num":35,"name":"Joey Gase","team":"Joey Gase Motorsports","mfg":"Toyota","ovr":67,"ss":67,"it":64,"st":64,"rc":58,"agg":54,"con":64,"car":95},{"num":32,"name":"Jordan Anderson","team":"Jordan Anderson Racing","mfg":"Chevy","ovr":67,"ss":66,"it":61,"st":65,"rc":60,"agg":62,"con":62,"car":95},{"num":31,"name":"Blaine Perkins","team":"Jordan Anderson Racing","mfg":"Chevy","ovr":72,"ss":70,"it":70,"st":72,"rc":64,"agg":62,"con":70,"car":95},{"num":30,"name":"Dawson Cram","team":"Stanton Barrett Motorsports","mfg":"Chevy","ovr":65,"ss":61,"it":62,"st":60,"rc":57,"agg":58,"con":62,"car":95},{"num":28,"name":"Kyle Sieg","team":"RSS Racing","mfg":"Chevy","ovr":71,"ss":72,"it":70,"st":69,"rc":64,"agg":62,"con":68,"car":95},{"num":27,"name":"Jeb Burton","team":"Jordan Anderson Racing","mfg":"Chevy","ovr":76,"ss":74,"it":71,"st":76,"rc":74,"agg":64,"con":75,"car":95},{"num":26,"name":"Dean Thompson","team":"Sam Hunt Racing","mfg":"Toyota","ovr":75,"ss":76,"it":74,"st":77,"rc":70,"agg":62,"con":71,"car":95},{"num":24,"name":"Harrison Burton","team":"Sam Hunt Racing","mfg":"Toyota","ovr":75,"ss":78,"it":72,"st":72,"rc":72,"agg":62,"con":72,"car":95},{"num":21,"name":"Austin Hill","team":"Richard Childress Racing","mfg":"Chevy","ovr":87,"ss":96,"it":90,"st":87,"rc":80,"agg":72,"con":86,"car":95},{"num":20,"name":"Brandon Jones","team":"Joe Gibbs Racing","mfg":"Toyota","ovr":81,"ss":79,"it":82,"st":84,"rc":78,"agg":62,"con":84,"car":95},{"num":19,"name":"Brent Crews","team":"Joe Gibbs Racing","mfg":"Toyota","ovr":80,"ss":76,"it":82,"st":83,"rc":78,"agg":66,"con":79,"car":95},{"num":18,"name":"William Sawalich","team":"Joe Gibbs Racing","mfg":"Toyota","ovr":81,"ss":82,"it":80,"st":84,"rc":80,"agg":66,"con":80,"car":95},{"num":17,"name":"Corey Day","team":"Hendrick Motorsports","mfg":"Chevy","ovr":84,"ss":83,"it":86,"st":86,"rc":83,"agg":72,"con":82,"car":95},{"num":16,"name":"AJ Allmendinger","team":"Kaulig Racing","mfg":"Chevy","ovr":76,"ss":64,"it":72,"st":68,"rc":92,"agg":68,"con":72,"car":95},{"num":14,"name":"Nick Sanchez","team":"AM Racing","mfg":"Chevy","ovr":73,"ss":72,"it":72,"st":74,"rc":64,"agg":65,"con":69,"car":95},{"num":9,"name":"Connor Zilisch","team":"JR Motorsports","mfg":"Chevy","ovr":71,"ss":62,"it":64,"st":62,"rc":80,"agg":68,"con":63,"car":95},{"num":8,"name":"Sammy Smith","team":"JR Motorsports","mfg":"Chevy","ovr":82,"ss":81,"it":84,"st":87,"rc":78,"agg":70,"con":80,"car":95},{"num":"08","name":"Alex Labbe","team":"SS-GreenLight Racing","mfg":"Chevy","ovr":68,"ss":68,"it":65,"st":63,"rc":62,"agg":58,"con":66,"car":95},{"num":7,"name":"Justin Allgaier","team":"JR Motorsports","mfg":"Chevy","ovr":88,"ss":88,"it":92,"st":90,"rc":92,"agg":66,"con":91,"car":95},{"num":"07","name":"Josh Bilicki","team":"SS-GreenLight Racing","mfg":"Chevy","ovr":71,"ss":72,"it":68,"st":68,"rc":69,"agg":56,"con":71,"car":95},{"num":5,"name":"Chandler Smith","team":"Hettinger Racing","mfg":"Ford","ovr":69,"ss":64,"it":66,"st":66,"rc":61,"agg":68,"con":61,"car":95},{"num":2,"name":"Jesse Love","team":"Richard Childress Racing","mfg":"Chevy","ovr":84,"ss":83,"it":88,"st":86,"rc":81,"agg":70,"con":82,"car":95},{"num":1,"name":"Carson Kvapil","team":"JR Motorsports","mfg":"Chevy","ovr":79,"ss":78,"it":80,"st":80,"rc":74,"agg":64,"con":79,"car":95},{"num":"00","name":"Sheldon Creed","team":"Haas Factory Team","mfg":"Chevy","ovr":83,"ss":84,"it":87,"st":86,"rc":83,"agg":68,"con":81,"car":95}
+[{"num":"7","name":"Justin Allgaier","team":"JR Motorsports","mfg":"Chevy","ovr":88,"ss":88,"it":92,"st":90,"rc":92,"agg":66,"con":91,"fullTime":true,"car":95},{"num":"21","name":"Austin Hill","team":"Richard Childress Racing","mfg":"Chevy","ovr":87,"ss":96,"it":90,"st":87,"rc":80,"agg":72,"con":86,"fullTime":true,"car":95},{"num":"41","name":"Sam Mayer","team":"Haas Factory Team","mfg":"Chevy","ovr":85,"ss":85,"it":86,"st":89,"rc":83,"agg":78,"con":78,"fullTime":true,"car":95},{"num":"2","name":"Jesse Love","team":"Richard Childress Racing","mfg":"Chevy","ovr":84,"ss":83,"it":88,"st":86,"rc":81,"agg":70,"con":82,"fullTime":true,"car":95},{"num":"17","name":"Corey Day","team":"Hendrick Motorsports","mfg":"Chevy","ovr":84,"ss":83,"it":86,"st":86,"rc":83,"agg":72,"con":82,"fullTime":true,"car":95},{"num":"0","name":"Sheldon Creed","team":"Haas Factory Team","mfg":"Chevy","ovr":83,"ss":84,"it":87,"st":86,"rc":83,"agg":68,"con":81,"fullTime":true,"car":95},{"num":"8","name":"Sammy Smith","team":"JR Motorsports","mfg":"Chevy","ovr":82,"ss":81,"it":84,"st":87,"rc":78,"agg":70,"con":80,"fullTime":true,"car":95},{"num":"54","name":"Taylor Gray","team":"Joe Gibbs Racing","mfg":"Toyota","ovr":81,"ss":80,"it":80,"st":83,"rc":80,"agg":72,"con":78,"fullTime":true,"car":95},{"num":"20","name":"Brandon Jones","team":"Joe Gibbs Racing","mfg":"Toyota","ovr":81,"ss":79,"it":82,"st":84,"rc":78,"agg":62,"con":84,"fullTime":true,"car":95},{"num":"18","name":"William Sawalich","team":"Joe Gibbs Racing","mfg":"Toyota","ovr":81,"ss":82,"it":80,"st":84,"rc":80,"agg":66,"con":80,"fullTime":true,"car":95},{"num":"39","name":"Ryan Sieg","team":"RSS Racing","mfg":"Chevy","ovr":80,"ss":83,"it":81,"st":80,"rc":78,"agg":66,"con":80,"fullTime":true,"car":95},{"num":"19","name":"Brent Crews","team":"Joe Gibbs Racing","mfg":"Toyota","ovr":80,"ss":76,"it":82,"st":83,"rc":78,"agg":66,"con":79,"fullTime":true,"car":95},{"num":"1","name":"Carson Kvapil","team":"JR Motorsports","mfg":"Chevy","ovr":79,"ss":78,"it":80,"st":80,"rc":74,"agg":64,"con":79,"fullTime":true,"car":95},{"num":"99","name":"Parker Retzlaff","team":"Viking Motorsports","mfg":"Chevy","ovr":78,"ss":80,"it":76,"st":80,"rc":72,"agg":64,"con":78,"fullTime":true,"car":95},{"num":"96","name":"Anthony Alfredo","team":"Viking Motorsports","mfg":"Chevy","ovr":77,"ss":80,"it":76,"st":77,"rc":73,"agg":61,"con":76,"fullTime":true,"car":95},{"num":"88","name":"Rajah Caruth","team":"JR Motorsports","mfg":"Chevy","ovr":77,"ss":78,"it":76,"st":80,"rc":73,"agg":61,"con":79,"fullTime":true,"car":95},{"num":"27","name":"Jeb Burton","team":"Jordan Anderson Racing","mfg":"Chevy","ovr":76,"ss":74,"it":71,"st":76,"rc":74,"agg":64,"con":75,"fullTime":true,"car":95},{"num":"16","name":"AJ Allmendinger","team":"Kaulig Racing","mfg":"Chevy","ovr":76,"ss":64,"it":72,"st":68,"rc":92,"agg":68,"con":72,"fullTime":true,"car":95},{"num":"51","name":"Jeremy Clements","team":"Jeremy Clements Racing","mfg":"Chevy","ovr":75,"ss":76,"it":72,"st":76,"rc":72,"agg":61,"con":74,"fullTime":true,"car":95},{"num":"26","name":"Dean Thompson","team":"Sam Hunt Racing","mfg":"Toyota","ovr":75,"ss":76,"it":74,"st":77,"rc":70,"agg":62,"con":71,"fullTime":true,"car":95},{"num":"24","name":"Harrison Burton","team":"Sam Hunt Racing","mfg":"Toyota","ovr":75,"ss":78,"it":72,"st":72,"rc":72,"agg":62,"con":72,"fullTime":true,"car":95},{"num":"45","name":"Lavar Scott","team":"Alpha Prime Racing","mfg":"Chevy","ovr":73,"ss":68,"it":72,"st":72,"rc":70,"agg":63,"con":68,"fullTime":true,"car":95},{"num":"14","name":"Nick Sanchez","team":"AM Racing","mfg":"Chevy","ovr":73,"ss":72,"it":72,"st":74,"rc":64,"agg":65,"con":69,"fullTime":true,"car":95},{"num":"44","name":"Brennan Poole","team":"Alpha Prime Racing","mfg":"Chevy","ovr":72,"ss":74,"it":73,"st":70,"rc":66,"agg":56,"con":73,"fullTime":true,"car":95},{"num":"31","name":"Blaine Perkins","team":"Jordan Anderson Racing","mfg":"Chevy","ovr":72,"ss":70,"it":70,"st":72,"rc":64,"agg":62,"con":70,"fullTime":true,"car":95},{"num":"9","name":"Connor Zilisch","team":"JR Motorsports","mfg":"Chevy","ovr":71,"ss":62,"it":64,"st":62,"rc":80,"agg":68,"con":63,"fullTime":true,"car":95},{"num":"87","name":"Austin Green","team":"Peterson Racing","mfg":"Chevy","ovr":71,"ss":66,"it":69,"st":72,"rc":66,"agg":60,"con":70,"fullTime":true,"car":95},{"num":"7","name":"Josh Bilicki","team":"SS-GreenLight Racing","mfg":"Chevy","ovr":71,"ss":72,"it":68,"st":68,"rc":69,"agg":56,"con":71,"fullTime":true,"car":95},{"num":"48","name":"Patrick Staropoli","team":"Big Machine Racing","mfg":"Chevy","ovr":71,"ss":66,"it":71,"st":68,"rc":70,"agg":59,"con":70,"fullTime":true,"car":95},{"num":"28","name":"Kyle Sieg","team":"RSS Racing","mfg":"Chevy","ovr":71,"ss":72,"it":70,"st":69,"rc":64,"agg":62,"con":68,"fullTime":true,"car":95},{"num":"92","name":"Josh Williams","team":"DGM Racing","mfg":"Chevy","ovr":70,"ss":64,"it":64,"st":67,"rc":71,"agg":66,"con":66,"fullTime":true,"car":95},{"num":"66","name":"Timmy Hill","team":"MBM Motorsports","mfg":"Toyota","ovr":69,"ss":66,"it":64,"st":67,"rc":64,"agg":60,"con":68,"fullTime":true,"car":95},{"num":"5","name":"Chandler Smith","team":"Hettinger Racing","mfg":"Ford","ovr":69,"ss":64,"it":66,"st":66,"rc":61,"agg":68,"con":61,"fullTime":false,"car":95},{"num":"8","name":"Alex Labbe","team":"SS-GreenLight Racing","mfg":"Chevy","ovr":68,"ss":68,"it":65,"st":63,"rc":62,"agg":58,"con":66,"fullTime":true,"car":95},{"num":"42","name":"Nick Leitz","team":"Young's Motorsports","mfg":"Chevy","ovr":67,"ss":64,"it":63,"st":62,"rc":63,"agg":60,"con":64,"fullTime":true,"car":95},{"num":"35","name":"Joey Gase","team":"Joey Gase Motorsports","mfg":"Toyota","ovr":67,"ss":67,"it":64,"st":64,"rc":58,"agg":54,"con":64,"fullTime":true,"car":95},{"num":"32","name":"Jordan Anderson","team":"Jordan Anderson Racing","mfg":"Chevy","ovr":67,"ss":66,"it":61,"st":65,"rc":60,"agg":62,"con":62,"fullTime":false,"car":95},{"num":"91","name":"Mason Maggio","team":"DGM Racing","mfg":"Chevy","ovr":66,"ss":64,"it":61,"st":65,"rc":56,"agg":58,"con":63,"fullTime":false,"car":95},{"num":"53","name":"Brad Perez","team":"Joey Gase Motorsports","mfg":"Toyota","ovr":65,"ss":60,"it":60,"st":60,"rc":60,"agg":60,"con":60,"fullTime":true,"car":95},{"num":"30","name":"Dawson Cram","team":"Stanton Barrett Motorsports","mfg":"Chevy","ovr":65,"ss":61,"it":62,"st":60,"rc":57,"agg":58,"con":62,"fullTime":false,"car":95}
 ];
 
 // ====================== TRUCK SERIES DRIVERS ======================
 let TRUCK_DRIVERS = [
-{"num":99,"name":"Ben Rhodes","team":"ThorSport Racing","mfg":"Ford","ovr":82,"ss":88,"it":82,"st":84,"rc":79,"agg":63,"con":86,"car":95},{"num":98,"name":"Jake Garcia","team":"ThorSport Racing","mfg":"Ford","ovr":75,"ss":76,"it":74,"st":76,"rc":71,"agg":58,"con":77,"car":95},{"num":91,"name":"Christian Eckes","team":"McAnally-Hilgemann Racing","mfg":"Chevy","ovr":84,"ss":84,"it":85,"st":88,"rc":90,"agg":63,"con":85,"car":95},{"num":88,"name":"Ty Majeski","team":"ThorSport Racing","mfg":"Ford","ovr":84,"ss":90,"it":86,"st":86,"rc":82,"agg":65,"con":86,"car":95},{"num":81,"name":"Kris Wright","team":"McAnally-Hilgemann Racing","mfg":"Chevy","ovr":71,"ss":69,"it":66,"st":72,"rc":64,"agg":60,"con":68,"car":95},{"num":77,"name":"Carson Hocevar","team":"Spire Motorsports","mfg":"Chevy","ovr":82,"ss":81,"it":82,"st":84,"rc":78,"agg":79,"con":78,"car":95},{"num":76,"name":"Spencer Boyd","team":"Freedom Racing Enterprises","mfg":"Ford","ovr":69,"ss":70,"it":65,"st":69,"rc":60,"agg":56,"con":68,"car":95},{"num":71,"name":"Connor Zilisch","team":"Spire Motorsports","mfg":"Chevy","ovr":71,"ss":62,"it":64,"st":62,"rc":84,"agg":68,"con":63,"car":95},{"num":62,"name":"John Hunter Nemechek","team":"Halmar Friesen Racing","mfg":"Toyota","ovr":70,"ss":72,"it":64,"st":67,"rc":62,"agg":66,"con":67,"car":95},{"num":56,"name":"Timmy Hill","team":"Hill Motorsports","mfg":"Chevy","ovr":69,"ss":66,"it":64,"st":67,"rc":64,"agg":58,"con":68,"car":95},{"num":52,"name":"Stewart Friesen","team":"Halmar Friesen Racing","mfg":"Toyota","ovr":82,"ss":79,"it":80,"st":86,"rc":84,"agg":67,"con":83,"car":95},{"num":45,"name":"Landen Lewis","team":"Niece Motorsports","mfg":"Chevy","ovr":71,"ss":70,"it":67,"st":69,"rc":64,"agg":62,"con":68,"car":95},{"num":44,"name":"Andres Perez De Lara","team":"Niece Motorsports","mfg":"Chevy","ovr":72,"ss":72,"it":72,"st":70,"rc":67,"agg":58,"con":72,"car":95},{"num":42,"name":"Tyler Reif","team":"Niece Motorsports","mfg":"Chevy","ovr":70,"ss":66,"it":68,"st":66,"rc":64,"agg":62,"con":66,"car":95},{"num":38,"name":"Chandler Smith","team":"Front Row Motorsports","mfg":"Ford","ovr":83,"ss":84,"it":86,"st":86,"rc":81,"agg":68,"con":81,"car":95},{"num":34,"name":"Layne Riggs","team":"Front Row Motorsports","mfg":"Ford","ovr":86,"ss":85,"it":87,"st":90,"rc":90,"agg":71,"con":86,"car":95},{"num":33,"name":"Frankie Muniz","team":"Team Reaume","mfg":"Ford","ovr":67,"ss":67,"it":63,"st":63,"rc":61,"agg":54,"con":66,"car":95},{"num":26,"name":"Dawson Sutton","team":"Rackley W.A.R.","mfg":"Chevy","ovr":73,"ss":72,"it":69,"st":72,"rc":70,"agg":60,"con":70,"car":95},{"num":25,"name":"Parker Kligerman","team":"Kaulig Racing","mfg":"Dodge","ovr":74,"ss":75,"it":72,"st":68,"rc":74,"agg":60,"con":74,"car":95},{"num":22,"name":"Josh Reaume","team":"Team Reaume","mfg":"Ford","ovr":67,"ss":64,"it":62,"st":62,"rc":61,"agg":60,"con":64,"car":95},{"num":20,"name":"Toni Breidinger","team":"McAnally-Hilgemann Racing","mfg":"Chevy","ovr":65,"ss":65,"it":58,"st":60,"rc":60,"agg":55,"con":62,"car":95},{"num":19,"name":"Daniel Hemric","team":"McAnally-Hilgemann Racing","mfg":"Chevy","ovr":79,"ss":78,"it":78,"st":82,"rc":78,"agg":55,"con":84,"car":95},{"num":18,"name":"Tyler Ankrum","team":"McAnally-Hilgemann Racing","mfg":"Chevy","ovr":78,"ss":82,"it":78,"st":80,"rc":76,"agg":58,"con":79,"car":95},{"num":17,"name":"Giovanni Ruggiero","team":"TRICON Garage","mfg":"Toyota","ovr":77,"ss":74,"it":76,"st":78,"rc":76,"agg":62,"con":78,"car":95},{"num":16,"name":"Justin Haley","team":"Kaulig Racing","mfg":"Dodge","ovr":79,"ss":80,"it":77,"st":80,"rc":78,"agg":66,"con":78,"car":95},{"num":15,"name":"Tanner Gray","team":"TRICON Garage","mfg":"Toyota","ovr":77,"ss":76,"it":76,"st":80,"rc":72,"agg":60,"con":80,"car":95},{"num":14,"name":"Mini Tyrrell","team":"Kaulig Racing","mfg":"Dodge","ovr":71,"ss":72,"it":67,"st":69,"rc":66,"agg":58,"con":70,"car":95},{"num":13,"name":"Cole Butcher","team":"ThorSport Racing","mfg":"Ford","ovr":74,"ss":71,"it":72,"st":75,"rc":70,"agg":59,"con":73,"car":95},{"num":12,"name":"Brenden Queen","team":"Kaulig Racing","mfg":"Dodge","ovr":74,"ss":74,"it":72,"st":74,"rc":70,"agg":59,"con":75,"car":95},{"num":11,"name":"Kaden Honeycutt","team":"TRICON Garage","mfg":"Toyota","ovr":84,"ss":82,"it":88,"st":88,"rc":88,"agg":66,"con":84,"car":95},{"num":10,"name":"Corey LaJoie","team":"Kaulig Racing","mfg":"Dodge","ovr":76,"ss":82,"it":74,"st":70,"rc":74,"agg":60,"con":75,"car":95},{"num":9,"name":"Grant Enfinger","team":"CR7 Motorsports","mfg":"Chevy","ovr":83,"ss":88,"it":84,"st":86,"rc":76,"agg":65,"con":84,"car":95},{"num":7,"name":"Connor Mosack","team":"Spire Motorsports","mfg":"Chevy","ovr":72,"ss":68,"it":70,"st":74,"rc":66,"agg":62,"con":72,"car":95},{"num":5,"name":"Adam Andretti","team":"TRICON Garage","mfg":"Toyota","ovr":69,"ss":68,"it":66,"st":66,"rc":66,"agg":58,"con":66,"car":95},{"num":4,"name":"Ricky Stenhouse Jr","team":"Niece Motorsports","mfg":"Chevy","ovr":73,"ss":80,"it":66,"st":66,"rc":64,"agg":74,"con":64,"car":95},{"num":2,"name":"Luke Baldwin","team":"Team Reaume","mfg":"Ford","ovr":65,"ss":60,"it":62,"st":60,"rc":58,"agg":58,"con":62,"car":95},{"num":1,"name":"Corey Heim","team":"TRICON Garage","mfg":"Toyota","ovr":86,"ss":90,"it":90,"st":87,"rc":86,"agg":70,"con":86,"car":95}
+[{"num":"34","name":"Layne Riggs","team":"Front Row Motorsports","mfg":"Ford","ovr":86,"ss":85,"it":87,"st":90,"rc":90,"agg":71,"con":86,"fullTime":true,"car":95},{"num":"1","name":"Corey Heim","team":"TRICON Garage","mfg":"Toyota","ovr":86,"ss":90,"it":90,"st":87,"rc":86,"agg":70,"con":86,"fullTime":true,"car":95},{"num":"91","name":"Christian Eckes","team":"McAnally-Hilgemann Racing","mfg":"Chevy","ovr":84,"ss":84,"it":85,"st":88,"rc":90,"agg":63,"con":85,"fullTime":true,"car":95},{"num":"88","name":"Ty Majeski","team":"ThorSport Racing","mfg":"Ford","ovr":84,"ss":90,"it":86,"st":86,"rc":82,"agg":65,"con":86,"fullTime":true,"car":95},{"num":"11","name":"Kaden Honeycutt","team":"TRICON Garage","mfg":"Toyota","ovr":84,"ss":82,"it":88,"st":88,"rc":88,"agg":66,"con":84,"fullTime":true,"car":95},{"num":"9","name":"Grant Enfinger","team":"CR7 Motorsports","mfg":"Chevy","ovr":83,"ss":88,"it":84,"st":86,"rc":76,"agg":65,"con":84,"fullTime":true,"car":95},{"num":"38","name":"Chandler Smith","team":"Front Row Motorsports","mfg":"Ford","ovr":83,"ss":84,"it":86,"st":86,"rc":81,"agg":68,"con":81,"fullTime":true,"car":95},{"num":"99","name":"Ben Rhodes","team":"ThorSport Racing","mfg":"Ford","ovr":82,"ss":88,"it":82,"st":84,"rc":79,"agg":63,"con":86,"fullTime":true,"car":95},{"num":"77","name":"Carson Hocevar","team":"Spire Motorsports","mfg":"Chevy","ovr":82,"ss":81,"it":82,"st":84,"rc":78,"agg":79,"con":78,"fullTime":true,"car":95},{"num":"52","name":"Stewart Friesen","team":"Halmar Friesen Racing","mfg":"Toyota","ovr":82,"ss":79,"it":80,"st":86,"rc":84,"agg":67,"con":83,"fullTime":true,"car":95},{"num":"19","name":"Daniel Hemric","team":"McAnally-Hilgemann Racing","mfg":"Chevy","ovr":79,"ss":78,"it":78,"st":82,"rc":78,"agg":55,"con":84,"fullTime":true,"car":95},{"num":"16","name":"Justin Haley","team":"Kaulig Racing","mfg":"Dodge","ovr":79,"ss":80,"it":77,"st":80,"rc":78,"agg":66,"con":78,"fullTime":true,"car":95},{"num":"18","name":"Tyler Ankrum","team":"McAnally-Hilgemann Racing","mfg":"Chevy","ovr":78,"ss":82,"it":78,"st":80,"rc":76,"agg":58,"con":79,"fullTime":true,"car":95},{"num":"17","name":"Giovanni Ruggiero","team":"TRICON Garage","mfg":"Toyota","ovr":77,"ss":74,"it":76,"st":78,"rc":76,"agg":62,"con":78,"fullTime":true,"car":95},{"num":"15","name":"Tanner Gray","team":"TRICON Garage","mfg":"Toyota","ovr":77,"ss":76,"it":76,"st":80,"rc":72,"agg":60,"con":80,"fullTime":true,"car":95},{"num":"10","name":"Corey LaJoie","team":"Kaulig Racing","mfg":"Dodge","ovr":76,"ss":82,"it":74,"st":70,"rc":74,"agg":60,"con":75,"fullTime":true,"car":95},{"num":"98","name":"Jake Garcia","team":"ThorSport Racing","mfg":"Ford","ovr":75,"ss":76,"it":74,"st":76,"rc":71,"agg":58,"con":77,"fullTime":true,"car":95},{"num":"25","name":"Parker Kligerman","team":"Kaulig Racing","mfg":"Dodge","ovr":74,"ss":75,"it":72,"st":68,"rc":74,"agg":60,"con":74,"fullTime":false,"car":95},{"num":"13","name":"Cole Butcher","team":"ThorSport Racing","mfg":"Ford","ovr":74,"ss":71,"it":72,"st":75,"rc":70,"agg":59,"con":73,"fullTime":true,"car":95},{"num":"12","name":"Brenden Queen","team":"Kaulig Racing","mfg":"Dodge","ovr":74,"ss":74,"it":72,"st":74,"rc":70,"agg":59,"con":75,"fullTime":true,"car":95},{"num":"4","name":"Ricky Stenhouse Jr","team":"Niece Motorsports","mfg":"Chevy","ovr":73,"ss":80,"it":66,"st":66,"rc":64,"agg":74,"con":64,"fullTime":false,"car":95},{"num":"26","name":"Dawson Sutton","team":"Rackley W.A.R.","mfg":"Chevy","ovr":73,"ss":72,"it":69,"st":72,"rc":70,"agg":60,"con":70,"fullTime":true,"car":95},{"num":"7","name":"Connor Mosack","team":"Spire Motorsports","mfg":"Chevy","ovr":72,"ss":68,"it":70,"st":74,"rc":66,"agg":62,"con":72,"fullTime":true,"car":95},{"num":"44","name":"Andres Perez De Lara","team":"Niece Motorsports","mfg":"Chevy","ovr":72,"ss":72,"it":72,"st":70,"rc":67,"agg":58,"con":72,"fullTime":true,"car":95},{"num":"81","name":"Kris Wright","team":"McAnally-Hilgemann Racing","mfg":"Chevy","ovr":71,"ss":69,"it":66,"st":72,"rc":64,"agg":60,"con":68,"fullTime":true,"car":95},{"num":"71","name":"Connor Zilisch","team":"Spire Motorsports","mfg":"Chevy","ovr":71,"ss":62,"it":64,"st":62,"rc":84,"agg":68,"con":63,"fullTime":false,"car":95},{"num":"45","name":"Landen Lewis","team":"Niece Motorsports","mfg":"Chevy","ovr":71,"ss":70,"it":67,"st":69,"rc":64,"agg":62,"con":68,"fullTime":true,"car":95},{"num":"14","name":"Mini Tyrrell","team":"Kaulig Racing","mfg":"Dodge","ovr":71,"ss":72,"it":67,"st":69,"rc":66,"agg":58,"con":70,"fullTime":true,"car":95},{"num":"62","name":"John Hunter Nemechek","team":"Halmar Friesen Racing","mfg":"Toyota","ovr":70,"ss":72,"it":64,"st":67,"rc":62,"agg":66,"con":67,"fullTime":false,"car":95},{"num":"42","name":"Tyler Reif","team":"Niece Motorsports","mfg":"Chevy","ovr":70,"ss":66,"it":68,"st":66,"rc":64,"agg":62,"con":66,"fullTime":true,"car":95},{"num":"76","name":"Spencer Boyd","team":"Freedom Racing Enterprises","mfg":"Ford","ovr":69,"ss":70,"it":65,"st":69,"rc":60,"agg":56,"con":68,"fullTime":true,"car":95},{"num":"56","name":"Timmy Hill","team":"Hill Motorsports","mfg":"Chevy","ovr":69,"ss":66,"it":64,"st":67,"rc":64,"agg":58,"con":68,"fullTime":true,"car":95},{"num":"5","name":"Adam Andretti","team":"TRICON Garage","mfg":"Toyota","ovr":69,"ss":68,"it":66,"st":66,"rc":66,"agg":58,"con":66,"fullTime":false,"car":95},{"num":"33","name":"Frankie Muniz","team":"Team Reaume","mfg":"Ford","ovr":67,"ss":67,"it":63,"st":63,"rc":61,"agg":54,"con":66,"fullTime":true,"car":95},{"num":"22","name":"Josh Reaume","team":"Team Reaume","mfg":"Ford","ovr":67,"ss":64,"it":62,"st":62,"rc":61,"agg":60,"con":64,"fullTime":false,"car":95},{"num":"20","name":"Toni Breidinger","team":"McAnally-Hilgemann Racing","mfg":"Chevy","ovr":65,"ss":65,"it":58,"st":60,"rc":60,"agg":55,"con":62,"fullTime":false,"car":95},{"num":"2","name":"Luke Baldwin","team":"Team Reaume","mfg":"Ford","ovr":65,"ss":60,"it":62,"st":60,"rc":58,"agg":58,"con":62,"fullTime":true,"car":95}
 ];
 
 // ====================== F1 SERIES DRIVERS (2026) ======================
@@ -572,6 +573,7 @@ let INDYCAR_DRIVERS = [
 
 const MFG_COLORS = {Chevy:"var(--chevy)",Ford:"var(--ford)",Toyota:"var(--toyota)",Dodge:"var(--dodge)",Honda:"#e30a17","Red Bull":"#1e41a1",McLaren:"#ff8700",Ferrari:"#dc0000",Mercedes:"#27f4d2","Aston Martin":"#006f62",Alpine:"#ff69b4",RB:"#294e7a",Haas:"#888888",Williams:"#00a2e6",Sauber:"#00e701",Cadillac:"#ffffff",Audi:"#8b0000","Racing Bulls":"#294e7a"};
 const FIELD_CAP = {cup:40,xfinity:40,truck:36,f1:22,indycar:33,cf1:22,eel:40};
+const FULLTIME_LIMITS = {cup:36,xfinity:36,truck:30,f1:22,indycar:28,cf1:22,eel:36};
 const QUAL_SPEEDS = {SS:197,INT:176,ST:106,RC:96};
 const RACE_SPEEDS = {SS:192,INT:170,ST:100,RC:91};
 const F1_QUAL_SPEEDS = {SS:197,INT:176,ST:130,RC:145};
@@ -876,10 +878,10 @@ function createSeason(driverArr){
 
 // Save originals for roster reset
 // Assign car ratings (NASCAR spec, F1 varied by team, IndyCar spec) — only if not already set
-[CUP_DRIVERS, XFINITY_DRIVERS, TRUCK_DRIVERS].forEach(arr => arr.forEach(d => { if(d.car===undefined)d.car = 95; }));
-INDYCAR_DRIVERS.forEach(d => { if(d.car===undefined)d.car = 85; });
+[CUP_DRIVERS, XFINITY_DRIVERS, TRUCK_DRIVERS].forEach(arr => arr.forEach(d => { if(d.car===undefined)d.car = 95; if(d.fullTime===undefined)d.fullTime = true; }));
+INDYCAR_DRIVERS.forEach(d => { if(d.car===undefined)d.car = 85; if(d.fullTime===undefined)d.fullTime = true; });
 const F1_CAR = {"Red Bull Racing":90,"McLaren":94,"Ferrari":95,"Mercedes":96,"Aston Martin":68,"Alpine":85,"Williams":78,"Haas":80,"Racing Bulls":82,"Audi":78,"Cadillac":70};
-F1_DRIVERS.forEach(d => { if(d.car===undefined)d.car = F1_CAR[d.team] || 80; });
+F1_DRIVERS.forEach(d => { if(d.car===undefined)d.car = F1_CAR[d.team] || 80; if(d.fullTime===undefined)d.fullTime = true; });
 const DEFAULT_CUP = [...CUP_DRIVERS];
 const DEFAULT_XFINITY = [...XFINITY_DRIVERS];
 const DEFAULT_TRUCK = [...TRUCK_DRIVERS];
@@ -957,14 +959,15 @@ function rosterDataFromTable(){
     const rc=parseInt(inputs[7].value)||50;
     const agg=parseInt(inputs[8].value)||50;
     const con=parseInt(inputs[9].value)||50;
-    const car=parseInt(inputs[10].value)||50;
+    const fullTime=inputs[10].checked;
+    const car=parseInt(inputs[11].value)||50;
     drivers.push({
       num: String(num),
       name: inputs[1].value.trim()||'Unknown',
       team: inputs[2].value.trim()||'Independent',
       mfg: inputs[3].value,
       ovr: Math.round((ss+it+st+rc+agg+con+car)/7),
-      ss:ss, it:it, st:st, rc:rc, agg:agg, con:con, car:car
+      ss:ss, it:it, st:st, rc:rc, agg:agg, con:con, fullTime:fullTime, car:car
     });
   });
   return drivers;
@@ -991,6 +994,7 @@ function openRosterEditor(){
 
 function closeRosterEditor(){
   document.getElementById('rosterModal').style.display='none';
+  updateFullTimeStat();
 }
 
 function calcOvr(d){
@@ -1029,6 +1033,7 @@ function renderRosterEditor(){
       <td><input type="number" value="${d.rc}" min="0" max="100" oninput="recalcOvr(this)"></td>
       <td><input type="number" value="${d.agg}" min="0" max="100" oninput="recalcOvr(this)"></td>
       <td><input type="number" value="${d.con}" min="0" max="100" oninput="recalcOvr(this)"></td>
+      <td><input type="checkbox" ${d.fullTime!==false?'checked':''} style="width:16px;height:16px;cursor:pointer" onchange="updateRosterFtCount()"></td>
       <td><input type="number" value="${d.car!==undefined?d.car:getCarRating(d)}" min="0" max="100" oninput="recalcOvr(this)"></td>
       <td style="white-space:nowrap"><button class="btn btn-gray btn-sm" style="padding:1px 5px;font-size:11px" onclick="duplicateRosterRow(this)" title="Duplicate">⧉</button> <button class="btn btn-gray btn-sm" style="padding:1px 6px;font-size:11px" onclick="removeRosterRow(this)">x</button></td>`;
     tbody.appendChild(tr);
@@ -1038,6 +1043,18 @@ function renderRosterEditor(){
     th.classList.remove('sort-asc','sort-desc');
     if(th.dataset.col===rosterSortCol)th.classList.add(rosterSortAsc?'sort-asc':'sort-desc');
   });
+  updateRosterFtCount();
+}
+
+function updateRosterFtCount(){
+  const el=document.getElementById('rosterFtCount');
+  const tbody=document.getElementById('rosterBody');
+  if(!el||!tbody)return;
+  const checkboxes=tbody.querySelectorAll('input[type="checkbox"]');
+  const ftCount=[...checkboxes].filter(c=>c.checked).length;
+  const ftLimit=FULLTIME_LIMITS[seriesKeyForRoster()];
+  el.textContent=`${ftCount}/${ftLimit}`;
+  el.style.color=ftCount>ftLimit?'var(--red)':'';
 }
 
 function duplicateRosterRow(btn){
@@ -1053,7 +1070,8 @@ function duplicateRosterRow(btn){
   const rc=inputs[7].value;
   const agg=inputs[8].value;
   const con=inputs[9].value;
-  const car=inputs[10].value;
+  const ftChecked=inputs[10].checked;
+  const car=inputs[11].value;
   const mfgs=['Chevy','Ford','Toyota','Dodge','Honda','Red Bull','McLaren','Ferrari','Mercedes','Aston Martin','Alpine','RB','Haas','Williams','Sauber','Cadillac','Audi','Racing Bulls'];
   const tr=document.createElement('tr');
   tr.innerHTML=`<td><input type="text" value="${num}" style="width:100%"></td>
@@ -1067,9 +1085,11 @@ function duplicateRosterRow(btn){
     <td><input type="number" value="${rc}" min="0" max="100" oninput="recalcOvr(this)"></td>
     <td><input type="number" value="${agg}" min="0" max="100" oninput="recalcOvr(this)"></td>
     <td><input type="number" value="${con}" min="0" max="100" oninput="recalcOvr(this)"></td>
+    <td><input type="checkbox" ${ftChecked?'checked':''} style="width:16px;height:16px;cursor:pointer" onchange="updateRosterFtCount()"></td>
     <td><input type="number" value="${car}" min="0" max="100" oninput="recalcOvr(this)"></td>
     <td style="white-space:nowrap"><button class="btn btn-gray btn-sm" style="padding:1px 5px;font-size:11px" onclick="duplicateRosterRow(this)" title="Duplicate">⧉</button> <button class="btn btn-gray btn-sm" style="padding:1px 6px;font-size:11px" onclick="removeRosterRow(this)">x</button></td>`;
   row.parentNode.insertBefore(tr,row.nextSibling);
+  updateRosterFtCount();
 }
 
 function sortRoster(col){
@@ -1095,19 +1115,25 @@ function addRosterRow(){
     <td><input type="number" value="50" min="0" max="100" oninput="recalcOvr(this)"></td>
     <td><input type="number" value="50" min="0" max="100" oninput="recalcOvr(this)"></td>
     <td><input type="number" value="50" min="0" max="100" oninput="recalcOvr(this)"></td>
+    <td><input type="checkbox" checked style="width:16px;height:16px;cursor:pointer" onchange="updateRosterFtCount()"></td>
     <td><input type="number" value="85" min="0" max="100" oninput="recalcOvr(this)"></td>
     <td style="white-space:nowrap"><button class="btn btn-gray btn-sm" style="padding:1px 5px;font-size:11px" onclick="duplicateRosterRow(this)" title="Duplicate">⧉</button> <button class="btn btn-gray btn-sm" style="padding:1px 6px;font-size:11px" onclick="removeRosterRow(this)">x</button></td>`;
   tbody.appendChild(tr);
+  updateRosterFtCount();
 }
 
 function removeRosterRow(btn){
   btn.closest('tr').remove();
+  updateRosterFtCount();
 }
 
 function saveRoster(){
   const drivers=rosterDataFromTable();
   const key=seriesKeyForRoster();
   if(!drivers.length){alert('Roster must have at least one driver.');return;}
+  const ftCount=drivers.filter(d=>d.fullTime!==false).length;
+  const ftLimit=FULLTIME_LIMITS[key];
+  if(ftCount>ftLimit&&!confirm(`Full-time drivers (${ftCount}) exceed the limit of ${ftLimit} for this series. Save anyway?`))return;
   try{
     const raw=localStorage.getItem('nascar_rosters');
     const data=raw?JSON.parse(raw):{};
@@ -1135,7 +1161,7 @@ function saveRoster(){
         // Update profile fields, preserve stats
         Object.assign(st[num],{
           name:d.name,team:d.team,mfg:d.mfg,
-          ovr:d.ovr,ss:d.ss,it:d.it,st:d.st,rc:d.rc,agg:d.agg,con:d.con,car:d.car
+          ovr:d.ovr,ss:d.ss,it:d.it,st:d.st,rc:d.rc,agg:d.agg,con:d.con,car:d.car,fullTime:d.fullTime
         });
       }else{
         // New driver: add with 0 stats
@@ -1227,11 +1253,11 @@ function copyRosterInfo(){
 loadCustomRosters();
 [CUP_DRIVERS, XFINITY_DRIVERS, TRUCK_DRIVERS, F1_DRIVERS, INDYCAR_DRIVERS, EEL_DRIVERS, CUSTOM_F1_DRIVERS].forEach(arr => arr.forEach(d => { d.num = String(d.num); }));
 // Assign car ratings after loading so they apply to runtime arrays
-[CUP_DRIVERS, XFINITY_DRIVERS, TRUCK_DRIVERS, EEL_DRIVERS].forEach(arr => arr.forEach(d => { if(d.car===undefined)d.car = 95; }));
-INDYCAR_DRIVERS.forEach(d => { if(d.car===undefined)d.car = 85; });
+[CUP_DRIVERS, XFINITY_DRIVERS, TRUCK_DRIVERS, EEL_DRIVERS].forEach(arr => arr.forEach(d => { if(d.car===undefined)d.car = 95; if(d.fullTime===undefined)d.fullTime = true; }));
+INDYCAR_DRIVERS.forEach(d => { if(d.car===undefined)d.car = 85; if(d.fullTime===undefined)d.fullTime = true; });
 const F1_CAR_MAP = {"Red Bull Racing":90,"McLaren":94,"Ferrari":95,"Mercedes":96,"Aston Martin":68,"Alpine":85,"Williams":78,"Haas":80,"Racing Bulls":82,"Audi":78,"Cadillac":70};
-F1_DRIVERS.forEach(d => { if(d.car===undefined)d.car = (F1_CAR_MAP[d.team] || 80); });
-CUSTOM_F1_DRIVERS.forEach(d => { if(d.car===undefined)d.car = (F1_CAR_MAP[d.team] || 80); });
+F1_DRIVERS.forEach(d => { if(d.car===undefined)d.car = (F1_CAR_MAP[d.team] || 80); if(d.fullTime===undefined)d.fullTime = true; });
+CUSTOM_F1_DRIVERS.forEach(d => { if(d.car===undefined)d.car = (F1_CAR_MAP[d.team] || 80); if(d.fullTime===undefined)d.fullTime = true; });
 loadCustomTracks();
 loadCustomPoints();
 let cupSeason = createSeason(CUP_DRIVERS); cupSeason.postInit();
@@ -1284,6 +1310,7 @@ function switchSeries(key){
   addLog(`Switched to ${sn[key]} Series.`,'s');
   document.getElementById('chaseToggle').checked=season.chaseEnabled;
   updateHeaderInfo();
+  updateFullTimeStat();
 }
 
 // ====================== RACE STATE ======================
@@ -1356,9 +1383,13 @@ function startQualifyingSession(track){
     if(!seen[key]){seen[key]=true;deduped.push(r);}
   });
 
-  // Apply field cap on deduped list
+  // Separate full-time and part-time; guarantee full-time make the race
   const cap=FIELD_CAP[currentSeries]||DRIVERS.length;
-  const qualified=deduped.slice(0,cap);
+  const ft=[],pt=[];
+  deduped.forEach(r=>{(r.driver.fullTime!==false?ft:pt).push(r);});
+  // All full-time advance, then fill remaining spots with fastest part-time
+  const qualified=[...ft];
+  if(qualified.length<cap)qualified.push(...pt.slice(0,cap-qualified.length));
 
   // DNQ = anyone not in qualified
   const dnqList=results.filter(r=>!qualified.includes(r));
@@ -2073,8 +2104,17 @@ function updateHeaderInfo(){
   el.innerHTML=label;
 }
 
+function updateFullTimeStat(){
+  const el=document.getElementById('sFullTime');
+  if(!el)return;
+  const ftCount=DRIVERS.filter(d=>d.fullTime!==false).length;
+  const ftLimit=FULLTIME_LIMITS[currentSeries];
+  el.textContent=`${ftCount}/${ftLimit}`;
+  el.style.color=ftCount>ftLimit?'var(--red)':'';
+}
+
 function updateStatusBar(){
-  if(!race){const cap=FIELD_CAP[currentSeries]||DRIVERS.length;document.getElementById('sLap').textContent='-';document.getElementById('sStage').textContent='-';document.getElementById('sFlag').textContent='-';document.getElementById('sLeader').textContent='-';document.getElementById('sCautionLaps').textContent='-';document.getElementById('sRunning').textContent=`${cap}/${DRIVERS.length}`;return;}
+  if(!race){const cap=FIELD_CAP[currentSeries]||DRIVERS.length;document.getElementById('sLap').textContent='-';document.getElementById('sStage').textContent='-';document.getElementById('sFlag').textContent='-';document.getElementById('sLeader').textContent='-';document.getElementById('sCautionLaps').textContent='-';document.getElementById('sRunning').textContent=`${cap}/${DRIVERS.length}`;updateFullTimeStat();return;}
   const sl=document.getElementById('sLap');
   sl.textContent=`${race.laps}/${seriesTrackVal(race.track,'laps')}`;
   if(race.finished)sl.style.color='var(--yellow)';
@@ -2104,6 +2144,7 @@ function updateStatusBar(){
   document.getElementById('sLeader').textContent=l?`#${l.num} ${l.name}`:'-';
   document.getElementById('sCautionLaps').textContent=race.flag==='caution'?`${race.cautionLaps}/${race.cautionTotalLaps}`:'-';
   document.getElementById('sRunning').textContent=`${race.runningCars}/${race.fieldCap||DRIVERS.length}`;
+  updateFullTimeStat();
 }
 
 function setStatus(msg,session){
@@ -2329,6 +2370,7 @@ function renderTeamStandings(){
       <td class="st-finishes">${t.finishes||0}</td>
     </tr>`;
   });
+  updateFullTimeStat();
 }
 
 // ====================== RESULTS ======================
@@ -3175,6 +3217,7 @@ function loadAllSeasons(){
   renderStandings();
   renderResults();
   updateHeaderInfo();
+  updateFullTimeStat();
 }
 
 document.addEventListener('DOMContentLoaded',init);
@@ -3192,6 +3235,7 @@ document.addEventListener('DOMContentLoaded',init);
       <button class="btn btn-gray btn-sm" onclick="resetRoster()">Reset to Defaults</button>
       <button class="btn btn-gray btn-sm" onclick="copyRosterInfo()">Copy Roster Info</button>
       <span style="font-size:10px;color:var(--text3);align-self:center">Season data is preserved</span>
+      <span style="font-size:11px;color:var(--text2);align-self:center;margin-left:auto">FT:&nbsp;<span id="rosterFtCount" style="font-weight:700">-</span></span>
     </div>
     <div class="modal-body">
       <table>
@@ -3208,6 +3252,7 @@ document.addEventListener('DOMContentLoaded',init);
             <th style="width:36px;cursor:pointer" class="roster-sortable" data-col="rc" onclick="sortRoster('rc')">RC<span class="sort-arrow">▼</span></th>
             <th style="width:36px;cursor:pointer" class="roster-sortable" data-col="agg" onclick="sortRoster('agg')">AGG<span class="sort-arrow">▼</span></th>
             <th style="width:36px;cursor:pointer" class="roster-sortable" data-col="con" onclick="sortRoster('con')">CON<span class="sort-arrow">▼</span></th>
+            <th style="width:28px;cursor:pointer" class="roster-sortable" data-col="fullTime" onclick="sortRoster('fullTime')">FT<span class="sort-arrow">▼</span></th>
             <th style="width:36px;cursor:pointer" class="roster-sortable" data-col="car" onclick="sortRoster('car')">CAR<span class="sort-arrow">▼</span></th>
             <th style="width:60px"><button class="btn btn-gray btn-sm" style="padding:1px 5px;font-size:11px" onclick="addRosterRow()">+ ⧉</button></th>
           </tr>
