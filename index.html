@@ -580,7 +580,7 @@ const INDYCAR_QUAL_SPEEDS = {SS:222,INT:192,ST:115,RC:125};
 const INDYCAR_RACE_SPEEDS = {SS:215,INT:187,ST:110,RC:120};
 function getQualSpeed(t){return currentSeries==='f1'||currentSeries==='cf1'?F1_QUAL_SPEEDS[t]:currentSeries==='indycar'?INDYCAR_QUAL_SPEEDS[t]:QUAL_SPEEDS[t];}
 function getRaceSpeed(t){return currentSeries==='f1'||currentSeries==='cf1'?F1_RACE_SPEEDS[t]:currentSeries==='indycar'?INDYCAR_RACE_SPEEDS[t]:RACE_SPEEDS[t];}
-const CAR_DEFAULTS = {cup:85,xfinity:85,truck:85,f1:80,indycar:88,cf1:80,eel:85};
+const CAR_DEFAULTS = {cup:95,xfinity:95,truck:95,f1:85,indycar:85,cf1:85,eel:95};
 function getCarRating(d){return d.car!==undefined?d.car:(CAR_DEFAULTS[currentSeries]||85);}
 let SERIES_POINTS = {cup:[46,40,39,38,37,36,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2],xfinity:[46,40,39,38,37,36,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2],truck:[46,40,39,38,37,36,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6],f1:[25,18,15,12,10,8,6,4,2,1],cf1:[25,18,15,12,10,8,6,4,2,1],indycar:[50,40,35,32,30,28,26,24,22,20,19,18,17,16,15,14,13,12,11,10],eel:[46,40,39,38,37,36,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2]};
 const DEFAULT_SERIES_POINTS = JSON.parse(JSON.stringify(SERIES_POINTS));
@@ -1226,6 +1226,12 @@ function copyRosterInfo(){
 
 loadCustomRosters();
 [CUP_DRIVERS, XFINITY_DRIVERS, TRUCK_DRIVERS, F1_DRIVERS, INDYCAR_DRIVERS, EEL_DRIVERS, CUSTOM_F1_DRIVERS].forEach(arr => arr.forEach(d => { d.num = String(d.num); }));
+// Assign car ratings after loading so they apply to runtime arrays
+[CUP_DRIVERS, XFINITY_DRIVERS, TRUCK_DRIVERS, EEL_DRIVERS].forEach(arr => arr.forEach(d => d.car = 95));
+INDYCAR_DRIVERS.forEach(d => d.car = 85);
+const F1_CAR_MAP = {"Red Bull Racing":90,"McLaren":94,"Ferrari":95,"Mercedes":96,"Aston Martin":68,"Alpine":85,"Williams":78,"Haas":80,"Racing Bulls":82,"Audi":78,"Cadillac":70};
+F1_DRIVERS.forEach(d => d.car = F1_CAR_MAP[d.team] || 80);
+CUSTOM_F1_DRIVERS.forEach(d => d.car = F1_CAR_MAP[d.team] || 80);
 loadCustomTracks();
 loadCustomPoints();
 let cupSeason = createSeason(CUP_DRIVERS); cupSeason.postInit();
