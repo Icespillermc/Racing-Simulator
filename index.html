@@ -875,11 +875,11 @@ function createSeason(driverArr){
 }
 
 // Save originals for roster reset
-// Assign car ratings (NASCAR spec, F1 varied by team, IndyCar spec)
-[CUP_DRIVERS, XFINITY_DRIVERS, TRUCK_DRIVERS].forEach(arr => arr.forEach(d => d.car = 95));
-INDYCAR_DRIVERS.forEach(d => d.car = 85);
+// Assign car ratings (NASCAR spec, F1 varied by team, IndyCar spec) — only if not already set
+[CUP_DRIVERS, XFINITY_DRIVERS, TRUCK_DRIVERS].forEach(arr => arr.forEach(d => { if(d.car===undefined)d.car = 95; }));
+INDYCAR_DRIVERS.forEach(d => { if(d.car===undefined)d.car = 85; });
 const F1_CAR = {"Red Bull Racing":90,"McLaren":94,"Ferrari":95,"Mercedes":96,"Aston Martin":68,"Alpine":85,"Williams":78,"Haas":80,"Racing Bulls":82,"Audi":78,"Cadillac":70};
-F1_DRIVERS.forEach(d => d.car = F1_CAR[d.team] || 80);
+F1_DRIVERS.forEach(d => { if(d.car===undefined)d.car = F1_CAR[d.team] || 80; });
 const DEFAULT_CUP = [...CUP_DRIVERS];
 const DEFAULT_XFINITY = [...XFINITY_DRIVERS];
 const DEFAULT_TRUCK = [...TRUCK_DRIVERS];
@@ -1227,11 +1227,11 @@ function copyRosterInfo(){
 loadCustomRosters();
 [CUP_DRIVERS, XFINITY_DRIVERS, TRUCK_DRIVERS, F1_DRIVERS, INDYCAR_DRIVERS, EEL_DRIVERS, CUSTOM_F1_DRIVERS].forEach(arr => arr.forEach(d => { d.num = String(d.num); }));
 // Assign car ratings after loading so they apply to runtime arrays
-[CUP_DRIVERS, XFINITY_DRIVERS, TRUCK_DRIVERS, EEL_DRIVERS].forEach(arr => arr.forEach(d => d.car = 95));
-INDYCAR_DRIVERS.forEach(d => d.car = 85);
+[CUP_DRIVERS, XFINITY_DRIVERS, TRUCK_DRIVERS, EEL_DRIVERS].forEach(arr => arr.forEach(d => { if(d.car===undefined)d.car = 95; }));
+INDYCAR_DRIVERS.forEach(d => { if(d.car===undefined)d.car = 85; });
 const F1_CAR_MAP = {"Red Bull Racing":90,"McLaren":94,"Ferrari":95,"Mercedes":96,"Aston Martin":68,"Alpine":85,"Williams":78,"Haas":80,"Racing Bulls":82,"Audi":78,"Cadillac":70};
-F1_DRIVERS.forEach(d => d.car = F1_CAR_MAP[d.team] || 80);
-CUSTOM_F1_DRIVERS.forEach(d => d.car = F1_CAR_MAP[d.team] || 80);
+F1_DRIVERS.forEach(d => { if(d.car===undefined)d.car = (F1_CAR_MAP[d.team] || 80); });
+CUSTOM_F1_DRIVERS.forEach(d => { if(d.car===undefined)d.car = (F1_CAR_MAP[d.team] || 80); });
 loadCustomTracks();
 loadCustomPoints();
 let cupSeason = createSeason(CUP_DRIVERS); cupSeason.postInit();
