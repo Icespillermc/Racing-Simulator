@@ -578,7 +578,7 @@ select:focus{outline:none;border-color:var(--yellow)}
     <div class="track-form" id="trackForm">
       <label>ID</label><input id="tfId" placeholder="short-id" style="width:70px">
       <label>Name</label><input id="tfName" placeholder="Track Name" style="width:160px">
-      <label>Type</label><select id="tfType"><option value="SS">SS</option><option value="INT">INT</option><option value="ST">ST</option><option value="RC">RC</option></select>
+      <label>Type</label><select id="tfType"><option value="SS">SS</option><option value="INT">INT</option><option value="ST">ST</option><option value="RC">RC</option><option value="SC">SC</option></select>
       <label>Laps</label><input id="tfLaps" type="number" min="1" style="width:50px">
       <label>Miles</label><input id="tfMiles" type="number" step="0.001" min="0.1" style="width:60px">
       <label>S1</label><input id="tfS1" type="number" min="0" style="width:45px">
@@ -680,12 +680,12 @@ let INDYCAR_DRIVERS = [
 const MFG_COLORS = {Chevy:"var(--chevy)",Ford:"var(--ford)",Toyota:"var(--toyota)",Dodge:"var(--dodge)",Honda:"#e30a17","Red Bull":"#1e41a1",McLaren:"#ff8700",Ferrari:"#dc0000",Mercedes:"#27f4d2","Aston Martin":"#006f62",Alpine:"#ff69b4",RB:"#294e7a",Haas:"#888888",Williams:"#00a2e6",Sauber:"#00e701",Cadillac:"#ffffff",Audi:"#8b0000","Racing Bulls":"#294e7a"};
 const FIELD_CAP = {cup:40,xfinity:40,truck:36,f1:22,indycar:33,cf1:22,eel:40};
 const FULLTIME_LIMITS = {cup:36,xfinity:36,truck:30,f1:22,indycar:28,cf1:22,eel:36};
-const QUAL_SPEEDS = {SS:197,INT:176,ST:106,RC:96};
-const RACE_SPEEDS = {SS:192,INT:170,ST:100,RC:91};
-const F1_QUAL_SPEEDS = {SS:197,INT:176,ST:130,RC:145};
-const F1_RACE_SPEEDS = {SS:192,INT:170,ST:125,RC:140};
-const INDYCAR_QUAL_SPEEDS = {SS:222,INT:192,ST:115,RC:125};
-const INDYCAR_RACE_SPEEDS = {SS:215,INT:187,ST:110,RC:120};
+const QUAL_SPEEDS = {SS:197,INT:176,ST:106,RC:96,SC:96};
+const RACE_SPEEDS = {SS:192,INT:170,ST:100,RC:91,SC:91};
+const F1_QUAL_SPEEDS = {SS:197,INT:176,ST:130,RC:145,SC:145};
+const F1_RACE_SPEEDS = {SS:192,INT:170,ST:125,RC:140,SC:140};
+const INDYCAR_QUAL_SPEEDS = {SS:222,INT:192,ST:115,RC:125,SC:125};
+const INDYCAR_RACE_SPEEDS = {SS:215,INT:187,ST:110,RC:120,SC:120};
 function getQualSpeed(t){return currentSeries==='f1'||currentSeries==='cf1'?F1_QUAL_SPEEDS[t]:currentSeries==='indycar'?INDYCAR_QUAL_SPEEDS[t]:QUAL_SPEEDS[t];}
 function getRaceSpeed(t){return currentSeries==='f1'||currentSeries==='cf1'?F1_RACE_SPEEDS[t]:currentSeries==='indycar'?INDYCAR_RACE_SPEEDS[t]:RACE_SPEEDS[t];}
 const CAR_DEFAULTS = {cup:95,xfinity:95,truck:95,f1:85,indycar:85,cf1:85,eel:95};
@@ -726,47 +726,47 @@ let TRACKS = [
   {id:"cota",name:"Circuit of the Americas",type:"RC",typeName:"Road Course",laps:68,miles:3.41,stage1:22,stage2:22,stage3:24},
   {id:"sonoma",name:"Sonoma Raceway",type:"RC",typeName:"Road Course",laps:110,miles:1.99,stage1:35,stage2:35,stage3:40},
   {id:"mexico",name:"Autodromo Hermanos Rodriguez",type:"RC",typeName:"Road Course",laps:80,miles:2.674,stage1:25,stage2:25,stage3:30},
-  {id:"sandiego",name:"San Diego Street Course",type:"ST",typeName:"Street Circuit",laps:75,miles:2.0,stage1:25,stage2:25,stage3:25},
+  {id:"sandiego",name:"San Diego Street Course",type:"SC",typeName:"Street Circuit",laps:75,miles:2.0,stage1:25,stage2:25,stage3:25},
   {id:"lime",name:"Lime Rock Park",type:"RC",typeName:"Road Course",laps:90,miles:1.53,stage1:30,stage2:30,stage3:30},
-  {id:"stpete",name:"St. Petersburg Street Course",type:"ST",typeName:"Street Circuit",laps:100,miles:1.8,stage1:35,stage2:35,stage3:30},
-  {id:"monaco",name:"Monaco Grand Prix",type:"ST",typeName:"Street Circuit",laps:78,miles:2.074,stage1:26,stage2:26,stage3:26},
+  {id:"stpete",name:"St. Petersburg Street Course",type:"SC",typeName:"Street Circuit",laps:100,miles:1.8,stage1:35,stage2:35,stage3:30},
+  {id:"monaco",name:"Monaco Grand Prix",type:"SC",typeName:"Street Circuit",laps:78,miles:2.074,stage1:26,stage2:26,stage3:26},
   {id:"silverstone",name:"Silverstone Circuit",type:"RC",typeName:"Road Course",laps:52,miles:3.66,stage1:17,stage2:17,stage3:18},
   {id:"monza",name:"Autodromo Nazionale di Monza",type:"RC",typeName:"Road Course",laps:53,miles:3.6,stage1:17,stage2:18,stage3:18},
   {id:"spa",name:"Circuit de Spa-Francorchamps",type:"RC",typeName:"Road Course",laps:44,miles:4.352,stage1:14,stage2:15,stage3:15},
   {id:"suzuka",name:"Suzuka International Racing Course",type:"RC",typeName:"Road Course",laps:53,miles:3.608,stage1:17,stage2:18,stage3:18},
-  {id:"longbeach",name:"Long Beach Street Circuit",type:"ST",typeName:"Street Circuit",laps:85,miles:1.968,stage1:28,stage2:28,stage3:29},
+  {id:"longbeach",name:"Long Beach Street Circuit",type:"SC",typeName:"Street Circuit",laps:85,miles:1.968,stage1:28,stage2:28,stage3:29},
   {id:"lagunaseca",name:"WeatherTech Raceway Laguna Seca",type:"RC",typeName:"Road Course",laps:95,miles:2.238,stage1:31,stage2:32,stage3:32},
   // F1 / IndyCar additions
   {id:"bahrain",name:"Bahrain International Circuit",type:"RC",typeName:"Road Course",laps:57,miles:3.363,stage1:19,stage2:19,stage3:19},
-  {id:"jeddah",name:"Jeddah Corniche Circuit",type:"ST",typeName:"Street Circuit",laps:50,miles:3.836,stage1:16,stage2:17,stage3:17},
-  {id:"albertpark",name:"Albert Park Grand Prix Circuit",type:"ST",typeName:"Street Circuit",laps:58,miles:3.28,stage1:19,stage2:19,stage3:20},
+  {id:"jeddah",name:"Jeddah Corniche Circuit",type:"SC",typeName:"Street Circuit",laps:50,miles:3.836,stage1:16,stage2:17,stage3:17},
+  {id:"albertpark",name:"Albert Park Grand Prix Circuit",type:"SC",typeName:"Street Circuit",laps:58,miles:3.28,stage1:19,stage2:19,stage3:20},
   {id:"barcelona",name:"Circuit de Barcelona-Catalunya",type:"RC",typeName:"Road Course",laps:66,miles:2.894,stage1:22,stage2:22,stage3:22},
   {id:"montreal",name:"Circuit Gilles Villeneuve",type:"RC",typeName:"Road Course",laps:70,miles:2.71,stage1:23,stage2:23,stage3:24},
   {id:"zandvoort",name:"Circuit Zandvoort",type:"RC",typeName:"Road Course",laps:72,miles:2.646,stage1:24,stage2:24,stage3:24},
-  {id:"marina",name:"Marina Bay Street Circuit",type:"ST",typeName:"Street Circuit",laps:62,miles:3.063,stage1:20,stage2:21,stage3:21},
+  {id:"marina",name:"Marina Bay Street Circuit",type:"SC",typeName:"Street Circuit",laps:62,miles:3.063,stage1:20,stage2:21,stage3:21},
   {id:"lusail",name:"Lusail International Circuit",type:"RC",typeName:"Road Course",laps:57,miles:3.367,stage1:19,stage2:19,stage3:19},
   {id:"yasmarina",name:"Yas Marina Circuit",type:"RC",typeName:"Road Course",laps:58,miles:3.281,stage1:19,stage2:19,stage3:20},
   {id:"interlagos",name:"Autodromo Jose Carlos Pace",type:"RC",typeName:"Road Course",laps:71,miles:2.677,stage1:23,stage2:24,stage3:24},
   {id:"shanghai",name:"Shanghai International Circuit",type:"RC",typeName:"Road Course",laps:56,miles:3.387,stage1:18,stage2:19,stage3:19},
   {id:"imola",name:"Autodromo Enzo e Dino Ferrari",type:"RC",typeName:"Road Course",laps:63,miles:3.05,stage1:21,stage2:21,stage3:21},
   {id:"hungaroring",name:"Hungaroring",type:"RC",typeName:"Road Course",laps:70,miles:2.722,stage1:23,stage2:23,stage3:24},
-  {id:"miami",name:"Miami International Autodrome",type:"ST",typeName:"Street Circuit",laps:57,miles:3.362,stage1:19,stage2:19,stage3:19},
-  {id:"detroit",name:"Detroit Street Circuit",type:"ST",typeName:"Street Circuit",laps:100,miles:1.645,stage1:33,stage2:33,stage3:34},
+  {id:"miami",name:"Miami International Autodrome",type:"SC",typeName:"Street Circuit",laps:57,miles:3.362,stage1:19,stage2:19,stage3:19},
+  {id:"detroit",name:"Detroit Street Circuit",type:"SC",typeName:"Street Circuit",laps:100,miles:1.645,stage1:33,stage2:33,stage3:34},
   {id:"roadamerica",name:"Road America",type:"RC",typeName:"Road Course",laps:55,miles:4.048,stage1:18,stage2:18,stage3:19},
   {id:"portland",name:"Portland International Raceway",type:"RC",typeName:"Road Course",laps:105,miles:1.967,stage1:35,stage2:35,stage3:35},
   {id:"midohio",name:"Mid-Ohio Sports Car Course",type:"RC",typeName:"Road Course",laps:90,miles:2.258,stage1:30,stage2:30,stage3:30},
-  {id:"toronto",name:"Honda Indy Toronto",type:"ST",typeName:"Street Circuit",laps:85,miles:1.786,stage1:28,stage2:28,stage3:29},
+  {id:"toronto",name:"Honda Indy Toronto",type:"SC",typeName:"Street Circuit",laps:85,miles:1.786,stage1:28,stage2:28,stage3:29},
   {id:"barber",name:"Barber Motorsports Park",type:"RC",typeName:"Road Course",laps:90,miles:2.38,stage1:30,stage2:30,stage3:30},
   // 2026 IndyCar additions
-  {id:"arlington",name:"Streets of Arlington",type:"ST",typeName:"Street Circuit",laps:65,miles:2.73,stage1:22,stage2:22,stage3:21},
+  {id:"arlington",name:"Streets of Arlington",type:"SC",typeName:"Street Circuit",laps:65,miles:2.73,stage1:22,stage2:22,stage3:21},
   {id:"ims_rc",name:"Indianapolis Motor Speedway Road Course",type:"RC",typeName:"Road Course",laps:55,miles:2.439,stage1:18,stage2:18,stage3:19},
-  {id:"markham",name:"Streets of Markham",type:"ST",typeName:"Street Circuit",laps:85,miles:2.19,stage1:28,stage2:28,stage3:29},
-  {id:"washington_dc",name:"Freedom 250 Grand Prix of Washington, D.C.",type:"ST",typeName:"Street Circuit",laps:75,miles:1.7,stage1:25,stage2:25,stage3:25},
+  {id:"markham",name:"Streets of Markham",type:"SC",typeName:"Street Circuit",laps:85,miles:2.19,stage1:28,stage2:28,stage3:29},
+  {id:"washington_dc",name:"Freedom 250 Grand Prix of Washington, D.C.",type:"SC",typeName:"Street Circuit",laps:75,miles:1.7,stage1:25,stage2:25,stage3:25},
   // 2026 F1 additions
   {id:"redbullring",name:"Red Bull Ring",type:"RC",typeName:"Road Course",laps:71,miles:2.688,stage1:23,stage2:24,stage3:24},
-  {id:"madrid",name:"Madrid Street Circuit",type:"ST",typeName:"Street Circuit",laps:55,miles:3.4,stage1:18,stage2:18,stage3:19},
-  {id:"baku",name:"Baku City Circuit",type:"ST",typeName:"Street Circuit",laps:51,miles:3.73,stage1:17,stage2:17,stage3:17},
-  {id:"lasvegas_strip",name:"Las Vegas Strip Circuit",type:"ST",typeName:"Street Circuit",laps:50,miles:3.853,stage1:16,stage2:17,stage3:17}
+  {id:"madrid",name:"Madrid Street Circuit",type:"SC",typeName:"Street Circuit",laps:55,miles:3.4,stage1:18,stage2:18,stage3:19},
+  {id:"baku",name:"Baku City Circuit",type:"SC",typeName:"Street Circuit",laps:51,miles:3.73,stage1:17,stage2:17,stage3:17},
+  {id:"lasvegas_strip",name:"Las Vegas Strip Circuit",type:"SC",typeName:"Street Circuit",laps:50,miles:3.853,stage1:16,stage2:17,stage3:17}
 ];
 const DEFAULT_TRACKS = JSON.parse(JSON.stringify(TRACKS));
 
@@ -1433,7 +1433,7 @@ let speed = 1000;
 let autoMode = false;
 
 function getTrackAffinity(d,type){
-  const map={SS:'ss',INT:'it',ST:'st',RC:'rc'};
+  const map={SS:'ss',INT:'it',ST:'st',RC:'rc',SC:'rc'};
   const key=map[type];
   return d[key]||d.ovr;
 }
@@ -2788,7 +2788,7 @@ function saveTrackEditor(){
   const stage2=parseInt(document.getElementById('tfS2').value)||0;
   const stage3=parseInt(document.getElementById('tfS3').value)||0;
   if(!id||!name||!laps||!miles){alert('Please fill in ID, Name, Laps, and Miles.');return;}
-  const typeNames={SS:'Superspeedway',INT:'Intermediate',ST:'Short Track',RC:'Road Course'};
+  const typeNames={SS:'Superspeedway',INT:'Intermediate',ST:'Short Track',RC:'Road Course',SC:'Street Circuit'};
   const typeName=typeNames[type]||type;
   if(_editingTrackId){
     if(id!==_editingTrackId&&TRACKS.some(x=>x.id===id)){alert('Track ID "'+id+'" already exists.');return;}
