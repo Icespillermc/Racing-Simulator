@@ -913,8 +913,13 @@ function createSeason(driverArr){
           if(s){
             s.points+=pts;
             s.stagePts+=pts;
-            if(pts===10)s.stageWins++;
           }
+        });
+      }
+      if(result.stageWins){
+        Object.entries(result.stageWins).forEach(([num,w])=>{
+          const s=this.standings[num];
+          if(s)s.stageWins+=w;
         });
       }
     },
@@ -1516,6 +1521,7 @@ function startQualifyingSession(track){
     leaderTime: 0,
     finished: false,
     stagePoints: {},
+    stageWins: {},
     history: [],
     lapsLed: {},
     dnfs: [],
@@ -2031,6 +2037,7 @@ function runLapInternal(){
         const pts=stagePts[i];
         if(race.stagePoints[d.driver.num])race.stagePoints[d.driver.num]+=pts;
         else race.stagePoints[d.driver.num]=pts;
+        if(pts===10){if(race.stageWins[d.driver.num])race.stageWins[d.driver.num]++;else race.stageWins[d.driver.num]=1;}
         addLog(`  Stage ${race.stage} Top 10: #${d.driver.num} ${d.driver.name} +${pts} pts`,'s');
       });
 
@@ -2084,6 +2091,7 @@ function onRaceComplete(){
       mech:d.mech||false
     })),
     stagePoints:race.stagePoints,
+    stageWins:race.stageWins,
     lapsLed:race.lapsLed,
     dnfs:race.dnfs,
     dnqList:race.dnqList?race.dnqList.map(r=>({driver:r.driver,qualPos:r.qualPos,time:r.time})):[]
@@ -3308,8 +3316,13 @@ function createCareerSeason(series,drivers,snum){
           if(s){
             s.points+=pts;
             s.stagePts+=pts;
-            if(pts>=10)s.stageWins++;
           }
+        });
+      }
+      if(result.stageWins){
+        Object.entries(result.stageWins).forEach(([num,w])=>{
+          const s=this.standings[num];
+          if(s)s.stageWins+=w;
         });
       }
     },
@@ -3924,6 +3937,7 @@ function saveSeason(seriesKey, seasonObj){
         mech: f.mech
       })),
       stagePoints: r.stagePoints,
+      stageWins: r.stageWins,
       lapsLed: r.lapsLed,
       dnfs: (r.dnfs||[]).map(d=>({driverNum: d.driver.num, lap: d.lap})),
       dnqList: (r.dnqList||[]).map(d=>({driverNum: d.driver.num, qualPos: d.qualPos, time: d.time}))
@@ -3980,6 +3994,7 @@ function loadSeason(seriesKey, seasonObj, driverArr){
           mech: f.mech||false
         })),
         stagePoints: r.stagePoints,
+        stageWins: r.stageWins,
         lapsLed: r.lapsLed,
         dnfs: (r.dnfs||[]).map(d=>({driver: driverMap[d.driverNum]||driverArr[0], lap: d.lap})),
         dnqList: (r.dnqList||[]).map(d=>({driver: driverMap[d.driverNum]||driverArr[0], qualPos: d.qualPos, time: d.time}))
