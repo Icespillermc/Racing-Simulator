@@ -218,6 +218,40 @@ select:focus{outline:none;border-color:var(--yellow)}
 .dnq-row{opacity:0.5}.dnq-row td{color:var(--text3)!important}
 #authSection{display:flex;align-items:center;gap:6px;margin-top:2px}
 #authSection .fb-avatar{width:20px;height:20px;border-radius:50%;object-fit:cover}
+/* CAREER MODE */
+.career-active #btnCareer{background:var(--green);color:#000;border-color:var(--green)}
+.career-highlight{background:rgba(0,200,100,0.08)!important;border-left:3px solid var(--green)!important}
+.career-highlight td:first-child{padding-left:11px!important}
+.career-card{background:var(--bg2);border:1px solid var(--green);border-radius:6px;padding:8px 12px;margin-bottom:6px;font-size:11px;display:flex;gap:12px;align-items:center}
+.career-card .cc-label{color:var(--text3);font-size:10px}
+.career-card .cc-val{color:var(--yellow);font-weight:700}
+.career-card .cc-name{font-size:14px;font-weight:700;color:var(--text)}
+.career-modal{min-width:500px}
+.career-modal label{font-size:11px;color:var(--text2);display:block;margin-bottom:2px}
+.career-modal input,.career-modal select{padding:4px 6px;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:3px;font-size:12px;box-sizing:border-box;width:100%}
+.career-modal input:focus,.career-modal select:focus{outline:none;border-color:var(--yellow)}
+.career-preset-btn{padding:4px 10px;font-size:11px;border:1px solid var(--border);background:var(--bg2);color:var(--text);border-radius:3px;cursor:pointer}
+.career-preset-btn.selected{background:var(--green);color:#000;border-color:var(--green);font-weight:700}
+.career-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:11px}
+.career-mode-badge{font-size:9px;color:var(--green);font-weight:700;text-transform:uppercase;letter-spacing:1px}
+#panel-career{overflow-y:auto}
+#panel-career table th{cursor:pointer;user-select:none}
+#panel-career table th .sort-arrow{display:inline-block;margin-left:2px;font-size:8px;opacity:0.4}
+#panel-career table th.sort-asc .sort-arrow,#panel-career table th.sort-desc .sort-arrow{opacity:1;color:var(--yellow)}
+.career-panel h2{margin:0 0 8px;font-size:13px;color:var(--text)}
+.career-panel .career-header{display:flex;gap:16px;align-items:center;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:10px 14px;margin-bottom:8px}
+.career-panel .season-summary{font-size:11px;color:var(--text2);margin-bottom:8px;padding:0 2px}
+.career-panel table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:0}
+.career-panel th,.career-panel td{padding:3px 6px;border:1px solid var(--border);text-align:center;white-space:nowrap}
+.career-panel th{background:var(--bg3);color:var(--yellow);position:sticky;top:0;font-size:10px;text-transform:uppercase;letter-spacing:0.3px}
+.career-panel .race-log{max-height:500px;overflow-y:auto;border:1px solid var(--border);border-radius:4px}
+.career-panel .race-log table{border:none}
+.career-panel .race-log td,.career-panel .race-log th{padding:3px 8px}
+.career-panel .race-log tbody tr:hover{background:var(--bg3)}
+.career-panel .toggle-btns{display:flex;gap:6px;margin-bottom:8px}
+.career-panel .toggle-btn{padding:4px 12px;font-size:11px;border:1px solid var(--border);background:var(--bg2);color:var(--text2);border-radius:3px;cursor:pointer}
+.career-panel .toggle-btn.active{background:var(--green);color:#000;border-color:var(--green);font-weight:700}
+.career-panel .toggle-btn:hover{background:var(--bg3)}
 /* TRACK EDITOR */
 .track-modal{min-width:600px}.track-modal .modal-body{overflow:auto;max-height:50vh}.track-modal table{width:100%;border-collapse:collapse;font-size:11px}.track-modal th,.track-modal td{padding:2px 4px;border:1px solid var(--border);text-align:center;white-space:nowrap}.track-modal th{background:var(--bg3);color:var(--yellow);position:sticky;top:0;-webkit-user-select:none;user-select:none}.track-modal th .track-sort{font-size:8px;margin-left:1px;color:var(--text2)}.track-modal td input,.track-modal td select{width:100%;padding:1px 3px;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:2px;font-size:11px;box-sizing:border-box}.track-modal td input:focus,.track-modal td select:focus{outline:none;border-color:var(--yellow)}.track-form{display:flex;gap:4px;padding:6px 0;flex-wrap:wrap;align-items:center;border-top:1px solid var(--border);margin-top:6px}.track-form input,.track-form select{padding:2px 4px;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:2px;font-size:11px}.track-form label{font-size:10px;color:var(--text2)}
 /* POINTS EDITOR */
@@ -229,6 +263,7 @@ select:focus{outline:none;border-color:var(--yellow)}
 <header>
   <div style="display:flex;align-items:center;gap:8px">
     <h1 style="margin:0"><span class="red">&#9679;</span> <span class="yellow">NASCAR</span> CUP SERIES SIMULATOR</h1>
+    <button id="btnCareer" onclick="openCareerSetup()" style="font-size:11px;padding:0 8px;background:var(--bg3);color:var(--green);border:1px solid var(--green);border-radius:3px;cursor:pointer;height:24px;font-weight:700;line-height:22px">Career</button>
     <button onclick="openHelp()" style="font-size:12px;padding:0 8px;background:var(--bg3);color:var(--text2);border:1px solid var(--border);border-radius:3px;cursor:pointer;height:24px;font-weight:700;line-height:22px">?</button>
   </div>
   <div class="race-info">
@@ -252,6 +287,7 @@ select:focus{outline:none;border-color:var(--yellow)}
   <button class="tab-btn active" data-tab="race">Race Center</button>
   <button class="tab-btn" data-tab="standings">Standings</button>
   <button class="tab-btn" data-tab="results">Results</button>
+  <button class="tab-btn" data-tab="career">Career</button>
 </div>
 
 <div class="content">
@@ -348,6 +384,76 @@ select:focus{outline:none;border-color:var(--yellow)}
     <h2>Race Results</h2>
     <div id="resultsContainer">
       <p style="color:var(--text3);padding:20px;text-align:center">No races completed yet. Run a race to see results.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CAREER PANEL -->
+<div class="panel" id="panel-career">
+  <div class="career-panel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <h2>Career</h2>
+      <div style="display:flex;gap:4px" id="careerHeaderBtns">
+        <button class="btn btn-gray btn-sm" style="font-size:10px;padding:2px 6px" onclick="openCareerSetup()">New Career</button>
+      </div>
+    </div>
+    <!-- Active career -->
+    <div id="careerActiveContent" style="display:none">
+      <div class="career-header">
+        <div style="text-align:center;min-width:80px">
+          <div style="font-size:18px;font-weight:700;color:var(--yellow)" id="careerDriverNum">#00</div>
+          <div style="font-size:12px;font-weight:600" id="careerDriverName">Driver</div>
+          <div style="font-size:10px;color:var(--text2)" id="careerDriverTeam">Team</div>
+        </div>
+        <div class="career-stat-grid" style="flex:1" id="careerStatGrid">
+          <div><span class="cc-label">Wins</span> <span class="cc-val" id="csWins">0</span></div>
+          <div><span class="cc-label">Titles</span> <span class="cc-val" id="csTitles">0</span></div>
+          <div><span class="cc-label">Top 5</span> <span class="cc-val" id="csT5">0</span></div>
+          <div><span class="cc-label">Top 10</span> <span class="cc-val" id="csT10">0</span></div>
+          <div><span class="cc-label">Podiums</span> <span class="cc-val" id="csPodiums">0</span></div>
+          <div><span class="cc-label">Poles</span> <span class="cc-val" id="csPoles">0</span></div>
+          <div><span class="cc-label">Races</span> <span class="cc-val" id="csRaces">0</span></div>
+          <div><span class="cc-label">OVR</span> <span class="cc-val" id="csOvr">65</span></div>
+        </div>
+      </div>
+      <div class="career-ratings" id="careerRatings" style="margin:6px 12px 4px;font-size:10px;color:var(--text2);display:flex;gap:10px;flex-wrap:wrap;justify-content:center"></div>
+      <div class="season-summary" id="careerSeasonSummary"></div>
+      <div class="toggle-btns" id="careerToggleBtns">
+        <button class="toggle-btn active" data-careertab="yearly">Year by Year</button>
+        <button class="toggle-btn" data-careertab="racelog">Race Log</button>
+      </div>
+      <div id="careerYearlyContent"></div>
+      <div id="careerRaceLogContent" style="display:none"></div>
+    </div>
+    <!-- Saved career (not active) -->
+    <div id="careerSavedContent" style="display:none">
+      <div class="career-header">
+        <div style="text-align:center;min-width:80px">
+          <div style="font-size:18px;font-weight:700;color:var(--yellow)" id="savedCareerDriverNum">#00</div>
+          <div style="font-size:12px;font-weight:600" id="savedCareerDriverName">Driver</div>
+          <div style="font-size:10px;color:var(--text2)" id="savedCareerDriverTeam">Team</div>
+        </div>
+        <div class="career-stat-grid" style="flex:1" id="savedCareerStatGrid">
+          <div><span class="cc-label">Wins</span> <span class="cc-val" id="savedCsWins">0</span></div>
+          <div><span class="cc-label">Titles</span> <span class="cc-val" id="savedCsTitles">0</span></div>
+          <div><span class="cc-label">Top 5</span> <span class="cc-val" id="savedCsT5">0</span></div>
+          <div><span class="cc-label">Top 10</span> <span class="cc-val" id="savedCsT10">0</span></div>
+          <div><span class="cc-label">Podiums</span> <span class="cc-val" id="savedCsPodiums">0</span></div>
+          <div><span class="cc-label">Poles</span> <span class="cc-val" id="savedCsPoles">0</span></div>
+          <div><span class="cc-label">Races</span> <span class="cc-val" id="savedCsRaces">0</span></div>
+          <div><span class="cc-label">OVR</span> <span class="cc-val" id="savedCsOvr">65</span></div>
+        </div>
+      </div>
+      <div class="career-ratings" id="savedCareerRatings" style="margin:6px 12px 4px;font-size:10px;color:var(--text2);display:flex;gap:10px;flex-wrap:wrap;justify-content:center"></div>
+      <div style="margin:8px 0;font-size:11px;color:var(--text2)" id="savedCareerSummary"></div>
+      <div style="display:flex;gap:6px;margin-bottom:10px">
+        <button class="btn btn-sm" style="background:var(--green);color:#000;font-weight:700;padding:6px 16px;font-size:12px;border:none;border-radius:3px;cursor:pointer" onclick="resumeCareerFromTab()">Resume Career</button>
+        <button class="btn btn-gray btn-sm" style="font-size:10px" onclick="if(confirm('Delete all career data?')){resetCareer();updateCareerUI();}">Delete Career</button>
+      </div>
+    </div>
+    <!-- No career data -->
+    <div id="careerEmptyContent" style="display:flex;align-items:center;justify-content:center;min-height:200px;color:var(--text3);font-size:13px;text-align:center;padding:40px">
+      <div>No career data found.<br><button class="btn btn-gray btn-sm" style="margin-top:8px" onclick="openCareerSetup()">Start Career</button></div>
     </div>
   </div>
 </div>
@@ -532,7 +638,7 @@ let CUP_DRIVERS = [
 
 // ====================== XFINITY SERIES DRIVERS ======================
 let XFINITY_DRIVERS = [
-{"num":"7","name":"Justin Allgaier","team":"JR Motorsports","mfg":"Chevy","ovr":88,"ss":88,"it":92,"st":90,"rc":92,"agg":66,"con":91,"fullTime":true,"car":95},{"num":"21","name":"Austin Hill","team":"Richard Childress Racing","mfg":"Chevy","ovr":87,"ss":96,"it":90,"st":87,"rc":80,"agg":72,"con":86,"fullTime":true,"car":95},{"num":"41","name":"Sam Mayer","team":"Haas Factory Team","mfg":"Chevy","ovr":85,"ss":85,"it":86,"st":89,"rc":83,"agg":78,"con":78,"fullTime":true,"car":95},{"num":"2","name":"Jesse Love","team":"Richard Childress Racing","mfg":"Chevy","ovr":84,"ss":83,"it":88,"st":86,"rc":81,"agg":70,"con":82,"fullTime":true,"car":95},{"num":"17","name":"Corey Day","team":"Hendrick Motorsports","mfg":"Chevy","ovr":84,"ss":83,"it":86,"st":86,"rc":83,"agg":72,"con":82,"fullTime":true,"car":95},{"num":"0","name":"Sheldon Creed","team":"Haas Factory Team","mfg":"Chevy","ovr":83,"ss":84,"it":87,"st":86,"rc":83,"agg":68,"con":81,"fullTime":true,"car":95},{"num":"8","name":"Sammy Smith","team":"JR Motorsports","mfg":"Chevy","ovr":82,"ss":81,"it":84,"st":87,"rc":78,"agg":70,"con":80,"fullTime":true,"car":95},{"num":"54","name":"Taylor Gray","team":"Joe Gibbs Racing","mfg":"Toyota","ovr":81,"ss":80,"it":80,"st":83,"rc":80,"agg":72,"con":78,"fullTime":true,"car":95},{"num":"20","name":"Brandon Jones","team":"Joe Gibbs Racing","mfg":"Toyota","ovr":81,"ss":79,"it":82,"st":84,"rc":78,"agg":62,"con":84,"fullTime":true,"car":95},{"num":"18","name":"William Sawalich","team":"Joe Gibbs Racing","mfg":"Toyota","ovr":81,"ss":82,"it":80,"st":84,"rc":80,"agg":66,"con":80,"fullTime":true,"car":95},{"num":"39","name":"Ryan Sieg","team":"RSS Racing","mfg":"Chevy","ovr":80,"ss":83,"it":81,"st":80,"rc":78,"agg":66,"con":80,"fullTime":true,"car":95},{"num":"19","name":"Brent Crews","team":"Joe Gibbs Racing","mfg":"Toyota","ovr":80,"ss":76,"it":82,"st":83,"rc":78,"agg":66,"con":79,"fullTime":true,"car":95},{"num":"1","name":"Carson Kvapil","team":"JR Motorsports","mfg":"Chevy","ovr":79,"ss":78,"it":80,"st":80,"rc":74,"agg":64,"con":79,"fullTime":true,"car":95},{"num":"99","name":"Parker Retzlaff","team":"Viking Motorsports","mfg":"Chevy","ovr":78,"ss":80,"it":76,"st":80,"rc":72,"agg":64,"con":78,"fullTime":true,"car":95},{"num":"96","name":"Anthony Alfredo","team":"Viking Motorsports","mfg":"Chevy","ovr":77,"ss":80,"it":76,"st":77,"rc":73,"agg":61,"con":76,"fullTime":true,"car":95},{"num":"88","name":"Rajah Caruth","team":"JR Motorsports","mfg":"Chevy","ovr":77,"ss":78,"it":76,"st":80,"rc":73,"agg":61,"con":79,"fullTime":true,"car":95},{"num":"27","name":"Jeb Burton","team":"Jordan Anderson Racing","mfg":"Chevy","ovr":76,"ss":74,"it":71,"st":76,"rc":74,"agg":64,"con":75,"fullTime":true,"car":95},{"num":"16","name":"AJ Allmendinger","team":"Kaulig Racing","mfg":"Chevy","ovr":76,"ss":64,"it":72,"st":68,"rc":92,"agg":68,"con":72,"fullTime":true,"car":95},{"num":"51","name":"Jeremy Clements","team":"Jeremy Clements Racing","mfg":"Chevy","ovr":75,"ss":76,"it":72,"st":76,"rc":72,"agg":61,"con":74,"fullTime":true,"car":95},{"num":"26","name":"Dean Thompson","team":"Sam Hunt Racing","mfg":"Toyota","ovr":75,"ss":76,"it":74,"st":77,"rc":70,"agg":62,"con":71,"fullTime":true,"car":95},{"num":"24","name":"Harrison Burton","team":"Sam Hunt Racing","mfg":"Toyota","ovr":75,"ss":78,"it":72,"st":72,"rc":72,"agg":62,"con":72,"fullTime":true,"car":95},{"num":"45","name":"Lavar Scott","team":"Alpha Prime Racing","mfg":"Chevy","ovr":73,"ss":68,"it":72,"st":72,"rc":70,"agg":63,"con":68,"fullTime":true,"car":95},{"num":"14","name":"Nick Sanchez","team":"AM Racing","mfg":"Chevy","ovr":73,"ss":72,"it":72,"st":74,"rc":64,"agg":65,"con":69,"fullTime":true,"car":95},{"num":"44","name":"Brennan Poole","team":"Alpha Prime Racing","mfg":"Chevy","ovr":72,"ss":74,"it":73,"st":70,"rc":66,"agg":56,"con":73,"fullTime":true,"car":95},{"num":"31","name":"Blaine Perkins","team":"Jordan Anderson Racing","mfg":"Chevy","ovr":72,"ss":70,"it":70,"st":72,"rc":64,"agg":62,"con":70,"fullTime":true,"car":95},{"num":"9","name":"Connor Zilisch","team":"JR Motorsports","mfg":"Chevy","ovr":71,"ss":62,"it":64,"st":62,"rc":80,"agg":68,"con":63,"fullTime":true,"car":95},{"num":"87","name":"Austin Green","team":"Peterson Racing","mfg":"Chevy","ovr":71,"ss":66,"it":69,"st":72,"rc":66,"agg":60,"con":70,"fullTime":true,"car":95},{"num":"7","name":"Josh Bilicki","team":"SS-GreenLight Racing","mfg":"Chevy","ovr":71,"ss":72,"it":68,"st":68,"rc":69,"agg":56,"con":71,"fullTime":true,"car":95},{"num":"48","name":"Patrick Staropoli","team":"Big Machine Racing","mfg":"Chevy","ovr":71,"ss":66,"it":71,"st":68,"rc":70,"agg":59,"con":70,"fullTime":true,"car":95},{"num":"28","name":"Kyle Sieg","team":"RSS Racing","mfg":"Chevy","ovr":71,"ss":72,"it":70,"st":69,"rc":64,"agg":62,"con":68,"fullTime":true,"car":95},{"num":"92","name":"Josh Williams","team":"DGM Racing","mfg":"Chevy","ovr":70,"ss":64,"it":64,"st":67,"rc":71,"agg":66,"con":66,"fullTime":true,"car":95},{"num":"66","name":"Timmy Hill","team":"MBM Motorsports","mfg":"Toyota","ovr":69,"ss":66,"it":64,"st":67,"rc":64,"agg":60,"con":68,"fullTime":true,"car":95},{"num":"5","name":"Chandler Smith","team":"Hettinger Racing","mfg":"Ford","ovr":69,"ss":64,"it":66,"st":66,"rc":61,"agg":68,"con":61,"fullTime":false,"car":95},{"num":"8","name":"Alex Labbe","team":"SS-GreenLight Racing","mfg":"Chevy","ovr":68,"ss":68,"it":65,"st":63,"rc":62,"agg":58,"con":66,"fullTime":true,"car":95},{"num":"42","name":"Nick Leitz","team":"Young's Motorsports","mfg":"Chevy","ovr":67,"ss":64,"it":63,"st":62,"rc":63,"agg":60,"con":64,"fullTime":true,"car":95},{"num":"35","name":"Joey Gase","team":"Joey Gase Motorsports","mfg":"Toyota","ovr":67,"ss":67,"it":64,"st":64,"rc":58,"agg":54,"con":64,"fullTime":true,"car":95},{"num":"32","name":"Jordan Anderson","team":"Jordan Anderson Racing","mfg":"Chevy","ovr":67,"ss":66,"it":61,"st":65,"rc":60,"agg":62,"con":62,"fullTime":false,"car":95},{"num":"91","name":"Mason Maggio","team":"DGM Racing","mfg":"Chevy","ovr":66,"ss":64,"it":61,"st":65,"rc":56,"agg":58,"con":63,"fullTime":false,"car":95},{"num":"53","name":"Brad Perez","team":"Joey Gase Motorsports","mfg":"Toyota","ovr":65,"ss":60,"it":60,"st":60,"rc":60,"agg":60,"con":60,"fullTime":true,"car":95},{"num":"30","name":"Dawson Cram","team":"Stanton Barrett Motorsports","mfg":"Chevy","ovr":65,"ss":61,"it":62,"st":60,"rc":57,"agg":58,"con":62,"fullTime":false,"car":95}
+{"num":"7","name":"Justin Allgaier","team":"JR Motorsports","mfg":"Chevy","ovr":88,"ss":88,"it":92,"st":90,"rc":92,"agg":66,"con":91,"fullTime":true,"car":95},{"num":"21","name":"Austin Hill","team":"Richard Childress Racing","mfg":"Chevy","ovr":87,"ss":96,"it":90,"st":87,"rc":80,"agg":72,"con":86,"fullTime":true,"car":95},{"num":"41","name":"Sam Mayer","team":"Haas Factory Team","mfg":"Chevy","ovr":85,"ss":85,"it":86,"st":89,"rc":83,"agg":78,"con":78,"fullTime":true,"car":95},{"num":"2","name":"Jesse Love","team":"Richard Childress Racing","mfg":"Chevy","ovr":84,"ss":83,"it":88,"st":86,"rc":81,"agg":70,"con":82,"fullTime":true,"car":95},{"num":"17","name":"Corey Day","team":"Hendrick Motorsports","mfg":"Chevy","ovr":84,"ss":83,"it":86,"st":86,"rc":83,"agg":72,"con":82,"fullTime":true,"car":95},{"num":"00","name":"Sheldon Creed","team":"Haas Factory Team","mfg":"Chevy","ovr":83,"ss":84,"it":87,"st":86,"rc":83,"agg":68,"con":81,"fullTime":true,"car":95},{"num":"8","name":"Sammy Smith","team":"JR Motorsports","mfg":"Chevy","ovr":82,"ss":81,"it":84,"st":87,"rc":78,"agg":70,"con":80,"fullTime":true,"car":95},{"num":"54","name":"Taylor Gray","team":"Joe Gibbs Racing","mfg":"Toyota","ovr":81,"ss":80,"it":80,"st":83,"rc":80,"agg":72,"con":78,"fullTime":true,"car":95},{"num":"20","name":"Brandon Jones","team":"Joe Gibbs Racing","mfg":"Toyota","ovr":81,"ss":79,"it":82,"st":84,"rc":78,"agg":62,"con":84,"fullTime":true,"car":95},{"num":"18","name":"William Sawalich","team":"Joe Gibbs Racing","mfg":"Toyota","ovr":81,"ss":82,"it":80,"st":84,"rc":80,"agg":66,"con":80,"fullTime":true,"car":95},{"num":"39","name":"Ryan Sieg","team":"RSS Racing","mfg":"Chevy","ovr":80,"ss":83,"it":81,"st":80,"rc":78,"agg":66,"con":80,"fullTime":true,"car":95},{"num":"19","name":"Brent Crews","team":"Joe Gibbs Racing","mfg":"Toyota","ovr":80,"ss":76,"it":82,"st":83,"rc":78,"agg":66,"con":79,"fullTime":true,"car":95},{"num":"1","name":"Carson Kvapil","team":"JR Motorsports","mfg":"Chevy","ovr":79,"ss":78,"it":80,"st":80,"rc":74,"agg":64,"con":79,"fullTime":true,"car":95},{"num":"99","name":"Parker Retzlaff","team":"Viking Motorsports","mfg":"Chevy","ovr":78,"ss":80,"it":76,"st":80,"rc":72,"agg":64,"con":78,"fullTime":true,"car":95},{"num":"96","name":"Anthony Alfredo","team":"Viking Motorsports","mfg":"Chevy","ovr":77,"ss":80,"it":76,"st":77,"rc":73,"agg":61,"con":76,"fullTime":true,"car":95},{"num":"88","name":"Rajah Caruth","team":"JR Motorsports","mfg":"Chevy","ovr":77,"ss":78,"it":76,"st":80,"rc":73,"agg":61,"con":79,"fullTime":true,"car":95},{"num":"27","name":"Jeb Burton","team":"Jordan Anderson Racing","mfg":"Chevy","ovr":76,"ss":74,"it":71,"st":76,"rc":74,"agg":64,"con":75,"fullTime":true,"car":95},{"num":"16","name":"AJ Allmendinger","team":"Kaulig Racing","mfg":"Chevy","ovr":76,"ss":64,"it":72,"st":68,"rc":92,"agg":68,"con":72,"fullTime":true,"car":95},{"num":"51","name":"Jeremy Clements","team":"Jeremy Clements Racing","mfg":"Chevy","ovr":75,"ss":76,"it":72,"st":76,"rc":72,"agg":61,"con":74,"fullTime":true,"car":95},{"num":"26","name":"Dean Thompson","team":"Sam Hunt Racing","mfg":"Toyota","ovr":75,"ss":76,"it":74,"st":77,"rc":70,"agg":62,"con":71,"fullTime":true,"car":95},{"num":"24","name":"Harrison Burton","team":"Sam Hunt Racing","mfg":"Toyota","ovr":75,"ss":78,"it":72,"st":72,"rc":72,"agg":62,"con":72,"fullTime":true,"car":95},{"num":"45","name":"Lavar Scott","team":"Alpha Prime Racing","mfg":"Chevy","ovr":73,"ss":68,"it":72,"st":72,"rc":70,"agg":63,"con":68,"fullTime":true,"car":95},{"num":"14","name":"Nick Sanchez","team":"AM Racing","mfg":"Chevy","ovr":73,"ss":72,"it":72,"st":74,"rc":64,"agg":65,"con":69,"fullTime":true,"car":95},{"num":"44","name":"Brennan Poole","team":"Alpha Prime Racing","mfg":"Chevy","ovr":72,"ss":74,"it":73,"st":70,"rc":66,"agg":56,"con":73,"fullTime":true,"car":95},{"num":"31","name":"Blaine Perkins","team":"Jordan Anderson Racing","mfg":"Chevy","ovr":72,"ss":70,"it":70,"st":72,"rc":64,"agg":62,"con":70,"fullTime":true,"car":95},{"num":"9","name":"Connor Zilisch","team":"JR Motorsports","mfg":"Chevy","ovr":71,"ss":62,"it":64,"st":62,"rc":80,"agg":68,"con":63,"fullTime":true,"car":95},{"num":"87","name":"Austin Green","team":"Peterson Racing","mfg":"Chevy","ovr":71,"ss":66,"it":69,"st":72,"rc":66,"agg":60,"con":70,"fullTime":true,"car":95},{"num":"07","name":"Josh Bilicki","team":"SS-GreenLight Racing","mfg":"Chevy","ovr":71,"ss":72,"it":68,"st":68,"rc":69,"agg":56,"con":71,"fullTime":true,"car":95},{"num":"48","name":"Patrick Staropoli","team":"Big Machine Racing","mfg":"Chevy","ovr":71,"ss":66,"it":71,"st":68,"rc":70,"agg":59,"con":70,"fullTime":true,"car":95},{"num":"28","name":"Kyle Sieg","team":"RSS Racing","mfg":"Chevy","ovr":71,"ss":72,"it":70,"st":69,"rc":64,"agg":62,"con":68,"fullTime":true,"car":95},{"num":"92","name":"Josh Williams","team":"DGM Racing","mfg":"Chevy","ovr":70,"ss":64,"it":64,"st":67,"rc":71,"agg":66,"con":66,"fullTime":true,"car":95},{"num":"66","name":"Timmy Hill","team":"MBM Motorsports","mfg":"Toyota","ovr":69,"ss":66,"it":64,"st":67,"rc":64,"agg":60,"con":68,"fullTime":true,"car":95},{"num":"5","name":"Chandler Smith","team":"Hettinger Racing","mfg":"Ford","ovr":69,"ss":64,"it":66,"st":66,"rc":61,"agg":68,"con":61,"fullTime":false,"car":95},{"num":"08","name":"Alex Labbe","team":"SS-GreenLight Racing","mfg":"Chevy","ovr":68,"ss":68,"it":65,"st":63,"rc":62,"agg":58,"con":66,"fullTime":true,"car":95},{"num":"42","name":"Nick Leitz","team":"Young's Motorsports","mfg":"Chevy","ovr":67,"ss":64,"it":63,"st":62,"rc":63,"agg":60,"con":64,"fullTime":true,"car":95},{"num":"35","name":"Joey Gase","team":"Joey Gase Motorsports","mfg":"Toyota","ovr":67,"ss":67,"it":64,"st":64,"rc":58,"agg":54,"con":64,"fullTime":true,"car":95},{"num":"32","name":"Jordan Anderson","team":"Jordan Anderson Racing","mfg":"Chevy","ovr":67,"ss":66,"it":61,"st":65,"rc":60,"agg":62,"con":62,"fullTime":false,"car":95},{"num":"91","name":"Mason Maggio","team":"DGM Racing","mfg":"Chevy","ovr":66,"ss":64,"it":61,"st":65,"rc":56,"agg":58,"con":63,"fullTime":false,"car":95},{"num":"53","name":"Brad Perez","team":"Joey Gase Motorsports","mfg":"Toyota","ovr":65,"ss":60,"it":60,"st":60,"rc":60,"agg":60,"con":60,"fullTime":true,"car":95},{"num":"30","name":"Dawson Cram","team":"Stanton Barrett Motorsports","mfg":"Chevy","ovr":65,"ss":61,"it":62,"st":60,"rc":57,"agg":58,"con":62,"fullTime":false,"car":95}
 ];
 
 // ====================== TRUCK SERIES DRIVERS ======================
@@ -1270,6 +1376,7 @@ let cf1Season = createSeason(CUSTOM_F1_DRIVERS); cf1Season.postInit();
 season = cupSeason;
 
 function switchSeries(key){
+  if(careerActive){addLog('Cannot switch series while career mode is active.','s');return;}
   if(raceInterval){clearInterval(raceInterval);raceInterval=null;}
   autoMode=false;
   const autoBtn=document.getElementById('btnAuto');
@@ -1331,6 +1438,7 @@ function runQualifying(){
   resetSession();
   if(season.schedule&&season.schedule.length>0){
     if(season.races>=season.schedule.length){
+      if(careerActive){checkCareerSeasonEnd();return;}
       return addLog("Season is complete! Start a new season.","s");
     }
     const trackId=season.schedule[season.races];
@@ -2016,6 +2124,32 @@ function onRaceComplete(){
       },100);
     }
   }
+  // Career mode: check season end and save
+  if(careerActive){
+    // Add race log entry
+    const dn=careerData.driverNum;
+    const pos=result.finishOrder.findIndex(f=>String(f.driver.num)===String(dn))+1;
+    careerData.raceLog.push({
+      season: careerData.seasonNumber,
+      race: (careerData.raceLog.filter(e=>e.season===careerData.seasonNumber).length)+1,
+      track: race.track?.name||'Unknown', finish: pos>0?pos:'DNQ',
+      startPos: pos>0?(result.finishOrder.find(f=>String(f.driver.num)===String(dn))?.startPos||'-'):'-',
+      field: result.finishOrder.length,
+      lapsLed: result.lapsLed[dn]||0
+    });
+    saveCareerSeason();
+    saveCareerData();
+    updateCareerUI();
+    if(season.schedule&&season.schedule.length>0&&season.races>=season.schedule.length){
+      addLog(`Season ${careerData.seasonNumber} complete! Click "Advance Season" to continue.`,'s');
+      document.getElementById('btnQualify').textContent='Advance Season';
+      document.getElementById('btnQualify').onclick=function(){
+        advanceCareerSeason();
+        document.getElementById('btnQualify').onclick=runQualifying;
+        document.getElementById('btnQualify').textContent='Qualify';
+      };
+    }
+  }
 }
 
 // ====================== UI RENDERING ======================
@@ -2084,7 +2218,7 @@ function updateHeaderInfo(){
     return;
   }
   let label='Race '+nextRace+' of '+total;
-  if(season.chaseActive){
+  if(!careerActive&&season.chaseActive){
     let rn=season._roundNames;
     if(!rn){
       rn=['','Chase','Championship 4'];
@@ -2247,6 +2381,8 @@ function renderStandings(){
       else{chaseBadge='<span class="badge" style="background:rgba(0,200,100,0.3);color:#0c8;margin-right:4px" title="Playoffs">P</span>';}
     }
     const rowClass=isChase&&!eliminated.includes(d.num)?' chase-active':'';
+    const isCareerDriver=careerActive&&careerData&&String(d.num)===String(careerData.driverNum);
+    const careerHighlight=isCareerDriver?' career-highlight':'';
     const displayPoints=d._displayPoints;
     const ptsLeader=displayList[0];
     const leaderPts=ptsLeader._displayPoints;
@@ -2260,7 +2396,7 @@ function renderStandings(){
     const extraCols=isOpen
       ?`<td class="st-podiums">${d.podiums||0}</td>`
       :`<td class="st-stagewins">${d.stageWins||0}</td><td class="st-stagepts">${d.stagePts||0}</td>`;
-    tbody.innerHTML+=`<tr class="${posClass}${rowClass}">
+    tbody.innerHTML+=`<tr class="${posClass}${rowClass}${careerHighlight}">
       <td class="st-pos ${posClass}">${i+1}</td>
       <td class="st-num" style="color:${MFG_COLORS[d.mfg]}">${d.num}</td>
       <td class="st-driver">${chaseBadge}${d.name}</td>
@@ -2371,6 +2507,7 @@ function renderTeamStandings(){
     </tr>`;
   });
   updateFullTimeStat();
+  updateCareerUI();
 }
 
 // ====================== RESULTS ======================
@@ -2458,6 +2595,7 @@ function exportSeasonCSV(){
 }
 
 function newSeason(){
+  if(careerActive){addLog('Cannot reset while career mode is active. Exit career first.','s');return;}
   if(confirm('Start a new season? This will reset all standings and results.')){
     Object.values(season.standings).forEach(s=>{s.points=0;s.wins=0;s.t5=0;s.t10=0;s.races=0;s.led=0;s.stagePts=0;s.stageWins=0;s.champion=false;s.poles=0;s.totalFinish=0;s.totalStart=0;s.finishes=0;s._origPoints=0;delete s._regularStats;});
     season.races=0;
@@ -2479,6 +2617,7 @@ function newSeason(){
 }
 
 function resetSeason(){
+  if(careerActive){addLog('Cannot reset while career mode is active. Exit career first.','s');return;}
   Object.values(season.standings).forEach(s=>{s.points=0;s.wins=0;s.t5=0;s.t10=0;s.races=0;s.led=0;s.stagePts=0;s.stageWins=0;s.champion=false;s.poles=0;s.totalFinish=0;s.totalStart=0;s.finishes=0;s._origPoints=0;delete s._regularStats;});
   season.races=0;
   season.results=[];
@@ -2923,6 +3062,664 @@ function updateButtons(state){
   }
 }
 
+// ====================== CAREER MODE ======================
+let careerActive = false;
+let careerData = null;
+let classicState = null;
+let careerYearlySortCol='season', careerYearlySortAsc=false;
+let careerRaceLogSortCol='race', careerRaceLogSortAsc=false;
+
+const CAREER_PRESETS = {
+  rookie:  { ss:65, it:65, st:65, rc:65, agg:65, con:65, car:95 },
+  veteran: { ss:75, it:75, st:75, rc:75, agg:75, con:75, car:95 },
+  elite:   { ss:85, it:85, st:85, rc:85, agg:85, con:85, car:95 },
+  legend:  { ss:95, it:95, st:95, rc:95, agg:95, con:95, car:95 }
+};
+
+function openCareerSetup(){
+  document.getElementById('careerModal').style.display='flex';
+  careerSeriesChanged();
+}
+function closeCareerSetup(){
+  document.getElementById('careerModal').style.display='none';
+}
+
+function careerSeriesChanged(){
+  const series=document.getElementById('careerSeries').value;
+  const sel=document.getElementById('careerExistingDriver');
+  const arr=series==='cup'?CUP_DRIVERS:(series==='xfinity'?XFINITY_DRIVERS:TRUCK_DRIVERS);
+  sel.innerHTML=arr.map(d=>`<option value="${d.num}">#${d.num} ${d.name} (${d.team})</option>`).join('');
+  if(arr.length)sel.selectedIndex=0;
+}
+
+function careerDriverMode(mode){
+  document.getElementById('careerDriverNew').classList.toggle('selected',mode==='new');
+  document.getElementById('careerDriverExisting').classList.toggle('selected',mode==='existing');
+  document.getElementById('careerNewFields').style.display=mode==='new'?'':'none';
+  document.getElementById('careerExistingFields').style.display=mode==='existing'?'':'none';
+}
+
+function careerRatingPreset(preset){
+  document.querySelectorAll('.career-preset-btn[data-preset]').forEach(b=>b.classList.toggle('selected',b.dataset.preset===preset));
+  const r=CAREER_PRESETS[preset];
+  if(!r)return;
+  document.getElementById('careerSs').value=r.ss;
+  document.getElementById('careerIt').value=r.it;
+  document.getElementById('careerSt').value=r.st;
+  document.getElementById('careerRc').value=r.rc;
+  document.getElementById('careerAgg').value=r.agg;
+  document.getElementById('careerCon').value=r.con;
+  document.getElementById('careerCar').value=95;
+}
+
+function startCareer(){
+  const series=document.getElementById('careerSeries').value;
+  const isNew=document.getElementById('careerNewFields').style.display!=='none';
+  const activePreset=document.querySelector('.career-preset-btn[data-preset].selected');
+  const presetName=activePreset?activePreset.dataset.preset:null;
+
+  let driver;
+  if(isNew){
+    const num=document.getElementById('careerNum').value.trim()||'99';
+    driver={
+      num: String(num), name: document.getElementById('careerName').value.trim()||'Driver',
+      team: document.getElementById('careerTeam').value.trim()||'Independent',
+      mfg: document.getElementById('careerMfg').value,
+      ss: parseInt(document.getElementById('careerSs').value)||65,
+      it: parseInt(document.getElementById('careerIt').value)||65,
+      st: parseInt(document.getElementById('careerSt').value)||65,
+      rc: parseInt(document.getElementById('careerRc').value)||65,
+      agg: parseInt(document.getElementById('careerAgg').value)||65,
+      con: parseInt(document.getElementById('careerCon').value)||65,
+      car: parseInt(document.getElementById('careerCar').value)||85,
+      fullTime: true
+    };
+    driver.ovr=Math.round((driver.ss+driver.it+driver.st+driver.rc+driver.agg+driver.con+driver.car)/7);
+  }else{
+    const sel=document.getElementById('careerExistingDriver');
+    const num=sel.value;
+    const arr=series==='cup'?CUP_DRIVERS:(series==='xfinity'?XFINITY_DRIVERS:TRUCK_DRIVERS);
+    driver=arr.find(d=>String(d.num)===String(num));
+    if(!driver){alert('Select a driver.');return;}
+  }
+
+  // Get the full roster for this series
+  const roster=(series==='cup'?CUP_DRIVERS:(series==='xfinity'?XFINITY_DRIVERS:TRUCK_DRIVERS)).map(d=>({...d}));
+  // Ensure career driver is in roster
+  if(isNew){
+    const existing=roster.findIndex(d=>String(d.num)===String(driver.num));
+    if(existing>=0)roster[existing]={...driver};
+    else roster.push({...driver});
+  }
+
+  careerData={
+    series: series, driverNum: String(driver.num), driver: {...driver},
+    seasonNumber: 1, careerStats: {wins:0,titles:0,t5:0,t10:0,podiums:0,poles:0,races:0},
+    roster: roster, progression: {races:0,sumFinish:0},
+    seasonStats: [], raceLog: [],
+    preset: presetName
+  };
+
+  closeCareerSetup();
+  enterCareer();
+}
+
+function enterCareer(){
+  if(!careerData&&!loadCareerData()){
+    console.warn('No career data found');
+    return;
+  }
+  try{
+    // Save classic state before switching
+    saveSeason(currentSeries,season);
+    classicState={series:currentSeries, season:season, drivers:[...DRIVERS]};
+    // Switch to career series
+    currentSeries=careerData.series;
+    DRIVERS=careerData.roster;
+    // Create or load career season
+    const saved=localStorage.getItem('career_season_'+careerData.series+'_'+careerData.driverNum);
+    if(saved){
+      const parsed=JSON.parse(saved);
+      careerData.seasonObject=createCareerSeason(careerData.series,DRIVERS,careerData.seasonNumber);
+      // Restore data fields onto the fresh season object (which has methods)
+      Object.assign(careerData.seasonObject, parsed);
+      season=careerData.seasonObject;
+      // Update driver refs in standings
+      Object.values(season.standings).forEach(s=>{
+        const found=DRIVERS.find(d=>String(d.num)===String(s.num));
+        if(found)Object.assign(s,found);
+      });
+    }else{
+      careerData.seasonObject=createCareerSeason(careerData.series,DRIVERS,careerData.seasonNumber);
+      careerData.seasonObject.schedule=[...(SCHEDULES[careerData.series]||SCHEDULES.cup)];
+      season=careerData.seasonObject;
+    }
+    season.postInit();
+    balanceCareerFullTime();
+    careerActive=true;
+    // Update UI
+    document.body.classList.add('career-active');
+    document.getElementById('btnCareer').textContent='Classic';
+    document.getElementById('btnCareer').onclick=exitCareer;
+    switchSeriesUI(careerData.series);
+    // Switch to race tab
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.querySelector('.tab-btn[data-tab="race"]').classList.add('active');
+    document.getElementById('panel-race').classList.add('active');
+    document.getElementById('stagesToggle').checked=season.stagesEnabled!==false;
+    document.getElementById('chaseToggle').checked=season.chaseEnabled;
+    renderStandings();
+    renderResults();
+    updateHeaderInfo();
+    updateFullTimeStat();
+    updateCareerUI();
+    checkCareerSeasonEnd();
+    resetSession();
+    addLog('Career mode resumed.','s');
+  }catch(e){console.error('enterCareer error:',e);addLog('Failed to load career: '+e.message,'s');}
+}
+
+function exitCareer(){
+  if(!careerActive||!classicState)return;
+  // Save career season
+  if(careerData&&careerData.seasonObject){
+    saveCareerSeason();
+    saveCareerData();
+  }
+  careerActive=false;
+  document.body.classList.remove('career-active');
+  document.getElementById('btnCareer').textContent='Resume Career';
+  document.getElementById('btnCareer').onclick=function(){enterCareer();};
+  // Restore classic state
+  currentSeries=classicState.series;
+  season=classicState.season;
+  DRIVERS=classicState.drivers;
+  // Update the source arrays so series switching works
+  const sk=currentSeries;
+  if(sk==='cup')CUP_DRIVERS=DRIVERS;else if(sk==='xfinity')XFINITY_DRIVERS=DRIVERS;else if(sk==='truck')TRUCK_DRIVERS=DRIVERS;else if(sk==='f1')F1_DRIVERS=DRIVERS;else if(sk==='indycar')INDYCAR_DRIVERS=DRIVERS;else if(sk==='cf1')CUSTOM_F1_DRIVERS=DRIVERS;else EEL_DRIVERS=DRIVERS;
+  classicState=null;
+  switchSeriesUI(currentSeries);
+  // Switch to race tab
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelector('.tab-btn[data-tab="race"]').classList.add('active');
+  document.getElementById('panel-race').classList.add('active');
+  updateCareerUI();
+  renderStandings();
+  renderResults();
+  updateHeaderInfo();
+  updateFullTimeStat();
+  resetSession();
+}
+
+function switchSeriesUI(key){
+  document.querySelectorAll('.series-btn').forEach(b=>b.classList.toggle('active',b.dataset.series===key));
+  const svc={cup:'Cup Series',xfinity:'Xfinity Series',truck:'Truck Series',f1:'F1 Series',indycar:'IndyCar Series',cf1:'Custom F1 Series',eel:'Custom NASCAR Series'};
+  const htv={cup:'<span class="red">&#9679;</span> <span class="yellow">NASCAR</span> CUP SERIES SIMULATOR',xfinity:'<span class="red">&#9679;</span> <span class="yellow">NASCAR</span> XFINITY SERIES SIMULATOR',truck:'<span class="red">&#9679;</span> <span class="yellow">NASCAR</span> TRUCK SERIES SIMULATOR',f1:'<span class="red">&#9679;</span> <span class="red">FORMULA 1</span> SIMULATOR',indycar:'<span class="blue">&#9679;</span> <span class="red">INDYCAR</span> SIMULATOR',cf1:'<span class="red">&#9679;</span> <span class="red">CUSTOM F1</span> SIMULATOR',eel:'<span class="green">&#9679;</span> <span class="yellow">CUSTOM NASCAR</span> SIMULATOR'};
+  document.getElementById('stTitle').textContent=svc[key];
+  document.getElementById('stTitle').dataset.base=svc[key];
+  document.querySelector('header h1').innerHTML=htv[key];
+}
+
+function createCareerSeason(series,drivers,snum){
+  const isNascar=series!=='f1'&&series!=='indycar'&&series!=='cf1';
+  const size=CHASE_SIZES[series]||10;
+  const regEnd=CHASE_RACES[series]||26;
+  const st={};
+  drivers.forEach(d=>{st[d.num]={...d,points:0,wins:0,t5:0,t10:0,podiums:0,races:0,finishes:0,led:0,stagePts:0,stageWins:0,poles:0,totalFinish:0,totalStart:0};});
+  return {
+    races:0, standings:st, results:[],
+    schedule:[], chaseEnabled:isNascar, chaseActive:false,
+    chaseRound:0, chaseDrivers:[], eliminated:[],
+    chaseSize:size, regularSeasonEnd:regEnd, chaseElimRaces:[],
+    stagesEnabled:true, seasonNumber:snum,
+    postInit(){
+      if(this.chaseEnabled&&this.regularSeasonEnd>0&&this.chaseSize>0){
+        this.chaseElimRaces=[];
+        const totalRaces=this.schedule.length;
+        if(totalRaces<=0)return;
+        if(this.regularSeasonEnd>=totalRaces)this.regularSeasonEnd=totalRaces;
+      }
+    },
+    addResult(result){
+      this.results.push(result);this.races++;
+      const order=result.finishOrder;
+      const pts=SERIES_POINTS[series]||[40,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1];
+      order.forEach((r,i)=>{
+        const s=this.standings[r.driver.num];
+        if(!s)return;
+        const pos=i+1;
+        if(pos<=pts.length)s.points+=pts[pos-1];
+        s.races++;
+        if(r.status!=='dnf')s.finishes++;
+        if(pos===1)s.wins++;
+        if(pos<=3)s.podiums++;
+        if(pos<=5)s.t5++;
+        if(pos<=10)s.t10++;
+        s.totalFinish+=pos;
+        s.totalStart+=r.startPos||0;
+        s.led+=r.lapsLed||0;
+      });
+      // Stage points
+      if(result.stagePoints){
+        Object.entries(result.stagePoints).forEach(([num,pts])=>{
+          const s=this.standings[num];
+          if(s){
+            s.points+=pts;
+            s.stagePts+=pts;
+            if(pts>=10)s.stageWins++;
+          }
+        });
+      }
+    },
+    getSorted(col,asc){
+      return Object.values(this.standings).sort((a,b)=>{
+        let va=a[col]||0,vb=b[col]||0;
+        if(col==='name'){va=String(va).toLowerCase();vb=String(vb).toLowerCase();}
+        return asc?(va>vb?1:-1):(va<vb?1:-1);
+      });
+    },
+    initChase(){
+      if(!this.chaseEnabled||this.chaseSize<=0)return;
+      this.chaseActive=true;this.chaseRound=1;
+      const sorted=this.getSorted('points',false);
+      this.chaseDrivers=sorted.slice(0,this.chaseSize).map(s=>s.num);
+      this.eliminated=[];
+      const regEndIdx=this.regularSeasonEnd;
+      this.chaseDrivers.forEach(num=>{
+        const s=this.standings[num];
+        if(s){
+          s._origPoints=s.points;
+          s.points=2000;
+        }
+      });
+    },
+    checkChaseAfterRace(){
+      if(!this.chaseActive)return;
+      if(this.races===this.schedule.length){
+        const remaining=Object.values(this.standings).filter(s=>this.chaseDrivers.includes(s.num));
+        if(remaining.length>0){
+          const champ=remaining.sort((a,b)=>b.points-a.points)[0];
+          champ.champion=true;
+        }
+      }
+    }
+  };
+}
+
+function saveCareerSeason(){
+  if(!careerData||!careerData.seasonObject)return;
+  const key='career_season_'+careerData.series+'_'+careerData.driverNum;
+  localStorage.setItem(key,JSON.stringify(careerData.seasonObject));
+}
+
+function saveCareerData(){
+  if(!careerData)return;
+  try{
+    localStorage.setItem('career_data',JSON.stringify({
+      series:careerData.series, driverNum:careerData.driverNum, driver:careerData.driver,
+      seasonNumber:careerData.seasonNumber, careerStats:careerData.careerStats,
+      roster:careerData.roster, progression:careerData.progression,
+      seasonStats:careerData.seasonStats||[], raceLog:careerData.raceLog||[],
+      preset:careerData.preset
+    }));
+  }catch(e){console.error('saveCareerData error:',e);}
+}
+
+function resetCareer(){
+  if(careerActive)exitCareer();
+  careerData=null;
+  localStorage.removeItem('career_data');
+  // Remove all career season saves
+  const keys=Object.keys(localStorage).filter(k=>k.startsWith('career_season_'));
+  keys.forEach(k=>localStorage.removeItem(k));
+  document.getElementById('btnCareer').textContent='Career';
+  document.getElementById('btnCareer').onclick=openCareerSetup;
+  addLog('Career data cleared.','s');
+}
+
+function loadCareerData(){
+  const raw=localStorage.getItem('career_data');
+  if(!raw)return false;
+  try{
+    const data=JSON.parse(raw);
+    if(!data.series||!data.driverNum||!data.driver)return false;
+    const arr=data.series==='cup'?CUP_DRIVERS:(data.series==='xfinity'?XFINITY_DRIVERS:TRUCK_DRIVERS);
+    if(!arr||!arr.length)return false;
+    data.roster=arr.map(d=>({...d}));
+    const idx=data.roster.findIndex(d=>String(d.num)===String(data.driverNum));
+    if(idx>=0)data.roster[idx]={...data.driver};
+    else data.roster.push({...data.driver});
+    data.seasonStats=data.seasonStats||[];
+    data.raceLog=data.raceLog||[];
+    careerData=data;
+    return true;
+  }catch(e){console.error('loadCareerData error:',e);return false;}
+}
+
+function buildRatingsHTML(d){
+  const labels={ss:'SS',it:'IT',st:'ST',rc:'RC',agg:'AGG',con:'CON',car:'CAR'};
+  return Object.entries(labels).map(([k,l])=>`<span style="display:inline-flex;align-items:center;gap:2px"><span style="color:var(--text3)">${l}</span><span style="font-weight:600;color:${d[k]>=85?'var(--green)':d[k]>=70?'var(--yellow)':'var(--red)'}">${d[k]||0}</span></span>`).join('')+`<span style="display:inline-flex;align-items:center;gap:2px;margin-left:4px;border-left:1px solid var(--border);padding-left:8px"><span style="color:var(--text3)">OVR</span><span style="font-weight:700;color:var(--yellow)">${d.ovr||0}</span></span>`;
+}
+
+function updateCareerUI(){
+  if(!careerData)loadCareerData();
+  const activeEl=document.getElementById('careerActiveContent');
+  const savedEl=document.getElementById('careerSavedContent');
+  const emptyEl=document.getElementById('careerEmptyContent');
+  const headerBtns=document.getElementById('careerHeaderBtns');
+  if(!activeEl||!savedEl||!emptyEl)return;
+  // Hide all
+  activeEl.style.display='none';
+  savedEl.style.display='none';
+  emptyEl.style.display='none';
+  headerBtns.innerHTML='';
+
+  if(careerActive&&careerData){
+    // State 1: Career active
+    activeEl.style.display='';
+    const so=careerData.seasonObject;
+    const seasonComplete=so&&so.schedule&&so.schedule.length>0&&so.races>=so.schedule.length;
+    const advanceBtn=seasonComplete?'<button class="btn btn-sm" style="background:var(--green);color:#000;font-weight:700;padding:4px 12px;font-size:11px;border:none;border-radius:3px;cursor:pointer;margin-left:4px" onclick="document.getElementById(\'btnQualify\').click()">Advance Season</button>':'';
+    headerBtns.innerHTML=advanceBtn+'<button class="btn btn-gray btn-sm" style="font-size:10px;padding:2px 6px" onclick="exitCareer()">Back to Classic</button><button class="btn btn-gray btn-sm" style="font-size:10px;padding:2px 6px" onclick="if(confirm(\'Delete all career data?\')){resetCareer();updateCareerUI();}">Delete Career</button>';
+    const d=careerData.driver;
+    document.getElementById('careerDriverNum').textContent='#'+d.num;
+    document.getElementById('careerDriverName').textContent=d.name;
+    document.getElementById('careerDriverTeam').textContent=d.team;
+    const cs=careerData.careerStats;
+    document.getElementById('csWins').textContent=cs.wins;
+    document.getElementById('csTitles').textContent=cs.titles;
+    document.getElementById('csT5').textContent=cs.t5;
+    document.getElementById('csT10').textContent=cs.t10;
+    document.getElementById('csPodiums').textContent=cs.podiums;
+    document.getElementById('csPoles').textContent=cs.poles;
+    document.getElementById('csRaces').textContent=cs.races;
+    document.getElementById('csOvr').textContent=d.ovr;
+    document.getElementById('careerRatings').innerHTML=buildRatingsHTML(d);
+    document.getElementById('careerSeasonSummary').textContent='Season '+careerData.seasonNumber+' — '+careerData.series.toUpperCase()+(seasonComplete?' — COMPLETE!':(so?' — '+so.races+'/'+so.schedule.length+' races':''));
+    buildCareerYearlyTable();
+    buildCareerRaceLog();
+  }else if(careerData){
+    // State 2: Saved career data (classic mode)
+    savedEl.style.display='';
+    headerBtns.innerHTML='<button class="btn btn-gray btn-sm" style="font-size:10px;padding:2px 6px" onclick="openCareerSetup()">New Career</button>';
+    const d=careerData.driver;
+    document.getElementById('savedCareerDriverNum').textContent='#'+d.num;
+    document.getElementById('savedCareerDriverName').textContent=d.name;
+    document.getElementById('savedCareerDriverTeam').textContent=d.team;
+    const cs=careerData.careerStats;
+    document.getElementById('savedCsWins').textContent=cs.wins;
+    document.getElementById('savedCsTitles').textContent=cs.titles;
+    document.getElementById('savedCsT5').textContent=cs.t5;
+    document.getElementById('savedCsT10').textContent=cs.t10;
+    document.getElementById('savedCsPodiums').textContent=cs.podiums;
+    document.getElementById('savedCsPoles').textContent=cs.poles;
+    document.getElementById('savedCsRaces').textContent=cs.races;
+    document.getElementById('savedCsOvr').textContent=d.ovr;
+    document.getElementById('savedCareerRatings').innerHTML=buildRatingsHTML(d);
+    document.getElementById('savedCareerSummary').textContent='Season '+careerData.seasonNumber+' — '+careerData.series.toUpperCase()+' — '+cs.races+' career races';
+  }else{
+    // State 3: No career data
+    emptyEl.style.display='';
+    headerBtns.innerHTML='<button class="btn btn-gray btn-sm" style="font-size:10px;padding:2px 6px" onclick="openCareerSetup()">Start Career</button>';
+  }
+}
+
+function resumeCareerFromTab(){
+  if(!careerData&&!loadCareerData())return;
+  enterCareer();
+}
+
+function buildCareerYearlyTable(){
+  const el=document.getElementById('careerYearlyContent');
+  if(!el)return;
+  let stats=careerData.seasonStats||[];
+  // Sort
+  const col=careerYearlySortCol, asc=careerYearlySortAsc;
+  stats=[...stats].sort((a,b)=>{
+    let va=a[col],vb=b[col];
+    if(col==='series'){const sn={cup:0,xfinity:1,truck:2,f1:3,indycar:4,cf1:5,eel:6};va=sn[a.series]||0;vb=sn[b.series]||0;}
+    if(col==='avgFinish'){va=+va||0;vb=+vb||0;}
+    if(va==null)va=0;if(vb==null)vb=0;
+    if(typeof va==='string')return asc?va.localeCompare(vb):vb.localeCompare(va);
+    return asc?va-vb:vb-va;
+  });
+  if(!stats.length){
+    el.innerHTML='<p style="color:var(--text3);padding:10px;text-align:center;font-size:11px">Season in progress — stats will appear here at season end.</p>';
+    return;
+  }
+  const cols=['season','series','position','races','wins','t5','t10','podiums','poles','led','points','avgFinish'];
+  const labels=['Season','Series','Pos','Races','Wins','T5','T10','Podiums','Poles','Laps Led','Points','Avg Fin'];
+  let html='<table><thead><tr>'+cols.map((c,i)=>`<th data-col="${c}" onclick="sortCareerYearly('${c}')">${labels[i]}<span class="sort-arrow">▼</span></th>`).join('')+'</tr></thead><tbody>';
+  const sn={cup:'Cup',xfinity:'Xfinity',truck:'Truck',f1:'F1',indycar:'IndyCar',cf1:'Custom F1',eel:'Custom NASCAR'};
+  stats.forEach(s=>{
+    html+=`<tr>
+      <td>${s.season}</td>
+      <td>${sn[s.series]||(s.series?s.series.toUpperCase():'-')}</td>
+      <td style="font-weight:700">${s.position||'-'}</td>
+      <td>${s.races}</td>
+      <td>${s.wins}</td>
+      <td>${s.t5}</td>
+      <td>${s.t10}</td>
+      <td>${s.podiums}</td>
+      <td>${s.poles}</td>
+      <td>${s.led||0}</td>
+      <td>${s.points}</td>
+      <td>${s.avgFinish}</td>
+    </tr>`;
+  });
+  // Add current season in-progress row
+  const season=careerData.seasonObject;
+  if(season){
+    const ss=season.standings[careerData.driverNum];
+    if(ss){
+      const allSorted=Object.values(season.standings).sort((a,b)=>b.points-a.points);
+      const curPos=allSorted.findIndex(s=>String(s.num)===String(careerData.driverNum))+1;
+      html+=`<tr style="background:var(--bg3);font-style:italic">
+        <td>${careerData.seasonNumber}*</td>
+        <td>${sn[careerData.series]||careerData.series.toUpperCase()}</td>
+        <td style="font-weight:700">${curPos}</td>
+        <td>${ss.races||0}</td>
+        <td>${ss.wins||0}</td>
+        <td>${ss.t5||0}</td>
+        <td>${ss.t10||0}</td>
+        <td>${ss.podiums||0}</td>
+        <td>${ss.poles||0}</td>
+        <td>${ss.led||0}</td>
+        <td>${ss.points||0}</td>
+        <td>${ss.totalFinish&&ss.races?Math.round((ss.totalFinish/ss.races)*10)/10:'-'}</td>
+      </tr>`;
+    }
+  }
+  html+='</tbody></table>';
+  el.innerHTML=html;
+  // Apply sort classes
+  el.querySelectorAll('th[data-col]').forEach(th=>{
+    th.classList.remove('sort-asc','sort-desc');
+    if(th.dataset.col===col)th.classList.add(asc?'sort-asc':'sort-desc');
+  });
+}
+
+function sortCareerYearly(col){
+  if(careerYearlySortCol===col)careerYearlySortAsc=!careerYearlySortAsc;
+  else{careerYearlySortCol=col;careerYearlySortAsc=false;}
+  buildCareerYearlyTable();
+}
+
+function buildCareerRaceLog(){
+  const el=document.getElementById('careerRaceLogContent');
+  if(!el)return;
+  let log=careerData.raceLog||[];
+  // Sort
+  const col=careerRaceLogSortCol, asc=careerRaceLogSortAsc;
+  const sortMap={season:'season',race:'race',track:'track',startPos:'startPos',finish:'finish',lapsLed:'lapsLed',field:'field'};
+  const key=sortMap[col]||'race';
+  log=[...log].sort((a,b)=>{
+    let va=a[key],vb=b[key];
+    if(va==null)va=0;if(vb==null)vb=0;
+    if(typeof va==='string')return asc?va.localeCompare(vb):vb.localeCompare(va);
+    return asc?va-vb:vb-va;
+  });
+  if(!log.length){
+    el.innerHTML='<p style="color:var(--text3);padding:10px;text-align:center;font-size:11px">No races completed yet.</p>';
+    return;
+  }
+  const cols=['season','race','track','startPos','finish','lapsLed','field'];
+  const labels=['Season','Race','Track','Start','Finish','Led','Field'];
+  let html='<div class="race-log"><table><thead><tr>'+cols.map((c,i)=>`<th data-col="${c}" onclick="sortCareerRaceLog('${c}')">${labels[i]}<span class="sort-arrow">▼</span></th>`).join('')+'</tr></thead><tbody>';
+  log.forEach(r=>{
+    const finishClass=r.finish<=3?' style="color:var(--green);font-weight:700"':(r.finish<=5?' style="color:var(--yellow)"':'');
+    html+=`<tr>
+      <td>${r.season}</td>
+      <td>${r.race}</td>
+      <td style="text-align:left;max-width:200px;overflow:hidden;text-overflow:ellipsis">${r.track}</td>
+      <td>${r.startPos}</td>
+      <td${finishClass}>${r.finish}</td>
+      <td>${r.lapsLed||0}</td>
+      <td>${r.field}</td>
+    </tr>`;
+  });
+  html+='</tbody></table></div>';
+  el.innerHTML=html;
+  // Apply sort classes
+  el.querySelectorAll('th[data-col]').forEach(th=>{
+    th.classList.remove('sort-asc','sort-desc');
+    if(th.dataset.col===col)th.classList.add(asc?'sort-asc':'sort-desc');
+  });
+}
+
+function sortCareerRaceLog(col){
+  if(careerRaceLogSortCol===col)careerRaceLogSortAsc=!careerRaceLogSortAsc;
+  else{careerRaceLogSortCol=col;careerRaceLogSortAsc=false;}
+  buildCareerRaceLog();
+}
+
+function advanceCareerSeason(){
+  if(!careerActive||!careerData)return;
+  // Save season stats for year-by-year
+  const ss=season.standings;
+  const dn=careerData.driverNum;
+  const myStats=ss[dn];
+  if(myStats){
+    // Calculate final position
+    const sorted=Object.values(ss).sort((a,b)=>b.points-a.points);
+    const pos=sorted.findIndex(s=>String(s.num)===String(dn))+1;
+    careerData.seasonStats.push({
+      season: careerData.seasonNumber, series: careerData.series,
+      wins: myStats.wins||0, t5: myStats.t5||0, t10: myStats.t10||0,
+      podiums: myStats.podiums||0, poles: myStats.poles||0,
+      races: myStats.races||0, points: myStats.points||0,
+      avgFinish: myStats.races>0?Math.round((myStats.totalFinish/myStats.races)*10)/10:0,
+      champion: myStats.champion||false, position: pos,
+      led: myStats.led||0
+    });
+  }
+  // Update career stats from final standings
+  if(myStats){
+    const cs=careerData.careerStats;
+    cs.wins+=myStats.wins||0;
+    cs.t5+=myStats.t5||0;
+    cs.t10+=myStats.t10||0;
+    cs.podiums+=myStats.podiums||0;
+    cs.poles+=myStats.poles||0;
+    cs.races+=myStats.races||0;
+    if(myStats.champion)cs.titles++;
+    // Apply progression
+    applyCareerProgression(myStats);
+    // Promotion check: champion or 5+ wins unlocks next series
+    if(myStats.champion||myStats.wins>=5){
+      const nextSeries={truck:'xfinity',xfinity:'cup'}[careerData.series];
+      if(nextSeries&&confirm(`${careerData.series.toUpperCase()} champion`+(myStats.wins>=5?` with ${myStats.wins} wins`:'')+`! Advance to ${nextSeries.toUpperCase()}? (Cancel to stay in ${careerData.series.toUpperCase()})`)){
+        // Reset driver ratings to original career preset (car always 95)
+        if(careerData.preset&&CAREER_PRESETS[careerData.preset]){
+          const pr=CAREER_PRESETS[careerData.preset];
+          Object.assign(careerData.driver,pr);
+          careerData.driver.car=95;
+          careerData.driver.ovr=Math.round((careerData.driver.ss+careerData.driver.it+careerData.driver.st+careerData.driver.rc+careerData.driver.agg+careerData.driver.con+careerData.driver.car)/7);
+        }
+        careerData.driver.car=95;
+        const newRoster=(nextSeries==='cup'?CUP_DRIVERS:nextSeries==='xfinity'?XFINITY_DRIVERS:TRUCK_DRIVERS).map(d=>({...d}));
+        const numConflict=newRoster.find(d=>String(d.num)===String(careerData.driverNum));
+        if(numConflict){
+          const newNum=prompt('# '+careerData.driverNum+' is taken in '+nextSeries.toUpperCase()+'. Enter a new number:','00');
+          if(newNum&&newNum.trim()){
+            careerData.driverNum=String(newNum).trim();
+            careerData.driver.num=careerData.driverNum;
+          }
+        }
+        const delIdx=newRoster.findIndex(d=>String(d.num)===String(careerData.driverNum));
+        if(delIdx>=0)newRoster.splice(delIdx,1);
+        newRoster.push({...careerData.driver});
+        careerData.roster=newRoster;
+        careerData.series=nextSeries;
+        addLog(`Promoted to ${nextSeries.toUpperCase()} series!`,'s');
+      }
+    }
+  }
+  // Increment season
+  careerData.seasonNumber++;
+  // Generate fresh schedule (use existing preset or shuffle)
+  const preset=(SCHEDULES[careerData.series]||SCHEDULES.cup);
+  careerData.seasonObject=createCareerSeason(careerData.series,careerData.roster,careerData.seasonNumber);
+  careerData.seasonObject.schedule=[...preset];
+  careerData.seasonObject.postInit();
+  balanceCareerFullTime();
+  season=careerData.seasonObject;
+  // Save
+  saveCareerData();
+  saveCareerSeason();
+  addLog(`Season ${careerData.seasonNumber-1} complete! Advancing to Season ${careerData.seasonNumber}.`,'s');
+  renderStandings();
+  renderResults();
+  updateHeaderInfo();
+  updateCareerUI();
+  resetSession();
+  updateFullTimeStat();
+}
+
+function balanceCareerFullTime(){
+  if(!careerData||!careerData.roster)return;
+  const limit=FULLTIME_LIMITS[careerData.series]||Infinity;
+  const roster=careerData.roster;
+  const ftCount=roster.filter(d=>d.fullTime!==false).length;
+  if(ftCount<=limit)return;
+  const sorted=roster.filter(d=>String(d.num)!==String(careerData.driverNum)&&d.fullTime!==false).sort((a,b)=>(a.ovr||0)-(b.ovr||0));
+  if(sorted.length>0)sorted[0].fullTime=false;
+}
+
+function applyCareerProgression(myStats){
+  const d=careerData.driver;
+  const avgFinish=myStats.races>0?myStats.totalFinish/myStats.races:15;
+  const diff=15-avgFinish;
+  const change=Math.round(diff*0.5);
+  ['ss','it','st','rc','agg','con'].forEach(r=>{
+    let adj=change+Math.round((Math.random()-0.5)*4);
+    d[r]=Math.max(1,Math.min(99,(d[r]||65)+adj));
+  });
+  d.car=95;
+  d.ovr=Math.round((d.ss+d.it+d.st+d.rc+d.agg+d.con+d.car)/7);
+  const ri=careerData.roster.findIndex(x=>String(x.num)===String(d.num));
+  if(ri>=0)careerData.roster[ri]={...d};
+}
+
+function checkCareerSeasonEnd(){
+  if(!careerActive||!careerData||!season)return false;
+  if(season.schedule&&season.schedule.length>0&&season.races>=season.schedule.length){
+    addLog(`Season ${careerData.seasonNumber} complete! Click "Advance Season" to continue.`,'s');
+    document.getElementById('btnQualify').disabled=false;
+    document.getElementById('btnQualify').textContent='Advance Season';
+    document.getElementById('btnQualify').onclick=function(){
+      advanceCareerSeason();
+      // Reset button to normal qualify
+      document.getElementById('btnQualify').onclick=runQualifying;
+      document.getElementById('btnQualify').textContent='Qualify';
+    };
+    return true;
+  }
+  return false;
+}
+
 // ====================== FIREBASE ======================
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyC8Gbx9ZBkBzaTb_v3uyMiTeCO2kfOAnTA",
@@ -3068,6 +3865,7 @@ function proceedInit(){
       document.getElementById(`panel-${this.dataset.tab}`).classList.add('active');
       if(this.dataset.tab==='standings')renderStandings();
       if(this.dataset.tab==='results')renderResults();
+      if(this.dataset.tab==='career')updateCareerUI();
     });
   });
 
@@ -3079,6 +3877,16 @@ function proceedInit(){
     if(col===sortCol)sortAsc=!sortAsc;
     else{sortCol=col;sortAsc=false;}
     renderStandings();
+  });
+
+  // Career toggle buttons
+  document.querySelector('#careerToggleBtns').addEventListener('click',function(e){
+    const btn=e.target.closest('.toggle-btn');
+    if(!btn)return;
+    document.querySelectorAll('#careerToggleBtns .toggle-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('careerYearlyContent').style.display=btn.dataset.careertab==='yearly'?'':'none';
+    document.getElementById('careerRaceLogContent').style.display=btn.dataset.careertab==='racelog'?'':'none';
   });
 
   resetSession();
@@ -3218,6 +4026,11 @@ function loadAllSeasons(){
   renderResults();
   updateHeaderInfo();
   updateFullTimeStat();
+  // Load saved career data
+  if(!careerActive&&loadCareerData()){
+    document.getElementById('btnCareer').textContent='Resume Career';
+    document.getElementById('btnCareer').onclick=function(){enterCareer();};
+  }
 }
 
 document.addEventListener('DOMContentLoaded',init);
@@ -3259,6 +4072,84 @@ document.addEventListener('DOMContentLoaded',init);
         </thead>
         <tbody id="rosterBody"></tbody>
       </table>
+    </div>
+  </div>
+</div>
+
+<!-- CAREER SETUP MODAL -->
+<div class="modal-overlay" id="careerModal" style="display:none" onclick="if(event.target===this)closeCareerSetup()">
+  <div class="modal-content career-modal">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h3 style="margin:0">Career Setup</h3>
+      <button class="btn btn-gray btn-sm" onclick="closeCareerSetup()">Close</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div>
+        <label>Series</label>
+        <select id="careerSeries" onchange="careerSeriesChanged()">
+          <option value="truck">Truck Series</option>
+          <option value="xfinity">Xfinity Series</option>
+          <option value="cup">Cup Series</option>
+        </select>
+      </div>
+      <div>
+        <label>Driver</label>
+        <div style="display:flex;gap:6px;margin-bottom:6px">
+          <button id="careerDriverNew" class="career-preset-btn selected" onclick="careerDriverMode('new')">Create New</button>
+          <button id="careerDriverExisting" class="career-preset-btn" onclick="careerDriverMode('existing')">Pick Existing</button>
+        </div>
+      </div>
+      <div id="careerNewFields">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+          <div>
+            <label>Name</label>
+            <input type="text" id="careerName" value="Driver" placeholder="Driver name">
+          </div>
+          <div>
+            <label>Number</label>
+            <input type="text" id="careerNum" value="00" placeholder="Car number">
+          </div>
+        </div>
+          <div>
+            <label>Team</label>
+            <input type="text" id="careerTeam" value="Independent" placeholder="Team name">
+          </div>
+          <div>
+            <label>Manufacturer</label>
+            <select id="careerMfg">
+              <option value="Chevy">Chevy</option>
+              <option value="Ford">Ford</option>
+              <option value="Toyota">Toyota</option>
+              <option value="Dodge">Dodge</option>
+              <option value="Honda">Honda</option>
+            </select>
+          </div>
+        <div style="margin-top:4px">
+          <label>Starting Ratings</label>
+          <div style="display:flex;gap:4px;flex-wrap:wrap">
+            <button class="career-preset-btn selected" data-preset="rookie" onclick="careerRatingPreset('rookie')">Rookie</button>
+            <button class="career-preset-btn" data-preset="veteran" onclick="careerRatingPreset('veteran')">Veteran</button>
+            <button class="career-preset-btn" data-preset="elite" onclick="careerRatingPreset('elite')">Elite</button>
+            <button class="career-preset-btn" data-preset="legend" onclick="careerRatingPreset('legend')">Legend</button>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:6px" id="careerRatingFields">
+          <div><label>SS</label><input type="number" id="careerSs" value="65" min="1" max="99"></div>
+          <div><label>IT</label><input type="number" id="careerIt" value="65" min="1" max="99"></div>
+          <div><label>ST</label><input type="number" id="careerSt" value="65" min="1" max="99"></div>
+          <div><label>RC</label><input type="number" id="careerRc" value="65" min="1" max="99"></div>
+          <div><label>AGG</label><input type="number" id="careerAgg" value="65" min="1" max="99"></div>
+          <div><label>CON</label><input type="number" id="careerCon" value="65" min="1" max="99"></div>
+          <div><label>CAR</label><input type="number" id="careerCar" value="85" min="1" max="99" disabled style="opacity:0.6;cursor:not-allowed"></div>
+        </div>
+      </div>
+      <div id="careerExistingFields" style="display:none">
+        <label>Select Driver</label>
+        <select id="careerExistingDriver" style="height:120px" size="6"></select>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:6px">
+        <button class="btn btn-sm" style="background:var(--green);color:#000;font-weight:700" onclick="startCareer()">Start Career</button>
+      </div>
     </div>
   </div>
 </div>
