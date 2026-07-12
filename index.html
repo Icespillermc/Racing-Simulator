@@ -356,7 +356,12 @@ select:focus{outline:none;border-color:var(--yellow)}
   <div class="standings-panel">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
         <h2 style="margin:0" id="stTitle">Cup Series Standings</h2>
-        <div style="display:flex;gap:6px">
+        <div style="display:flex;gap:6px;align-items:center">
+          <span id="careerStSeasonWrap" style="display:none;font-size:10px">
+            <select id="careerStSeasonSelect" style="font-size:10px;padding:2px 4px;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:3px" onchange="onCareerSeasonChange(this.value)">
+              <option value="current">Current</option>
+            </select>
+          </span>
           <span id="viewToggle" style="display:none;cursor:pointer;font-size:10px;padding:3px 6px;border-radius:3px;background:var(--bg3);color:var(--text2);user-select:none" onclick="toggleStandingsView()">Season View</span>
           <span id="teamViewToggle" style="cursor:pointer;font-size:10px;padding:3px 6px;border-radius:3px;background:var(--bg3);color:var(--text2);user-select:none" onclick="toggleTeamView()">Team Standings</span>
           <button class="btn btn-gray btn-sm" onclick="resetSeason()">Reset Season</button>
@@ -381,7 +386,14 @@ select:focus{outline:none;border-color:var(--yellow)}
 <!-- RESULTS PANEL -->
 <div class="panel" id="panel-results">
   <div class="results-panel">
-    <h2>Race Results</h2>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h2>Race Results</h2>
+      <span id="careerResultsSeasonWrap" style="display:none;font-size:10px">
+        <select id="careerResultsSeasonSelect" style="font-size:10px;padding:2px 4px;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:3px" onchange="onCareerSeasonChange(this.value)">
+          <option value="current">Current</option>
+        </select>
+      </span>
+    </div>
     <div id="resultsContainer">
       <p style="color:var(--text3);padding:20px;text-align:center">No races completed yet. Run a race to see results.</p>
     </div>
@@ -417,13 +429,22 @@ select:focus{outline:none;border-color:var(--yellow)}
         </div>
       </div>
       <div class="career-ratings" id="careerRatings" style="margin:6px 12px 4px;font-size:10px;color:var(--text2);display:flex;gap:10px;flex-wrap:wrap;justify-content:center"></div>
-      <div class="season-summary" id="careerSeasonSummary"></div>
+      <div style="display:flex;gap:8px;align-items:center;margin:4px 12px 2px;font-size:11px">
+        <div class="season-summary" id="careerSeasonSummary" style="flex:1"></div>
+        <span id="careerSeasonSelectorWrap" style="display:none">
+          <select id="careerSeasonSelect" style="font-size:10px;padding:2px 4px;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:3px" onchange="onCareerSeasonChange(this.value)"></select>
+        </span>
+        <button class="btn btn-gray btn-sm" style="font-size:10px;padding:2px 6px" onclick="showCareerRoster()">Roster</button>
+        <button class="btn btn-gray btn-sm" style="font-size:10px;padding:2px 6px" onclick="exportCareerCSV()">Export Career</button>
+      </div>
       <div class="toggle-btns" id="careerToggleBtns">
         <button class="toggle-btn active" data-careertab="yearly">Year by Year</button>
         <button class="toggle-btn" data-careertab="racelog">Race Log</button>
+        <button class="toggle-btn" data-careertab="fieldstats">Field Stats</button>
       </div>
       <div id="careerYearlyContent"></div>
       <div id="careerRaceLogContent" style="display:none"></div>
+      <div id="careerFieldStatsContent" style="display:none"></div>
     </div>
     <!-- Saved career (not active) -->
     <div id="careerSavedContent" style="display:none">
@@ -2575,29 +2596,116 @@ function renderResults(){
 function exportSeasonCSV(){
   if(season.results.length===0){alert('No races to export.');return;}
   const sn={cup:'Cup',xfinity:'Xfinity',truck:'Truck',f1:'F1',indycar:'IndyCar',cf1:'Custom F1',eel:'Custom NASCAR'};
+  const seriesName=sn[currentSeries]||currentSeries;
   let csv='';
-  // --- STANDINGS ---
-  csv+='"'+(sn[currentSeries]||currentSeries)+' Series - Standings"\r\n';
-  csv+='Pos,#,Driver,Team,Points,Wins,Podiums,Poles,Stage Wins,Stage Pts,T5,T10,Races,Avg Finish,Avg Start,Laps Led\r\n';
+  // --- HEADER ---
+  csv+=`"${seriesName} Series - Full Season Export"\r\n`;
+  csv+=`"Generated: ${new Date().toLocaleDateString()}","Races: ${season.results.length}","Tracks: ${season.schedule.length}"\r\n\r\n`;
+  // --- STANDINGS TABLE ---
+  csv+='"=== STANDINGS ==="\r\n';
+  csv+='Pos,#,Driver,Team,Mfg,Points,Wins,Podiums,Poles,Stage Wins,Stage Pts,T5,T10,Races,Avg Finish,Avg Start,Laps Led,Chase\r\n';
   const sorted=season.getSorted('points',false);
   sorted.forEach((d,i)=>{
-    csv+=`${i+1},${d.num},"${d.name}","${d.team}",${d.points},${d.wins},${d.podiums||0},${d.poles||0},${d.stageWins||0},${d.stagePts||0},${d.t5||0},${d.t10||0},${d.races},${d.finishes||0},${d.races>0?(d.totalFinish/d.races).toFixed(2):'-'},${d.races>0?(d.totalStart/d.races).toFixed(2):'-'},${d.led||0}\r\n`;
+    const chase=d._regularStats?'Yes':'';
+    csv+=`${i+1},${d.num},"${d.name}","${d.team}","${d.mfg||''}",${d.points},${d.wins},${d.podiums||0},${d.poles||0},${d.stageWins||0},${d.stagePts||0},${d.t5||0},${d.t10||0},${d.races},${d.races>0?(d.totalFinish/d.races).toFixed(2):'-'},${d.races>0?(d.totalStart/d.races).toFixed(2):'-'},${d.led||0},${chase}\r\n`;
   });
-  // --- RESULTS ---
-  csv+='\r\nRace #,Track,Type,Laps,Pos,Start,#,Driver,Team,Mfg,Status,Laps Led,Pit Stops\r\n';
+  // --- STANDINGS GAPS ---
+  if(sorted.length>1){
+    csv+='\r\n"Points Gaps"\r\n';
+    csv+='Pos,#,Driver,Gap to Leader,Gap to Next\r\n';
+    let prevPts=-1;
+    sorted.forEach((d,i)=>{
+      const gapLead=i===0?'-':(sorted[0].points-d.points);
+      const gapNext=i===0?'-':(prevPts-d.points);
+      csv+=`${i+1},${d.num},"${d.name}",${gapLead},${gapNext}\r\n`;
+      prevPts=d.points;
+    });
+  }
+  // --- RACE RESULTS ---
+  csv+='\r\n"=== RACE RESULTS ==="\r\n';
+  csv+='Race #,Track,Type,Laps,Date,Pos,Start,#,Driver,Team,Mfg,Laps Comp,Led,Pit Stops,Status,Points,Stage Wins,Stage Pts\r\n';
   season.results.forEach((r,raceIdx)=>{
     const raceNum=raceIdx+1;
+    const date=r.date||'';
     r.finishOrder.forEach((d,i)=>{
       const drv=d.driver||d;
-      csv+=`${raceNum},"${r.track.name}","${r.track.typeName}",${r.laps},${i+1},${d.startPos||''},${drv.num},"${drv.name}","${drv.team}","${drv.mfg}",${d.status||''},${d.lapsLed||0},${d.pitStops||''}\r\n`;
+      const laps=d.dnfLap||r.laps||'-';
+      csv+=`${raceNum},"${r.track.name}","${r.track.typeName||''}",${r.laps},"${date}",${i+1},${d.startPos||''},${drv.num},"${drv.name}","${drv.team||''}","${drv.mfg||''}",${laps},${d.lapsLed||0},${d.pitStops||''},"${d.status||'Running'}",${d.points||0},${d.stageWins||0},${d.stagePts||0}\r\n`;
     });
   });
+  // --- SCHEDULE ---
+  if(season.schedule.length){
+    csv+='\r\n"=== SCHEDULE ==="\r\n';
+    csv+='Race #,Track Name,Type,Location\r\n';
+    season.schedule.forEach((t,i)=>{
+      csv+=`${i+1},"${t.name}","${t.typeName||''}","${t.location||''}"\r\n`;
+    });
+  }
   // Download
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
-  const date=season.results.length?season.results[season.results.length-1].track.name.replace(/\s+/g,'_'):'season';
-  a.download=`${currentSeries}_${date}.csv`;
+  const dateStr=season.results.length&&season.results[season.results.length-1].track?season.results[season.results.length-1].track.name.replace(/\s+/g,'_'):'season';
+  a.download=`${currentSeries}_${dateStr}.csv`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+}
+
+function exportCareerCSV(){
+  if(!careerActive){alert('No active career to export.');return;}
+  const cd=careerData;
+  let csv='';
+  const sn={cup:'Cup',xfinity:'Xfinity',truck:'Truck',f1:'F1',indycar:'IndyCar',cf1:'Custom F1',eel:'Custom NASCAR'};
+  // --- HEADER ---
+  csv+=`"Career Export - ${cd.driver.name} (#${cd.driverNum})"\r\n`;
+  csv+=`"Preset: ${cd.preset||'Custom'}","Series: ${sn[cd.series]||cd.series}","Season: ${cd.seasonNumber}/25"\r\n`;
+  csv+=`"Generated: ${new Date().toLocaleDateString()}"\r\n\r\n`;
+  // --- CURRENT SEASON STANDINGS ---
+  if(season&&season.standings){
+    csv+='"=== CURRENT SEASON STANDINGS ==="\r\n';
+    csv+='Pos,#,Driver,Team,Mfg,Points,Wins,Podiums,Poles,Stage Wins,Stage Pts,T5,T10,Races,Avg Finish,Avg Start,Laps Led\r\n';
+    const sorted=season.getSorted('points',false);
+    sorted.forEach((d,i)=>{
+      csv+=`${i+1},${d.num},"${d.name}","${d.team}","${d.mfg||''}",${d.points},${d.wins},${d.podiums||0},${d.poles||0},${d.stageWins||0},${d.stagePts||0},${d.t5||0},${d.t10||0},${d.races},${d.races>0?(d.totalFinish/d.races).toFixed(2):'-'},${d.races>0?(d.totalStart/d.races).toFixed(2):'-'},${d.led||0}\r\n`;
+    });
+  }
+  // --- SEASON HISTORY ---
+  if(cd.seasonStats&&cd.seasonStats.length){
+    csv+='\r\n"=== SEASON HISTORY ==="\r\n';
+    csv+='Season,Series,Wins,Titles,T5,T10,Podiums,Poles,Races,Avg Finish,OVR\r\n';
+    cd.seasonStats.forEach((s,i)=>{
+      const ss=sn[s.series||cd.series]||(s.series||cd.series);
+      const avgFin=s.races>0?(s.totalFinish/s.races).toFixed(2):'-';
+      csv+=`${i+1},${ss},${s.wins||0},${s.titles||0},${s.t5||0},${s.t10||0},${s.podiums||0},${s.poles||0},${s.races||0},${avgFin},${s.ovr||''}\r\n`;
+    });
+  }
+  // --- RACE LOG ---
+  if(cd.raceLog&&cd.raceLog.length){
+    csv+='\r\n"=== RACE LOG ==="\r\n';
+    csv+='Season,Race #,Series,Track,Type,Finish,Start,#,Status,Led,Pit Stops,Points,Stage Wins,Stage Pts\r\n';
+    cd.raceLog.forEach((r,i)=>{
+      const snNum=sn[r.series]||r.series;
+      csv+=`${r.season||(i+1)},${r.raceNumber||''},${snNum},"${r.trackName||''}","${r.trackType||''}",${r.finish},${r.start||''},${r.num||''},"${r.status||'Running'}",${r.led||0},${r.pitStops||''},${r.points||0},${r.stageWins||0},${r.stagePts||0}\r\n`;
+    });
+  }
+  // --- ALL-TIME PLAYER STATS ---
+  if(cd.raceLog&&cd.raceLog.length){
+    const totalRaces=cd.raceLog.length;
+    const totalWins=cd.raceLog.filter(r=>r.finish===1).length;
+    const totalPoles=cd.raceLog.filter(r=>r.start===1).length;
+    const totalT5=cd.raceLog.filter(r=>r.finish<=5).length;
+    const totalT10=cd.raceLog.filter(r=>r.finish<=10).length;
+    const totalPodiums=cd.raceLog.filter(r=>r.finish<=3).length;
+    const totalLed=cd.raceLog.reduce((s,r)=>s+(r.led||0),0);
+    const totalStageWins=cd.raceLog.reduce((s,r)=>s+(r.stageWins||0),0);
+    csv+='\r\n"=== ALL-TIME PLAYER STATS ==="\r\n';
+    csv+=`Races,${totalRaces}\r\nWins,${totalWins}\r\nPoles,${totalPoles}\r\nTop 5,${totalT5}\r\nTop 10,${totalT10}\r\nPodiums,${totalPodiums}\r\nLaps Led,${totalLed}\r\nStage Wins,${totalStageWins}\r\n`;
+  }
+  // Download
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`career_${cd.driver.name.replace(/\s+/g,'_')}_${cd.driverNum}.csv`;
   document.body.appendChild(a);a.click();document.body.removeChild(a);
   URL.revokeObjectURL(a.href);
 }
@@ -3034,6 +3142,12 @@ function deletePreset(){
 }
 
 function resetSession(){
+  // If viewing historical season data, restore to current
+  const sel=document.getElementById('careerSeasonSelect');
+  if(sel&&sel.value&&sel.value!=='current'){
+    sel.value='current';
+    onCareerSeasonChange('current');
+  }
   if(raceInterval){clearInterval(raceInterval);raceInterval=null;}
   paused=false;
   document.getElementById('btnPause').textContent='Pause';
@@ -3162,9 +3276,9 @@ function startCareer(){
 
   careerData={
     series: series, driverNum: String(driver.num), driver: {...driver},
-    seasonNumber: 1, careerStats: {wins:0,titles:0,t5:0,t10:0,podiums:0,poles:0,races:0},
+    seasonNumber: 1, careerStats: {wins:0,titles:0,t5:0,t10:0,podiums:0,poles:0,races:0,totalPoints:0,totalFinish:0,led:0,stageWins:0},
     roster: roster, progression: {races:0,sumFinish:0},
-    seasonStats: [], raceLog: [],
+    seasonStats: [], raceLog: [], aiStats: {}, savedSeasons: {},
     preset: presetName
   };
 
@@ -3205,6 +3319,11 @@ function enterCareer(){
     season.postInit();
     balanceCareerFullTime();
     careerActive=true;
+    // Show career season selectors in standings and results panels
+    const stWrap=document.getElementById('careerStSeasonWrap');
+    const resWrap=document.getElementById('careerResultsSeasonWrap');
+    if(stWrap)stWrap.style.display='';
+    if(resWrap)resWrap.style.display='';
     // Update UI
     document.body.classList.add('career-active');
     document.getElementById('btnCareer').textContent='Classic';
@@ -3237,6 +3356,11 @@ function exitCareer(){
   }
   careerActive=false;
   document.body.classList.remove('career-active');
+  // Hide career season selectors
+  const stWrap=document.getElementById('careerStSeasonWrap');
+  const resWrap=document.getElementById('careerResultsSeasonWrap');
+  if(stWrap)stWrap.style.display='none';
+  if(resWrap)resWrap.style.display='none';
   document.getElementById('btnCareer').textContent='Resume Career';
   document.getElementById('btnCareer').onclick=function(){enterCareer();};
   // Restore classic state
@@ -3375,8 +3499,10 @@ function saveCareerData(){
       seasonNumber:careerData.seasonNumber, careerStats:careerData.careerStats,
       roster:careerData.roster, progression:careerData.progression,
       seasonStats:careerData.seasonStats||[], raceLog:careerData.raceLog||[],
-      preset:careerData.preset
+      preset:careerData.preset, aiStats:careerData.aiStats||{}
     }));
+    // Save savedSeasons separately to keep main data lean
+    try{localStorage.setItem('career_saved_seasons_'+careerData.driverNum,JSON.stringify(careerData.savedSeasons||{}));}catch(se){console.warn('Could not save season history:',se);}
   }catch(e){console.error('saveCareerData error:',e);}
 }
 
@@ -3385,7 +3511,7 @@ function resetCareer(){
   careerData=null;
   localStorage.removeItem('career_data');
   // Remove all career season saves
-  const keys=Object.keys(localStorage).filter(k=>k.startsWith('career_season_'));
+  const keys=Object.keys(localStorage).filter(k=>k.startsWith('career_season_')||k.startsWith('career_saved_seasons_'));
   keys.forEach(k=>localStorage.removeItem(k));
   document.getElementById('btnCareer').textContent='Career';
   document.getElementById('btnCareer').onclick=openCareerSetup;
@@ -3398,14 +3524,29 @@ function loadCareerData(){
   try{
     const data=JSON.parse(raw);
     if(!data.series||!data.driverNum||!data.driver)return false;
+    // Preserve ages from saved roster before rebuilding
+    const savedAges={};(data.roster||[]).forEach(d=>{if(d.age)savedAges[String(d.num)]=d.age;});
     const arr=data.series==='cup'?CUP_DRIVERS:(data.series==='xfinity'?XFINITY_DRIVERS:TRUCK_DRIVERS);
     if(!arr||!arr.length)return false;
     data.roster=arr.map(d=>({...d}));
+    // Restore saved ages
+    data.roster.forEach(d=>{if(savedAges[String(d.num)])d.age=savedAges[String(d.num)];});
     const idx=data.roster.findIndex(d=>String(d.num)===String(data.driverNum));
     if(idx>=0)data.roster[idx]={...data.driver};
     else data.roster.push({...data.driver});
     data.seasonStats=data.seasonStats||[];
     data.raceLog=data.raceLog||[];
+    data.aiStats=data.aiStats||{};
+    data.savedSeasons=data.savedSeasons||{};
+    // Load saved seasons from separate storage
+    try{
+      const ssRaw=localStorage.getItem('career_saved_seasons_'+data.driverNum);
+      if(ssRaw)data.savedSeasons=JSON.parse(ssRaw);
+    }catch(se){}
+    data.preset=data.preset||null;
+    data.careerStats=data.careerStats||{wins:0,titles:0,t5:0,t10:0,podiums:0,poles:0,races:0,totalPoints:0,totalFinish:0,led:0,stageWins:0};
+    // Ensure careerStats has all fields for old saves
+    ['wins','titles','t5','t10','podiums','poles','races','totalPoints','totalFinish','led','stageWins'].forEach(k=>{if(typeof data.careerStats[k]!=='number')data.careerStats[k]=0;});
     careerData=data;
     return true;
   }catch(e){console.error('loadCareerData error:',e);return false;}
@@ -3450,7 +3591,8 @@ function updateCareerUI(){
     document.getElementById('csRaces').textContent=cs.races;
     document.getElementById('csOvr').textContent=d.ovr;
     document.getElementById('careerRatings').innerHTML=buildRatingsHTML(d);
-    document.getElementById('careerSeasonSummary').textContent='Season '+careerData.seasonNumber+' — '+careerData.series.toUpperCase()+(seasonComplete?' — COMPLETE!':(so?' — '+so.races+'/'+so.schedule.length+' races':''));
+    document.getElementById('careerSeasonSummary').textContent='Season '+careerData.seasonNumber+'/25 — '+careerData.series.toUpperCase()+(seasonComplete?' — COMPLETE!':(so?' — '+so.races+'/'+so.schedule.length+' races':''));
+    buildCareerSeasonSelect();
     buildCareerYearlyTable();
     buildCareerRaceLog();
   }else if(careerData){
@@ -3471,7 +3613,7 @@ function updateCareerUI(){
     document.getElementById('savedCsRaces').textContent=cs.races;
     document.getElementById('savedCsOvr').textContent=d.ovr;
     document.getElementById('savedCareerRatings').innerHTML=buildRatingsHTML(d);
-    document.getElementById('savedCareerSummary').textContent='Season '+careerData.seasonNumber+' — '+careerData.series.toUpperCase()+' — '+cs.races+' career races';
+    document.getElementById('savedCareerSummary').textContent='Season '+careerData.seasonNumber+'/25 — '+careerData.series.toUpperCase()+' — '+cs.races+' career races';
   }else{
     // State 3: No career data
     emptyEl.style.display='';
@@ -3608,6 +3750,243 @@ function sortCareerRaceLog(col){
   buildCareerRaceLog();
 }
 
+let careerFieldStatsSortCol='wins', careerFieldStatsSortAsc=false;
+
+function buildCareerFieldStats(){
+  const el=document.getElementById('careerFieldStatsContent');
+  if(!el)return;
+  const ai=careerData.aiStats||{};
+  const roster=careerData.roster||[];
+  // Build list of entries (AI + player)
+  const entries=[];
+  const dn=careerData.driverNum;
+  // Player
+  const cs=careerData.careerStats;
+  if(cs.races>0){
+    const d=careerData.driver;
+    entries.push({num:dn,name:d.name,team:d.team,isPlayer:true,...cs,stageWins:cs.stageWins||0,led:cs.led||0,seasons:(careerData.seasonStats||[]).length,avgFinish:cs.totalFinish&&cs.races?Math.round((cs.totalFinish/cs.races)*10)/10:'-'});
+  }
+  // AI drivers
+  roster.forEach(d=>{
+    const num=String(d.num);
+    if(num===dn)return;
+    const a=ai[num];
+    if(!a||!a.races)return;
+    entries.push({num,name:d.name,team:d.team,isPlayer:false,...a,avgFinish:a.totalFinish&&a.races?Math.round((a.totalFinish/a.races)*10)/10:'-'});
+  });
+  // Sort
+  const col=careerFieldStatsSortCol, asc=careerFieldStatsSortAsc;
+  entries.sort((a,b)=>{
+    let va=a[col],vb=b[col];
+    if(va==null)va=0;if(vb==null)vb=0;
+    if(col==='name'||col==='team'||col==='num')return asc?String(va).localeCompare(String(vb)):String(vb).localeCompare(String(va));
+    return asc?va-vb:vb-va;
+  });
+  if(!entries.length){el.innerHTML='<p style="color:var(--text3);padding:10px;text-align:center;font-size:11px">No career stats yet. Complete a season to see field stats.</p>';return;}
+  const cols=['num','name','seasons','races','wins','t5','t10','podiums','poles','titles','stageWins','led','totalPoints','avgFinish'];
+  const labels=['#','Name','Seas','Races','Wins','T5','T10','Pods','Poles','Titles','StgW','Led','Points','AvgF'];
+  let html='<table style="width:100%;font-size:10px"><thead><tr>'+cols.map((c,i)=>`<th data-col="${c}" onclick="sortCareerFieldStats('${c}')" style="cursor:pointer">${labels[i]}<span class="sort-arrow">▼</span></th>`).join('')+'</tr></thead><tbody>';
+  entries.forEach(e=>{
+    html+=`<tr${e.isPlayer?' style="background:var(--bg3);font-weight:700"':''}>
+      <td>${e.num}</td><td>${e.name}${e.isPlayer?' <span style="color:var(--yellow);font-size:9px">(YOU)</span>':''}</td>
+      <td>${e.seasons}</td><td>${e.races}</td><td style="color:var(--green)">${e.wins}</td><td>${e.t5}</td><td>${e.t10}</td><td>${e.podiums}</td><td>${e.poles}</td><td style="color:var(--yellow)">${e.titles}</td><td>${e.stageWins||0}</td><td>${e.led||0}</td><td>${e.totalPoints||0}</td><td>${e.avgFinish}</td>
+    </tr>`;
+  });
+  html+='</tbody></table>';
+  el.innerHTML=html;
+  el.querySelectorAll('th[data-col]').forEach(th=>{
+    th.classList.remove('sort-asc','sort-desc');
+    if(th.dataset.col===col)th.classList.add(asc?'sort-asc':'sort-desc');
+  });
+}
+
+function sortCareerFieldStats(col){
+  if(careerFieldStatsSortCol===col)careerFieldStatsSortAsc=!careerFieldStatsSortAsc;
+  else{careerFieldStatsSortCol=col;careerFieldStatsSortAsc=false;}
+  buildCareerFieldStats();
+}
+
+function buildCareerSeasonSelect(){
+  const sel=document.getElementById('careerSeasonSelect');
+  const selSt=document.getElementById('careerStSeasonSelect');
+  const selRes=document.getElementById('careerResultsSeasonSelect');
+  if(!sel)return;
+  const cur=careerData.seasonNumber;
+  const saved=careerData.savedSeasons||{};
+  let html='<option value="current">Current Season</option>';
+  for(let i=1;i<=cur;i++){
+    if(saved[i])html+=`<option value="${i}">Season ${i}${i===cur?' (Current)':''}</option>`;
+  }
+  [sel,selSt,selRes].forEach(s=>{
+    if(!s)return;
+    s.innerHTML=html;
+    if(s.dataset.lastVal&&s.querySelector(`option[value="${s.dataset.lastVal}"]`))s.value=s.dataset.lastVal;
+    else s.value='current';
+  });
+}
+
+function renderHistoricalStandings(stMap, snap){
+  const tbody=document.getElementById('stBody');
+  const thead=document.getElementById('stHead');
+  if(!tbody||!thead)return;
+  const isOpen=currentSeries==='f1'||currentSeries==='cf1'||currentSeries==='indycar';
+  const cols=isOpen
+    ?['pos','num','driver','team','points','gap','wins','podiums','poles','avgfin','avgstart','t5','t10','races','finishes']
+    :['pos','num','driver','team','points','gap','wins','stageWins','stagePts','poles','avgfin','avgstart','t5','t10','races','finishes'];
+  const labels=isOpen
+    ?['Pos','#','Driver','Team','Points','Gap','Wins','Pod','Poles','Avg F','Avg S','T5','T10','Races','Fin']
+    :['Pos','#','Driver','Team','Points','Gap','Wins','SW','SP','Poles','Avg F','Avg S','T5','T10','Races','Fin'];
+  thead.innerHTML='<tr>'+cols.map((c,i)=>`<th data-col="${c}">${labels[i]}<span class="sort-arrow">▼</span></th>`).join('')+'</tr>';
+  const list=Object.values(stMap).sort((a,b)=>b.points-a.points);
+  const isCareerDriver=careerActive&&careerData;
+  const dn=careerData&&careerData.driverNum;
+  tbody.innerHTML=list.map((d,i)=>{
+    const posClass=i===0?'top1':(i===1?'top2':(i===2?'top3':''));
+    const highlight=isCareerDriver&&String(d.num)===String(dn)?' career-highlight':'';
+    const ptsLeader=list[0];
+    const gap=ptsLeader?ptsLeader.points-d.points:0;
+    let prevGap='';
+    if(i>0){const p=list[i-1];prevGap=p.points-d.points;}
+    const gapStr=prevGap!==''?'-'+gap+' / -'+prevGap:'-'+gap;
+    const avgFin=d.races>0?(d.totalFinish/d.races).toFixed(1):'—';
+    const avgStart=d.races>0?(d.totalStart/d.races).toFixed(1):'—';
+    const extra=isOpen
+      ?`<td class="st-podiums">${d.podiums||0}</td>`
+      :`<td class="st-stagewins">${d.stageWins||0}</td><td class="st-stagepts">${d.stagePts||0}</td>`;
+    return `<tr class="${posClass}${highlight}">
+      <td class="st-pos ${posClass}">${i+1}</td>
+      <td class="st-num" style="color:${MFG_COLORS[d.mfg]||''}">${d.num}</td>
+      <td class="st-driver">${d.name}</td>
+      <td class="st-team">${d.team}</td>
+      <td class="st-points">${d.points}</td>
+      <td class="st-gap">${gapStr}</td>
+      <td class="st-wins">${d.wins}</td>
+      ${extra}
+      <td class="st-poles">${d.poles}</td>
+      <td class="st-avgfin">${avgFin}</td>
+      <td class="st-avgstart">${avgStart}</td>
+      <td class="st-top5">${d.t5}</td>
+      <td class="st-top10">${d.t10}</td>
+      <td class="st-races">${d.races}</td>
+      <td class="st-finishes">${d.finishes||0}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderHistoricalResults(snap){
+  const container=document.getElementById('resultsContainer');
+  if(!container)return;
+  const results=snap.results||[];
+  if(!results.length){container.innerHTML='<p style="color:var(--text3);padding:20px;text-align:center">No results for this season.</p>';return;}
+  container.innerHTML='';
+  results.slice().reverse().forEach((r,idx)=>{
+    const winner=r.finishOrder&&r.finishOrder[0];
+    const w=winner&&(winner.driver||winner);
+    const isFirst=idx===0;
+    const tblId='histResult_'+idx;
+    let html=`<div class="result-card slide-in">
+      <div class="collapsible-header${isFirst?'':' collapsed'}" onclick="toggleResult('${tblId}')">
+        <span class="toggle-arrow">▼</span>
+        <strong>${r.track&&r.track.name||'Unknown'}</strong> <span style="color:var(--text3);font-size:11px">— Race #${results.length - idx} &bull; ${r.laps||0} laps &bull; ${w?'Winner: #'+w.num+' '+w.name:'Winner: Unknown'}</span>
+      </div>
+      <div id="${tblId}" class="collapsible-body${isFirst?'':' collapsed'}">
+        <table class="result-table">
+          <thead><tr><th>Pos</th><th>St</th><th>#</th><th>Driver</th><th>Team</th><th>Mfg</th><th>Laps</th><th>Led</th><th>Pits</th><th>Status</th></tr></thead>
+          <tbody>`;
+    (r.finishOrder||[]).forEach((d,i2)=>{
+      const drv=d.driver||d;
+      const laps=d.dnfLap||(r.laps||0);
+      const led=d.lapsLed||0;
+      const pits=d.pitStops||'';
+      const mfg=drv.mfg||'';
+      html+=`<tr${i2===0?' style="font-weight:700"':''}>
+        <td>${i2+1}</td>
+        <td>${d.startPos||'-'}</td>
+        <td style="color:${MFG_COLORS[mfg]||''}">${drv.num}</td>
+        <td>${drv.name}</td>
+        <td style="font-size:10px">${drv.team||''}</td>
+        <td>${mfg}</td>
+        <td>${laps}</td>
+        <td>${led}</td>
+        <td>${pits}</td>
+        <td>${d.status||'Running'}</td>
+      </tr>`;
+    });
+    html+=`</tbody></table></div></div>`;
+    container.insertAdjacentHTML('beforeend',html);
+  });
+}
+
+function onCareerSeasonChange(val){
+  const sel=document.getElementById('careerSeasonSelect');
+  const selSt=document.getElementById('careerStSeasonSelect');
+  const selRes=document.getElementById('careerResultsSeasonSelect');
+  [sel,selSt,selRes].forEach(s=>{if(s){s.value=val;s.dataset.lastVal=val;}});
+  if(val==='current'){
+    renderStandings();
+    renderResults();
+    updateHeaderInfo();
+    return;
+  }
+  const snap=careerData.savedSeasons[parseInt(val)];
+  if(!snap)return;
+  // Convert saved standings array to map
+  const stMap={};
+  (snap.standings||[]).forEach(s=>{
+    stMap[s.num]={...s,driver:{num:s.num,name:s.name,team:s.team,mfg:s.mfg}};
+  });
+  // Render directly without patching season (to avoid side effects)
+  renderHistoricalStandings(stMap, snap);
+  renderHistoricalResults(snap);
+  // Update header
+  const el=document.getElementById('headerRace');
+  if(el){
+    const lbl=sel.options[sel.selectedIndex]?.textContent||'Historical';
+    el.innerHTML='<span style="color:var(--yellow)">'+lbl+'</span>';
+  }
+  const stTitle=document.getElementById('stTitle');
+  if(stTitle){
+    const lbl=sel.options[sel.selectedIndex]?.textContent||'Season';
+    stTitle.textContent='Standings — '+lbl;
+  }
+  // Hide chase toggle for historical
+  const toggleEl=document.getElementById('viewToggle');
+  if(toggleEl)toggleEl.style.display='none';
+}
+
+function showCareerRoster(){
+  if(!careerData||!careerData.roster)return;
+  const roster=careerData.roster;
+  let html=`
+    <div class="modal-overlay" id="careerRosterModal" style="display:flex" onclick="if(event.target===this)closeCareerRoster()">
+      <div class="modal-content" style="min-width:650px;max-height:80vh;overflow-y:auto">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <h3 style="margin:0;color:var(--yellow);font-size:14px">Roster — ${careerData.series.toUpperCase()}</h3>
+          <button class="btn btn-gray btn-sm" onclick="closeCareerRoster()">Close</button>
+        </div>
+        <table style="width:100%;font-size:10px"><thead><tr><th>#</th><th>Name</th><th>Team</th><th>Mfg</th><th>OVR</th><th>SS</th><th>IT</th><th>ST</th><th>RC</th><th>AGG</th><th>CON</th><th>FT</th></tr></thead><tbody>`;
+  roster.forEach(d=>{
+    const isMe=String(d.num)===String(careerData.driverNum);
+    html+=`<tr${isMe?' style="background:var(--bg3);font-weight:700"':''}>
+      <td>${d.num}</td><td>${d.name}${isMe?' <span style="color:var(--yellow);font-size:8px">(YOU)</span>':''}</td>
+      <td>${d.team||'-'}</td><td>${d.mfg||'-'}</td>
+      <td>${d.ovr||0}</td>
+      <td>${d.ss||0}</td><td>${d.it||0}</td><td>${d.st||0}</td><td>${d.rc||0}</td>
+      <td>${d.agg||0}</td><td>${d.con||0}</td>
+      <td>${d.fullTime===false?'':'✓'}</td>
+    </tr>`;
+  });
+  html+=`</tbody></table></div></div>`;
+  const existing=document.getElementById('careerRosterModal');
+  if(existing)existing.remove();
+  document.body.insertAdjacentHTML('beforeend',html);
+}
+
+function closeCareerRoster(){
+  const el=document.getElementById('careerRosterModal');
+  if(el)el.remove();
+}
+
 function advanceCareerSeason(){
   if(!careerActive||!careerData)return;
   // Save season stats for year-by-year
@@ -3637,41 +4016,71 @@ function advanceCareerSeason(){
     cs.podiums+=myStats.podiums||0;
     cs.poles+=myStats.poles||0;
     cs.races+=myStats.races||0;
+    cs.totalPoints=(cs.totalPoints||0)+(myStats.points||0);
+    cs.totalFinish=(cs.totalFinish||0)+(myStats.totalFinish||0);
+    cs.led=(cs.led||0)+(myStats.led||0);
+    cs.stageWins=(cs.stageWins||0)+(myStats.stageWins||0);
     if(myStats.champion)cs.titles++;
+    // Track AI driver career stats
+    const ss=season.standings;
+    Object.values(ss).forEach(s=>{
+      if(String(s.num)===String(dn))return;
+      const num=String(s.num);
+      if(!careerData.aiStats[num])careerData.aiStats[num]={wins:0,t5:0,t10:0,podiums:0,poles:0,races:0,titles:0,stageWins:0,led:0,totalPoints:0,totalFinish:0,seasons:0};
+      const ai=careerData.aiStats[num];
+      ai.wins+=s.wins||0; ai.t5+=s.t5||0; ai.t10+=s.t10||0;
+      ai.podiums+=s.podiums||0; ai.poles+=s.poles||0;
+      ai.races+=s.races||0; ai.stageWins+=s.stageWins||0;
+      ai.led+=s.led||0; ai.totalPoints+=s.points||0;
+      ai.totalFinish+=s.totalFinish||0;
+      ai.seasons++;
+      if(s.champion)ai.titles++;
+    });
     // Apply progression
     applyCareerProgression(myStats);
-    // Promotion check: champion or 5+ wins unlocks next series
-    if(myStats.champion||myStats.wins>=5){
-      const nextSeries={truck:'xfinity',xfinity:'cup'}[careerData.series];
-      if(nextSeries&&confirm(`${careerData.series.toUpperCase()} champion`+(myStats.wins>=5?` with ${myStats.wins} wins`:'')+`! Advance to ${nextSeries.toUpperCase()}? (Cancel to stay in ${careerData.series.toUpperCase()})`)){
-        // Reset driver ratings to original career preset (car always 95)
-        if(careerData.preset&&CAREER_PRESETS[careerData.preset]){
-          const pr=CAREER_PRESETS[careerData.preset];
-          Object.assign(careerData.driver,pr);
-          careerData.driver.car=95;
-          careerData.driver.ovr=Math.round((careerData.driver.ss+careerData.driver.it+careerData.driver.st+careerData.driver.rc+careerData.driver.agg+careerData.driver.con+careerData.driver.car)/7);
-        }
-        careerData.driver.car=95;
-        const newRoster=(nextSeries==='cup'?CUP_DRIVERS:nextSeries==='xfinity'?XFINITY_DRIVERS:TRUCK_DRIVERS).map(d=>({...d}));
-        const numConflict=newRoster.find(d=>String(d.num)===String(careerData.driverNum));
-        if(numConflict){
-          const newNum=prompt('# '+careerData.driverNum+' is taken in '+nextSeries.toUpperCase()+'. Enter a new number:','00');
-          if(newNum&&newNum.trim()){
-            careerData.driverNum=String(newNum).trim();
-            careerData.driver.num=careerData.driverNum;
-          }
-        }
-        const delIdx=newRoster.findIndex(d=>String(d.num)===String(careerData.driverNum));
-        if(delIdx>=0)newRoster.splice(delIdx,1);
-        newRoster.push({...careerData.driver});
-        careerData.roster=newRoster;
-        careerData.series=nextSeries;
-        addLog(`Promoted to ${nextSeries.toUpperCase()} series!`,'s');
-      }
-    }
   }
+  // Save season snapshot for historical viewing (minimal data)
+  if(!careerData.savedSeasons)careerData.savedSeasons={};
+  const sn=careerData.seasonNumber;
+  const st=season.standings;
+  careerData.savedSeasons[sn]={
+    standings: Object.values(st).map(s=>({
+      num:s.num, name:(s.driver&&s.driver.name)||s.name||'',
+      team:(s.driver&&s.driver.team)||s.team||'',
+      mfg:(s.driver&&s.driver.mfg)||s.mfg||'',
+      points:s.points||0, wins:s.wins||0, t5:s.t5||0, t10:s.t10||0,
+      podiums:s.podiums||0, poles:s.poles||0, races:s.races||0,
+      totalFinish:s.totalFinish||0, stageWins:s.stageWins||0,
+      stagePts:s.stagePts||0, led:s.led||0, finishes:s.finishes||0,
+      champion:!!s.champion, totalStart:s.totalStart||0
+    })),
+    results: (season.results||[]).map(r=>({
+      track:{name:typeof r.track==='string'?r.track:(r.track&&r.track.name)||''},
+      laps:r.laps||0,
+      finishOrder:(r.finishOrder||[]).map(f=>{
+        const fd=f.driver||f;
+        return {
+          driver:{num:fd.num||'',name:fd.name||'',team:fd.team||'',mfg:fd.mfg||''},
+          startPos:f.startPos||0, lapsLed:f.lapsLed||0, dnfLap:f.dnfLap||null,
+          pitStops:f.pitStops||'', status:f.status||''
+        };
+      })
+    })),
+    schedule: (season.schedule||[]).map(t=>typeof t==='string'?t:(t&&t.name)||''),
+    series: careerData.series, raceCount: season.races||0,
+    chaseActive: !!season.chaseActive
+  };
   // Increment season
   careerData.seasonNumber++;
+  // Process off-season: age, retirements, rookies, AI development
+  processOffSeason();
+  // Check 25-season cap
+  if(careerData.seasonNumber>25){
+    addLog(`Career complete after 25 seasons!`,'f');
+    if(careerActive)exitCareer();
+    showCareerSummary();
+    return;
+  }
   // Generate fresh schedule (use existing preset or shuffle)
   const preset=(SCHEDULES[careerData.series]||SCHEDULES.cup);
   careerData.seasonObject=createCareerSeason(careerData.series,careerData.roster,careerData.seasonNumber);
@@ -3699,6 +4108,86 @@ function balanceCareerFullTime(){
   if(ftCount<=limit)return;
   const sorted=roster.filter(d=>String(d.num)!==String(careerData.driverNum)&&d.fullTime!==false).sort((a,b)=>(a.ovr||0)-(b.ovr||0));
   if(sorted.length>0)sorted[0].fullTime=false;
+}
+
+function processOffSeason(){
+  if(!careerData||!careerData.roster)return;
+  const roster=careerData.roster;
+  const dn=careerData.driverNum;
+  // AI driver development based on season performance
+  if(season&&season.standings){
+    Object.values(season.standings).forEach(s=>{
+      if(String(s.num)===String(dn))return;
+      const d=roster.find(x=>String(x.num)===String(s.num));
+      if(!d)return;
+      const avgFinish=s.races>0?s.totalFinish/s.races:15;
+      const diff=15-avgFinish;
+      const change=Math.round(diff*0.3);
+      ['ss','it','st','rc','agg','con'].forEach(r=>{
+        d[r]=Math.max(1,Math.min(99,(d[r]||65)+change+Math.round((Math.random()-0.5)*6)));
+      });
+      d.ovr=Math.round((d.ss+d.it+d.st+d.rc+d.agg+d.con+d.car)/7);
+    });
+  }
+}
+
+function showCareerSummary(){
+  if(!careerData)return;
+  const d=careerData.driver;
+  const cs=careerData.careerStats;
+  const sn={cup:'Cup',xfinity:'Xfinity',truck:'Truck',f1:'F1',indycar:'IndyCar',cf1:'Custom F1',eel:'Custom NASCAR'};
+  let html=`
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:24px;font-weight:700;color:var(--yellow)">#${d.num} ${d.name}</div>
+      <div style="font-size:13px;color:var(--text2)">${d.team}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px">
+      <div style="background:var(--bg2);padding:8px;border-radius:4px;text-align:center"><div style="font-size:18px;font-weight:700;color:var(--yellow)">${cs.races}</div><div style="font-size:10px;color:var(--text3)">Races</div></div>
+      <div style="background:var(--bg2);padding:8px;border-radius:4px;text-align:center"><div style="font-size:18px;font-weight:700;color:var(--green)">${cs.wins}</div><div style="font-size:10px;color:var(--text3)">Wins</div></div>
+      <div style="background:var(--bg2);padding:8px;border-radius:4px;text-align:center"><div style="font-size:18px;font-weight:700;color:var(--yellow)">${cs.titles}</div><div style="font-size:10px;color:var(--text3)">Titles</div></div>
+      <div style="background:var(--bg2);padding:8px;border-radius:4px;text-align:center"><div style="font-size:18px;font-weight:700;color:var(--yellow)">${cs.podiums}</div><div style="font-size:10px;color:var(--text3)">Podiums</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px">
+      <div style="background:var(--bg2);padding:8px;border-radius:4px;text-align:center"><div style="font-size:16px;font-weight:600;color:var(--text)">${cs.t5}</div><div style="font-size:10px;color:var(--text3)">Top 5</div></div>
+      <div style="background:var(--bg2);padding:8px;border-radius:4px;text-align:center"><div style="font-size:16px;font-weight:600;color:var(--text)">${cs.t10}</div><div style="font-size:10px;color:var(--text3)">Top 10</div></div>
+      <div style="background:var(--bg2);padding:8px;border-radius:4px;text-align:center"><div style="font-size:16px;font-weight:600;color:var(--text)">${cs.poles}</div><div style="font-size:10px;color:var(--text3)">Poles</div></div>
+    </div>
+    <div style="margin-bottom:12px;font-size:12px;color:var(--text2);text-align:center">Final Ratings: ${buildRatingsHTML(d)}</div>
+    <h4 style="margin:12px 0 6px;color:var(--yellow);font-size:13px">Season by Season</h4>
+    <table style="width:100%;font-size:11px"><thead><tr><th>#</th><th>Series</th><th>Pos</th><th>Races</th><th>Wins</th><th>T5</th><th>T10</th><th>Podiums</th><th>Poles</th><th>Led</th><th>Pts</th><th>Avg F</th></tr></thead><tbody>`;
+  (careerData.seasonStats||[]).forEach(s=>{
+    html+=`<tr><td>${s.season}</td><td>${sn[s.series]||s.series}</td><td style="font-weight:700">${s.position||'-'}</td><td>${s.races}</td><td>${s.wins}</td><td>${s.t5}</td><td>${s.t10}</td><td>${s.podiums}</td><td>${s.poles}</td><td>${s.led||0}</td><td>${s.points}</td><td>${s.avgFinish}</td></tr>`;
+  });
+  html+=`</tbody></table>`;
+  // Add field career stats section
+  const ai=careerData.aiStats||{};
+  const roster=careerData.roster||[];
+  const fieldEntries=[];
+  const dn=careerData.driverNum;
+  const cs2=careerData.careerStats;
+  if(cs2.races>0)fieldEntries.push({num:dn,name:d.name,isPlayer:true,...cs2,stageWins:cs2.stageWins||0,led:cs2.led||0,seasons:(careerData.seasonStats||[]).length,avgFinish:cs2.totalFinish&&cs2.races?Math.round((cs2.totalFinish/cs2.races)*10)/10:'-',totalPoints:cs2.totalPoints||0});
+  roster.forEach(d2=>{
+    const n2=String(d2.num);
+    if(n2===dn)return;
+    const a=ai[n2];
+    if(!a||!a.races)return;
+    fieldEntries.push({num:n2,name:d2.name,isPlayer:false,...a,avgFinish:a.totalFinish&&a.races?Math.round((a.totalFinish/a.races)*10)/10:'-'});
+  });
+  fieldEntries.sort((a,b)=>b.wins-a.wins);
+  html+=`<h4 style="margin:16px 0 6px;color:var(--yellow);font-size:13px">All-Time Career Stats</h4>
+    <div style="max-height:300px;overflow-y:auto;font-size:10px"><table style="width:100%"><thead><tr><th>#</th><th>Name</th><th>Seas</th><th>Races</th><th>Wins</th><th>T5</th><th>T10</th><th>Pods</th><th>Poles</th><th>Titles</th><th>StgW</th><th>Led</th><th>Pts</th><th>AvgF</th></tr></thead><tbody>`;
+  fieldEntries.forEach(e=>{
+    html+=`<tr${e.isPlayer?' style="background:var(--bg3);font-weight:700"':''}><td>${e.num}</td><td>${e.name}${e.isPlayer?' <span style="color:var(--yellow);font-size:8px">(YOU)</span>':''}</td><td>${e.seasons}</td><td>${e.races}</td><td style="color:var(--green)">${e.wins}</td><td>${e.t5}</td><td>${e.t10}</td><td>${e.podiums}</td><td>${e.poles}</td><td style="color:var(--yellow)">${e.titles}</td><td>${e.stageWins||0}</td><td>${e.led||0}</td><td>${e.totalPoints||0}</td><td>${e.avgFinish}</td></tr>`;
+  });
+  html+=`</tbody></table></div>`;
+  document.getElementById('careerSummaryContent').innerHTML=html;
+  document.getElementById('careerSummaryModal').style.display='flex';
+  document.getElementById('btnCareer').textContent='Classic';
+  document.getElementById('btnCareer').onclick=function(){
+    document.getElementById('careerSummaryModal').style.display='none';
+    document.getElementById('btnCareer').textContent='Career';
+    document.getElementById('btnCareer').onclick=openCareerSetup;
+  };
 }
 
 function applyCareerProgression(myStats){
@@ -3900,6 +4389,8 @@ function proceedInit(){
     btn.classList.add('active');
     document.getElementById('careerYearlyContent').style.display=btn.dataset.careertab==='yearly'?'':'none';
     document.getElementById('careerRaceLogContent').style.display=btn.dataset.careertab==='racelog'?'':'none';
+    document.getElementById('careerFieldStatsContent').style.display=btn.dataset.careertab==='fieldstats'?'':'none';
+    if(btn.dataset.careertab==='fieldstats')buildCareerFieldStats();
   });
 
   resetSession();
@@ -4166,6 +4657,17 @@ document.addEventListener('DOMContentLoaded',init);
         <button class="btn btn-sm" style="background:var(--green);color:#000;font-weight:700" onclick="startCareer()">Start Career</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- CAREER SUMMARY MODAL -->
+<div class="modal-overlay" id="careerSummaryModal" style="display:none" onclick="if(event.target===this){document.getElementById('careerSummaryModal').style.display='none';document.getElementById('btnCareer').textContent='Career';document.getElementById('btnCareer').onclick=openCareerSetup;}">
+  <div class="modal-content" style="min-width:600px;max-height:80vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h3 style="margin:0;color:var(--yellow)">Career Complete!</h3>
+      <button class="btn btn-gray btn-sm" onclick="document.getElementById('careerSummaryModal').style.display='none';document.getElementById('btnCareer').textContent='Career';document.getElementById('btnCareer').onclick=openCareerSetup;">Close</button>
+    </div>
+    <div id="careerSummaryContent"></div>
   </div>
 </div>
 
